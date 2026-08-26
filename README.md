@@ -1,39 +1,50 @@
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&text=Aveli&fontAlign=50&fontAlignY=38&desc=System%20Analysis%20Case%20%C2%B7%20Offline-first%20Mobile%20Workspace&descAlign=50&descAlignY=58&animation=fadeIn" alt="Aveli banner" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&text=Aveli&fontAlign=50&fontAlignY=40&desc=Offline-first%20mobile%20workspace%20%C2%B7%20System%20Analysis%20Case&descAlign=50&descAlignY=60&animation=fadeIn" alt="Aveli banner" />
 </p>
 
 <p align="center">
-  <strong>Offline-first mobile workspace for independent beauty professionals.</strong>
+  <strong>Mobile workspace for independent beauty professionals with local-first data, server-managed access and subscription billing.</strong>
 </p>
 
 <p align="center">
   <code>System Analysis</code>
   <code>Mobile Architecture</code>
-  <code>Data Ownership</code>
-  <code>REST API</code>
   <code>Offline-first</code>
-  <code>Billing</code>
+  <code>REST API</code>
+  <code>Data Ownership</code>
+  <code>Billing Integration</code>
 </p>
 
 ---
 
-## Overview
+## What is Aveli?
 
-**Aveli** is a mobile workspace for independent beauty professionals who manage appointments, clients, services, payments, notes and visit photos.
+**Aveli** is a mobile daily workspace for independent beauty professionals.
 
-The system is intentionally split into two responsibility zones:
+It helps manage:
+
+- appointments and daily schedule;
+- clients and visit history;
+- services and pricing;
+- payments and outstanding balances;
+- visit notes and photos;
+- reminders and profile settings.
+
+The product is intentionally designed as a lightweight alternative to a heavy CRM.
+
+Its main architectural idea is simple:
 
 ```text
-Operational Workspace
+Operational Work Data
         ↓
-   Local Device
+     Device
 
 Identity / Access / Billing
         ↓
-      Backend
+     Backend
 ```
 
-This boundary keeps day-to-day work local while allowing the backend to manage authentication, trial periods, access grants and subscription state.
+Client, appointment and payment data stay on the device, while the backend manages identity, trial, subscription and entitlement.
 
 ---
 
@@ -42,49 +53,49 @@ This boundary keeps day-to-day work local while allowing the backend to manage a
 <table>
 <tr>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-today-screen.png" alt="Aveli Today" width="92%" />
+  <img src="11-Result/screenshots/aveli-today-screen.png" alt="Aveli Today" />
   <br>
-  <sub><b>Today</b> — daily schedule and current workload</sub>
+  <sub><b>Today</b> — daily schedule and workspace overview</sub>
 </td>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-calendar-screen.png" alt="Aveli Calendar" width="92%" />
+  <img src="11-Result/screenshots/aveli-calendar-screen.png" alt="Aveli Calendar" />
   <br>
-  <sub><b>Calendar</b> — day and week planning</sub>
+  <sub><b>Calendar</b> — appointments and day planning</sub>
 </td>
 </tr>
 <tr>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-clients-screen.png" alt="Aveli Clients" width="92%" />
+  <img src="11-Result/screenshots/aveli-clients-screen.png" alt="Aveli Clients" />
   <br>
-  <sub><b>Clients</b> — local client directory and visit history</sub>
+  <sub><b>Clients</b> — directory and client history</sub>
 </td>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-another-screen.png" alt="Aveli Additional Screen" width="92%" />
+  <img src="11-Result/screenshots/aveli-another-screen.png" alt="Aveli Screen" />
   <br>
-  <sub><b>Workspace</b> — supporting product flow</sub>
+  <sub><b>Workspace</b> — supporting application flow</sub>
 </td>
 </tr>
 </table>
 
 ---
 
-## Problem
+## The System Problem
 
-Aveli combines two different system concerns.
+Aveli has two very different concerns.
 
-The first is the user's actual operational work:
+The first is the user's actual work:
 
 ```text
 Clients
 Appointments
 Services
 Payments
-Visit Notes
-Visit Photos
+Notes
+Photos
 Schedule
 ```
 
-The second is account and commercial infrastructure:
+The second is commercial and account infrastructure:
 
 ```text
 Authentication
@@ -94,9 +105,9 @@ Access Grants
 Billing
 ```
 
-If these concerns were mixed, everyday work would become dependent on network availability and sensitive operational data would unnecessarily move into backend infrastructure.
+Mixing these concerns would make everyday work dependent on network availability and would move sensitive client data into backend infrastructure unnecessarily.
 
-The architecture therefore treats **data ownership and access control as separate problems**.
+So the solution was designed around a strict system boundary.
 
 ---
 
@@ -108,33 +119,33 @@ The architecture therefore treats **data ownership and access control as separat
 
 ### Local Workspace
 
-Owned by the mobile application:
+Stored on the user's device:
 
-- clients;
-- appointments;
-- services;
-- payments;
-- visit notes;
-- visit photos;
-- schedule;
-- local settings.
+- Clients
+- Appointments
+- Services
+- Payments
+- Visit notes
+- Visit photos
+- Schedule
+- Local settings
 
-**Storage:** Drift / SQLite + local device files
+**Storage:** Drift / SQLite + device files
 
 </td>
 <td width="50%" valign="top">
 
 ### Account & Access
 
-Owned by the backend:
+Managed by the backend:
 
-- user accounts;
-- sessions;
-- trial state;
-- manual grants;
-- lifetime grants;
-- subscriptions;
-- billing synchronization.
+- User accounts
+- Sessions
+- Trial state
+- Manual grants
+- Lifetime grants
+- Subscription state
+- Billing synchronization
 
 **Storage:** PostgreSQL
 
@@ -142,77 +153,70 @@ Owned by the backend:
 </tr>
 </table>
 
-The backend answers:
+The backend decides **whether the workspace can be opened**.
 
-```text
-Who is the user?
-Can this user open the workspace?
-```
-
-It does not answer:
-
-```text
-What clients, appointments or payments does the user have?
-```
+It does not become the source of truth for the user's professional data.
 
 ---
 
-## Architecture
+## High-Level Architecture
 
 <p align="center">
   <img src="renderer/system-context.svg" alt="Aveli System Context" width="900" />
 </p>
 
 ```text
-Flutter App
-   │
-   ├── Local Workspace ──→ Drift / SQLite
-   │                       Local Files
-   │
-   └── Account & Access ─→ NestJS API
-                              │
-                              ├── PostgreSQL
-                              │
-                              └── RevenueCat
-                                     │
-                          Google Play / App Store
+Flutter Application
+        │
+        ├── Local Workspace ──────→ Drift / SQLite
+        │                           Local Files
+        │
+        └── Account & Access ─────→ NestJS API
+                                      │
+                                      ├── PostgreSQL
+                                      │
+                                      └── RevenueCat
+                                             │
+                                   Google Play / App Store
 ```
 
 ---
 
 ## Key System Decisions
 
-### 01 · Local-first data ownership
+### 01 · Local-first workspace
 
-Operational data stays on the user's device.
+Daily work remains available without permanent backend connectivity.
 
-This allows the workspace to remain usable without continuous backend connectivity and keeps client data outside the server-side account infrastructure.
+The application reads and writes operational data directly from local storage.
 
-### 02 · Per-user workspace isolation
+### 02 · Per-user data isolation
 
-Each authenticated account opens its own local database:
+Each authenticated account has its own local workspace database:
 
 ```text
 aveli_<userId>.sqlite
 ```
 
-Visit photos follow the same per-user storage boundary.
+Visit photos follow the same user-specific ownership model.
 
 ### 03 · Server-controlled trial
 
-The 30-day trial is created and owned by the backend.
+The 30-day trial is created on the backend.
+
+That means:
 
 ```text
-Logout
-Reinstall
-Clear local data
-        ↓
-Does not create a new trial
+Logout      ─┐
+Reinstall   ├─→ does not reset trial
+Clear data  ─┘
 ```
 
-### 04 · Unified access model
+The server account remains the source of truth.
 
-Workspace access is resolved through one ordered source model:
+### 04 · Unified Access Gate
+
+The workspace is either available or blocked as a whole.
 
 ```text
 Lifetime
@@ -226,43 +230,53 @@ Trial
 None
 ```
 
-The app does not scatter feature-level premium checks across the UI.
+The application does not scatter individual premium checks across screens.
 
 ### 05 · Access does not own data
 
-If access expires, the workspace is blocked but not destroyed.
+Expiration of trial or subscription blocks workspace availability.
+
+It does **not** delete:
+
+- clients;
+- appointments;
+- payments;
+- notes;
+- photos.
+
+When access is restored, the same local workspace becomes available again.
+
+### 06 · Controlled offline access
+
+A trusted access snapshot is stored in secure storage.
+
+This allows temporary offline operation while preserving server authority over entitlement.
 
 ```text
-Access expired
-      ↓
-Access Gate
-      ↓
-Local data remains
+Last verified access
+        ↓
+Secure snapshot
+        ↓
+Offline grace
+        ↓
+Verification required
 ```
 
-Once access is restored, the same local workspace becomes available again.
+### 07 · Billing behind an entitlement model
 
-### 06 · Controlled offline grace
-
-The client stores a trusted access snapshot in secure storage.
-
-This supports temporary offline use while preserving the backend as the authority for entitlement.
-
-### 07 · Billing behind entitlement
-
-A store purchase is not treated as a direct `isPremium = true` switch.
+Aveli does not base access directly on a client-side `isPremium` flag.
 
 ```text
-Store
-  ↓
-RevenueCat
-  ↓
-Aveli Backend
-  ↓
-Access Decision
+Google Play / App Store
+          ↓
+      RevenueCat
+          ↓
+     Aveli Backend
+          ↓
+     Access Decision
 ```
 
-Monthly and yearly products both map to the logical entitlement:
+Monthly and yearly plans map to one logical entitlement:
 
 ```text
 support
@@ -270,65 +284,64 @@ support
 
 ---
 
-## Access State
+## Access State Model
 
 <p align="center">
   <img src="renderer/access-state-machine.svg" alt="Aveli Access State Machine" width="900" />
 </p>
 
-The state machine shows how lifetime, manual grants, subscriptions and trial access are resolved into one effective workspace decision.
+The access layer resolves one effective source and then decides whether the workspace can open.
+
+This keeps trial, subscription and manual grants inside one deterministic model.
 
 ---
 
 ## Data Model
 
 <p align="center">
-  <img src="renderer/data-model.svg" alt="Aveli High-Level Data Model" width="900" />
+  <img src="renderer/data-model.svg" alt="Aveli Data Model" width="900" />
 </p>
 
-The central design distinction is ownership:
+The important distinction is not only entity relationships, but **ownership**:
 
 ```text
 SERVER DOMAIN
-
 Account
 Session
-AccessGrant
+Access
 Subscription
 
-        │
         │ controls availability
         ▼
 
 LOCAL DOMAIN
-
 Client
 Service
 Appointment
 Payment
-VisitNote
-VisitPhoto
-Settings
+Visit Notes
+Visit Photos
+Schedule
 ```
 
 ---
 
-## Integration Sequence
+## Integration Flow
 
 <p align="center">
   <img src="renderer/integration-sequence.svg" alt="Aveli Integration Sequence" width="900" />
 </p>
 
-The main integration flow covers:
+The main integration surface includes:
 
 - authentication;
 - access resolution;
-- purchase and restore;
 - billing synchronization;
 - RevenueCat webhooks;
+- purchase restore;
 - offline fallback.
 
-Key API boundaries:
+Key backend endpoints:
 
 ```text
 /v1/auth/*
@@ -339,67 +352,63 @@ POST /v1/webhooks/revenuecat
 
 ---
 
-## Development Approach
+## Development Flow
 
-The system evolved from boundary decisions toward implementation.
+The product was developed from system boundaries inward rather than from isolated screens.
 
 ```text
-Product Idea
+Product idea
     ↓
-User Journeys
+User workflows
     ↓
-Requirements
+Domain model
     ↓
-Business Rules
+Data ownership
     ↓
-Domain Model
+Authentication & access
     ↓
-Data Ownership
+External integrations
     ↓
-System Architecture
+Offline behavior
     ↓
-Auth & Access
-    ↓
-External Integrations
-    ↓
-Offline Behavior
-    ↓
-Security & Release Constraints
+Security & release constraints
     ↓
 Implementation
     ↓
-Automated Verification
+Automated verification
 ```
 
-The most important design work happened at the boundaries between concerns:
+The most important decisions were made around the points where different concerns meet:
 
-- local data vs server data;
+- local data vs backend data;
 - authentication vs entitlement;
 - subscription state vs workspace access;
 - cached access vs server authority;
-- development configuration vs production safety.
+- development flexibility vs production safety.
 
 ---
 
-## Documentation
+## System Analysis Artifacts
 
-| Section | Contents |
+| Area | Documentation |
 |---|---|
-| [`01-Context-and-Scope`](01-Context-and-Scope/) | Product context and system boundary |
-| [`02-User-Journey`](02-User-Journey/) | Main and access journeys |
-| [`03-Requirements`](03-Requirements/) | FR, NFR, business rules, acceptance criteria |
-| [`04-System-Design`](04-System-Design/) | Solution overview and architecture |
-| [`05-Data-and-Domain`](05-Data-and-Domain/) | Domain model and data ownership |
-| [`06-Auth-and-Access`](06-Auth-and-Access/) | Authentication, access model and state |
-| [`07-Integrations`](07-Integrations/) | API boundaries and RevenueCat |
-| [`08-Offline-and-Error-Handling`](08-Offline-and-Error-Handling/) | Offline behavior and edge cases |
-| [`09-Security-and-Release`](09-Security-and-Release/) | Security and release constraints |
-| [`10-Traceability`](10-Traceability/) | Rule → requirement → acceptance mapping |
-| [`11-Result`](11-Result/) | Outcome and product screenshots |
+| Context & Scope | [`01-Context-and-Scope`](01-Context-and-Scope/) |
+| User Journey | [`02-User-Journey`](02-User-Journey/) |
+| Requirements | [`03-Requirements`](03-Requirements/) |
+| System Design | [`04-System-Design`](04-System-Design/) |
+| Data & Domain | [`05-Data-and-Domain`](05-Data-and-Domain/) |
+| Auth & Access | [`06-Auth-and-Access`](06-Auth-and-Access/) |
+| Integrations | [`07-Integrations`](07-Integrations/) |
+| Offline & Errors | [`08-Offline-and-Error-Handling`](08-Offline-and-Error-Handling/) |
+| Security & Release | [`09-Security-and-Release`](09-Security-and-Release/) |
+| Traceability | [`10-Traceability`](10-Traceability/) |
+| Result | [`11-Result`](11-Result/) |
 
 ---
 
 ## Diagram Set
+
+The repository contains rendered diagrams for fast review:
 
 ```text
 renderer/
@@ -412,7 +421,7 @@ renderer/
 └── integration-sequence.svg
 ```
 
-PlantUML source files remain next to the corresponding analytical documents.
+Source `.puml` files remain next to the corresponding analytical documents.
 
 ---
 
@@ -426,8 +435,8 @@ PlantUML source files remain next to the corresponding analytical documents.
   <img src="https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs&logoColor=white">
   <img src="https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white">
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white">
-  <img src="https://img.shields.io/badge/JWT-000000?style=flat-square">
-  <img src="https://img.shields.io/badge/RevenueCat-Billing-0D1117?style=flat-square">
+  <img src="https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white">
+  <img src="https://img.shields.io/badge/RevenueCat-F25A5A?style=flat-square">
   <img src="https://img.shields.io/badge/PlantUML-Diagrams-0D1117?style=flat-square">
 </p>
 
@@ -462,10 +471,10 @@ The project includes automated verification around:
 
 - authentication and session lifecycle;
 - access state;
-- subscription behavior;
+- subscription flows;
 - appointment rules;
 - payment rules;
-- local database migrations;
+- database migrations;
 - offline access;
 - release configuration.
 
@@ -482,14 +491,12 @@ AVELI_STANDALONE=true
 
 ## Outcome
 
-Aveli demonstrates system analysis of a real mobile product where local persistence, backend identity, subscription billing and offline behavior must remain consistent with each other.
+Aveli demonstrates analysis of a system where mobile UX, local persistence, backend identity, billing and offline behavior must remain consistent with each other.
 
 The case covers:
 
 ```text
 Requirements
-+
-Business Rules
 +
 Domain Modeling
 +
@@ -511,6 +518,10 @@ Security
 +
 Release Constraints
 ```
+
+The result is a real implemented product with explicit system boundaries and traceable design decisions.
+
+---
 
 <p align="center">
   <strong>System analysis designed to survive implementation.</strong>
