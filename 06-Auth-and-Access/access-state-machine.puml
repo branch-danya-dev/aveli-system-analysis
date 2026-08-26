@@ -1,0 +1,80 @@
+@startuml
+title Aveli — Access State Machine
+
+skinparam shadowing false
+skinparam roundcorner 16
+skinparam ArrowColor #6E7781
+skinparam state {
+  BackgroundColor white
+  BorderColor #30363D
+  FontColor #0D1117
+}
+
+[*] --> Unauthenticated
+
+Unauthenticated --> Authenticating : register / sign in
+
+Authenticating --> Authenticated : session created
+Authenticating --> Unauthenticated : authentication failed
+
+Authenticated --> ResolvingAccess : startup / resume / refresh
+
+ResolvingAccess --> LifetimeAccess : lifetime grant valid
+ResolvingAccess --> ManualAccess : manual grant valid
+ResolvingAccess --> SubscriptionAccess : subscription active
+ResolvingAccess --> TrialAccess : trial active
+ResolvingAccess --> NoAccess : no valid source
+
+LifetimeAccess --> Workspace
+ManualAccess --> Workspace
+SubscriptionAccess --> Workspace
+TrialAccess --> Workspace
+
+Workspace --> ResolvingAccess : verification required
+Workspace --> Unauthenticated : logout
+
+TrialAccess --> ResolvingAccess : trial expired
+SubscriptionAccess --> ResolvingAccess : subscription changed
+ManualAccess --> ResolvingAccess : grant expired
+LifetimeAccess --> ResolvingAccess : access state refreshed
+
+NoAccess --> AccessGate
+
+AccessGate --> ResolvingAccess : purchase
+AccessGate --> ResolvingAccess : restore purchase
+AccessGate --> ResolvingAccess : manual / lifetime grant
+AccessGate --> Unauthenticated : logout
+
+state ResolvingAccess {
+  [*] --> CheckLifetime
+
+  CheckLifetime --> LifetimeResolved : valid
+  CheckLifetime --> CheckManual : not valid
+
+  CheckManual --> ManualResolved : valid
+  CheckManual --> CheckSubscription : not valid
+
+  CheckSubscription --> SubscriptionResolved : valid
+  CheckSubscription --> CheckTrial : not valid
+
+  CheckTrial --> TrialResolved : valid
+  CheckTrial --> NoneResolved : not valid
+}
+
+LifetimeResolved --> LifetimeAccess
+ManualResolved --> ManualAccess
+SubscriptionResolved --> SubscriptionAccess
+TrialResolved --> TrialAccess
+NoneResolved --> NoAccess
+
+note right of Workspace
+Operational data remains local.
+Access controls availability only.
+end note
+
+note right of AccessGate
+Local workspace data
+is not deleted.
+end note
+
+@enduml

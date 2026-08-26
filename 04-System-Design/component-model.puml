@@ -1,0 +1,102 @@
+@startuml
+title Aveli — Component Model
+
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam roundcorner 14
+skinparam defaultTextAlignment center
+skinparam ArrowColor #6E7781
+
+package "Aveli Mobile App" {
+
+  component "App Shell\nNavigation / Bootstrap" as SHELL
+
+  package "Workspace Features" {
+    component "Today" as TODAY
+    component "Calendar" as CALENDAR
+    component "Clients" as CLIENTS
+    component "Appointments" as APPOINTMENTS
+    component "Payments" as PAYMENTS
+    component "Services" as SERVICES
+    component "Settings" as SETTINGS
+    component "Reminders" as REMINDERS
+  }
+
+  package "Account & Access" {
+    component "Authentication" as AUTH
+    component "Access State" as ACCESS
+    component "Subscription" as SUBSCRIPTION
+  }
+
+  package "Core" {
+    component "Local Database\nDrift / SQLite" as LOCALDB
+    component "Secure Storage" as SECURE
+    component "Local File Storage" as FILES
+    component "Device Integrations" as DEVICE
+  }
+}
+
+package "Aveli Backend" {
+  component "Auth Module" as BAUTH
+  component "Access Module" as BACCESS
+  component "Billing Module" as BILLING
+  component "Prisma" as PRISMA
+}
+
+database "PostgreSQL" as PG
+cloud "RevenueCat" as RC
+cloud "Google Play / App Store" as STORE
+cloud "Exchange Rate API" as FX
+
+SHELL --> TODAY
+SHELL --> CALENDAR
+SHELL --> CLIENTS
+SHELL --> SETTINGS
+
+TODAY --> APPOINTMENTS
+CALENDAR --> APPOINTMENTS
+CLIENTS --> APPOINTMENTS
+APPOINTMENTS --> PAYMENTS
+APPOINTMENTS --> CLIENTS
+APPOINTMENTS --> SERVICES
+
+TODAY --> LOCALDB
+CALENDAR --> LOCALDB
+CLIENTS --> LOCALDB
+APPOINTMENTS --> LOCALDB
+PAYMENTS --> LOCALDB
+SERVICES --> LOCALDB
+SETTINGS --> LOCALDB
+
+APPOINTMENTS --> FILES : visit photos
+REMINDERS --> DEVICE : local notifications
+CLIENTS --> DEVICE : contacts
+SETTINGS --> FX : exchange rates
+
+AUTH --> SECURE : tokens
+ACCESS --> SECURE : access snapshot
+
+AUTH --> BAUTH : HTTPS
+ACCESS --> BACCESS : HTTPS
+SUBSCRIPTION --> BILLING : sync
+SUBSCRIPTION --> RC : purchase / restore
+
+BAUTH --> PRISMA
+BACCESS --> PRISMA
+BILLING --> PRISMA
+PRISMA --> PG
+
+RC --> BILLING : webhook
+RC --> STORE : store subscription state
+
+note bottom of LOCALDB
+Workspace entities remain
+local to the active user.
+end note
+
+note bottom of BACCESS
+Backend resolves entitlement,
+not operational workspace data.
+end note
+
+@enduml

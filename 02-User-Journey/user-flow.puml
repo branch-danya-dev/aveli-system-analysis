@@ -1,0 +1,96 @@
+@startuml
+title Aveli — Main User Flow
+
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  DiamondBackgroundColor white
+  DiamondBorderColor black
+}
+
+start
+
+:Launch Aveli;
+:Bootstrap application;
+
+if (Session exists?) then (Yes)
+
+  :Restore session;
+  :Open local user database;
+  :Load cached access snapshot;
+  :Verify access if required;
+
+else (No)
+
+  :Show welcome / auth;
+
+  if (Existing account?) then (Yes)
+    :Sign in;
+  else (No)
+    :Register account;
+    :Backend creates 30-day trial;
+  endif
+
+  :Create authenticated session;
+  :Open local user database;
+  :Resolve access state;
+
+endif
+
+if (Access granted?) then (Yes)
+
+  :Open Workspace;
+
+  while (User continues working?) is (Yes)
+
+    :Use Today / Calendar / Clients / More;
+
+    if (Create or manage appointment?) then (Yes)
+      :Open appointment flow;
+      :Select client and service;
+      :Choose date and time;
+      :Save / reschedule / complete / cancel;
+    endif
+
+    if (Manage client?) then (Yes)
+      :Open client profile;
+      :View history / edit data / create next visit;
+    endif
+
+    if (Complete visit?) then (Yes)
+      :Save notes / photos;
+      :Record payment or mark outstanding;
+    endif
+
+  endwhile (No)
+
+else (No)
+
+  :Open Access Gate;
+
+  if (Purchase or restore access?) then (Yes)
+    :Open support paywall;
+    :Purchase or restore through store;
+    :RevenueCat updates entitlement;
+    :Sync billing with backend;
+    :Refresh access state;
+
+    if (Access restored?) then (Yes)
+      :Open Workspace;
+    else (No)
+      :Remain on Access Gate;
+    endif
+
+  else (No)
+    :Remain on Access Gate;
+  endif
+
+endif
+
+:Exit application;
+
+stop
+
+@enduml

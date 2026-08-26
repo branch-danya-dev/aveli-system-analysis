@@ -1,0 +1,121 @@
+@startuml
+title Aveli — Integration Sequence
+
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #6E7781
+  LifeLineBorderColor #30363D
+  LifeLineBackgroundColor white
+  ParticipantBorderColor #30363D
+  ParticipantBackgroundColor white
+  ParticipantFontColor #0D1117
+}
+
+actor User
+
+participant "Aveli Mobile App" as App
+participant "Secure Storage" as Secure
+participant "Aveli Backend" as API
+participant "PostgreSQL" as DB
+participant "RevenueCat" as RC
+participant "Google Play / App Store" as Store
+
+== Authentication ==
+
+User -> App : Register / Sign in
+App -> API : Auth request
+API -> DB : Validate / create account
+DB --> API : Account state
+
+alt New account
+  API -> DB : Create 30-day trial
+end
+
+API --> App : Session tokens
+App -> Secure : Persist tokens
+
+== Access Resolution ==
+
+App -> API : GET /v1/access
+API -> DB : Load grants / trial / subscription
+DB --> API : Access-related state
+
+API -> API : Resolve effective access source
+API --> App : AccessState
+
+App -> Secure : Persist access snapshot
+
+alt Access granted
+  App --> User : Open Workspace
+else Access denied
+  App --> User : Open Access Gate
+end
+
+== Purchase ==
+
+User -> App : Select subscription
+App -> RC : Start purchase
+RC -> Store : Open store purchase flow
+Store --> RC : Purchase result
+RC --> App : CustomerInfo
+
+App -> API : POST /v1/billing/sync
+API -> RC : Verify current entitlement
+RC --> API : Subscription / entitlement state
+
+API -> DB : Update normalized subscription
+DB --> API : Updated state
+
+API -> API : Recalculate access
+API --> App : Updated AccessState
+
+alt Access granted
+  App -> Secure : Update access snapshot
+  App --> User : Open Workspace
+else Access denied
+  App --> User : Keep Access Gate
+end
+
+== RevenueCat Webhook ==
+
+RC -> API : POST /v1/webhooks/revenuecat
+API -> DB : Update subscription state
+API -> API : Recalculate entitlement
+
+note right of API
+Webhook handling does not
+depend on the mobile app
+being open.
+end note
+
+== Restore Purchase ==
+
+User -> App : Restore purchase
+App -> RC : Restore purchases
+RC -> Store : Query store state
+Store --> RC : Existing subscriptions
+RC --> App : CustomerInfo
+
+App -> API : POST /v1/billing/sync
+API -> RC : Verify entitlement
+RC --> API : Current state
+
+API -> DB : Reconcile subscription
+API -> API : Resolve access
+API --> App : AccessState
+
+== Offline Launch ==
+
+User -> App : Launch without network
+App -> Secure : Load session + access snapshot
+Secure --> App : Cached state
+
+App -> App : Evaluate offline grace
+
+alt Snapshot trusted
+  App --> User : Open Workspace
+else Verification required
+  App --> User : Access verification required
+end
+
+@enduml

@@ -1,0 +1,131 @@
+@startuml
+title Aveli — High-Level Data Model
+
+skinparam shadowing false
+skinparam roundcorner 14
+skinparam defaultTextAlignment center
+skinparam ArrowColor #6E7781
+
+entity "Account" as ACCOUNT {
+  * id
+  --
+  email
+  status
+}
+
+entity "Session" as SESSION {
+  * id
+  --
+  accountId
+  refreshToken
+  expiresAt
+}
+
+entity "AccessGrant" as ACCESS {
+  * id
+  --
+  accountId
+  type
+  startsAt
+  expiresAt
+}
+
+entity "Subscription" as SUB {
+  * id
+  --
+  accountId
+  entitlement
+  status
+  productId
+}
+
+entity "Client" as CLIENT {
+  * id
+  --
+  name
+  phone
+  archived
+}
+
+entity "Service" as SERVICE {
+  * id
+  --
+  name
+  price
+  duration
+}
+
+entity "Appointment" as APPOINTMENT {
+  * id
+  --
+  clientId
+  serviceId
+  startsAt
+  status
+}
+
+entity "VisitNote" as NOTE {
+  * id
+  --
+  appointmentId
+  text
+}
+
+entity "VisitPhoto" as PHOTO {
+  * id
+  --
+  appointmentId
+  filePath
+  type
+}
+
+entity "Payment" as PAYMENT {
+  * id
+  --
+  appointmentId
+  amount
+  method
+  status
+}
+
+entity "AppSettings" as SETTINGS {
+  * id
+  --
+  locale
+  currency
+  scheduleConfig
+}
+
+ACCOUNT ||--o{ SESSION : has
+ACCOUNT ||--o{ ACCESS : receives
+ACCOUNT ||--o{ SUB : has
+
+CLIENT ||--o{ APPOINTMENT : books
+SERVICE ||--o{ APPOINTMENT : used in
+
+APPOINTMENT ||--o{ NOTE : contains
+APPOINTMENT ||--o{ PHOTO : contains
+APPOINTMENT ||--o| PAYMENT : produces
+
+note right of ACCOUNT
+Server-side domain
+PostgreSQL
+end note
+
+note right of CLIENT
+Local workspace domain
+SQLite
+end note
+
+note bottom of PHOTO
+Photo metadata is local.
+Actual files are stored
+in per-user device storage.
+end note
+
+note bottom of SETTINGS
+Local application and
+workspace configuration.
+end note
+
+@enduml
