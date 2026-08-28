@@ -1,0 +1,51 @@
+@startuml
+title Aveli — Verified External Integration Map
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam rectangle {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  RoundCorner 8
+}
+skinparam ArrowColor black
+
+rectangle "Aveli Mobile" as Mobile
+rectangle "Aveli Backend" as Backend
+
+rectangle "RevenueCat" as RC
+rectangle "Apple App Store" as Apple
+rectangle "Google Play" as Google
+rectangle "Device Contacts" as Contacts
+rectangle "OS Notifications" as Notifications
+rectangle "Camera / Gallery" as Media
+rectangle "open.er-api.com" as FX
+rectangle "SMS / Share / File Picker\nBrowser / Store UI" as Handoff
+
+Mobile --> RC : offerings / purchase / restore\nlogIn(user UUID)
+RC --> Apple : iOS store billing
+RC --> Google : Android store billing
+
+Backend --> RC : GET subscriber/{userId}
+RC --> Backend : webhook
+
+Mobile --> Contacts : read/import
+Mobile --> Notifications : schedule/cancel\nappointmentId payload
+Mobile --> Media : select image
+Mobile --> FX : GET /v6/latest/{base}
+Mobile --> Handoff : user-mediated handoff
+
+note bottom of RC
+Provider subscription evidence
+does not directly bypass
+Aveli access resolution.
+end note
+
+note bottom of Backend
+Final online workspace-access
+authority remains Aveli.
+end note
+
+@enduml

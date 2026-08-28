@@ -1,0 +1,30 @@
+@startuml
+title Aveli — RevenueCat Subscription Integration
+
+actor User
+participant "Aveli Mobile" as Mobile
+participant "RevenueCat SDK" as RCSDK
+participant "Apple / Google Store" as Store
+participant "Aveli Backend" as Backend
+participant "RevenueCat REST" as RCREST
+database "PostgreSQL" as DB
+
+User -> Mobile : purchase / restore
+Mobile -> RCSDK : offerings / purchase / restore
+RCSDK -> Store : store billing flow
+Store --> RCSDK : provider result
+RCSDK --> Mobile : CustomerInfo / outcome
+
+Mobile -> Backend : POST /v1/billing/sync\nBearer JWT
+Backend -> RCREST : GET subscriber/{userId}
+RCREST --> Backend : subscription evidence
+Backend -> DB : upsert normalized subscription
+Backend -> DB : resolve access sources
+Backend --> Mobile : AccessStatusView
+
+note right of Mobile
+CustomerInfo does not
+directly unlock workspace.
+end note
+
+@enduml
