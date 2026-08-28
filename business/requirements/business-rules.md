@@ -1,304 +1,148 @@
 # Aveli — Business Rules
 
-<p align="center">
-  <a href="business-rules.md"><b>English</b></a> ·
-  <a href="business-rules.ru.md">Русский</a>
-</p>
+<p align="center"><a href="business-rules.md"><b>English</b></a> · <a href="business-rules.ru.md">Русский</a></p>
 
-> Defines product-level rules and constraints that must remain true across Aveli workflows.
+> Product-level invariants and lifecycle constraints independent of implementation.
 
----
+## Status
 
-## Overview
+**Baseline: Stable**
 
-Business rules describe **conditions the product must preserve regardless of how a specific screen, API, database, or service is implemented**.
-
-They are different from functional requirements:
-
-```text
-Functional Requirement
-    ↓
-What capability the system must provide
-
-Business Rule
-    ↓
-What condition or constraint must remain true
-```
-
-A business rule may affect several features at once.
-
-For example:
-
-```text
-Loss of access must not delete workspace data.
-```
-
-This rule affects access behavior, local data handling, logout, subscription expiration, recovery, and acceptance testing.
-
-Technical implementation is documented in the corresponding system areas.
-
----
+`BR-057`–`BR-061` remain intentionally retired historical identifiers from the removed release-rule model and are not reused.
 
 ## Access Rules
-
-Aveli uses one workspace-level access model.
-
-Different access sources may exist, but they all answer the same product question:
-
-> **May the authenticated user open the workspace now?**
 
 | ID | Rule |
 |---|---|
 | BR-001 | A user may open the workspace only when at least one valid access source exists. |
-| BR-002 | Access sources are evaluated in the following priority: Lifetime → Manual Grant → Active Subscription → Active Trial → None. |
+| BR-002 | Access sources are evaluated in the priority Lifetime → Manual Grant → Active Subscription → Active Trial → None. |
 | BR-003 | Lifetime access has priority over all other access sources. |
 | BR-004 | Manual access has priority over subscription and trial access. |
 | BR-005 | Active subscription access has priority over active trial access. |
-| BR-006 | If no valid access source exists, the workspace must remain unavailable. |
-| BR-007 | Workspace access is granted or denied as a whole; individual workspace features are not independently paywalled in the current product model. |
-
-The priority model exists to keep access behavior deterministic when several access sources are valid at the same time.
-
-Detailed technical resolution belongs to:
-
-`../../backend/access/`
-
----
+| BR-006 | If no valid access source exists, the workspace remains unavailable. |
+| BR-007 | Workspace access is granted or denied as a whole; the current product has no independent feature-level premium gates. |
 
 ## Trial Rules
 
-The Aveli trial belongs to the user account rather than to a single installation of the application.
-
 | ID | Rule |
 |---|---|
-| BR-008 | A new account receives one 30-day trial. |
-| BR-009 | Trial state belongs to the user account and must not depend solely on local application state. |
-| BR-010 | Logging out must not restart or extend the trial. |
-| BR-011 | Reinstalling the application must not create a new trial for the same account. |
-| BR-012 | Removing local workspace data must not create a new trial for the same account. |
-| BR-013 | The current product model must not combine the Aveli trial with an additional store-managed free trial. |
-
-The trial is therefore a product entitlement, not an installation-based counter.
-
----
+| BR-008 | A new account receives one 30-day registration trial. |
+| BR-009 | Trial state belongs to the account, not to local installation state. |
+| BR-010 | Logout does not restart or extend the trial. |
+| BR-011 | Reinstalling the application does not create a new trial for the same account. |
+| BR-012 | Deleting local workspace data does not create a new trial for the same account. |
+| BR-013 | The current product does not combine the Aveli registration trial with a second store-managed free trial. |
 
 ## Subscription Rules
 
-Aveli supports recurring subscription access through the mobile platform billing ecosystem.
-
 | ID | Rule |
 |---|---|
-| BR-014 | Monthly and yearly subscription plans grant the same logical workspace access level. |
-| BR-015 | Subscription prices shown to the user must reflect the current platform-provided price rather than an independently maintained static value. |
-| BR-016 | A recurring subscription must be presented as recurring when the corresponding store product is configured as auto-renewing. |
-| BR-017 | The user must be informed that subscription management and cancellation are handled through the corresponding mobile platform. |
-| BR-018 | Completion of a purchase flow is not by itself sufficient to bypass the common Aveli access decision. |
-| BR-019 | Restoring an existing valid subscription must restore the corresponding subscription-based workspace access. |
+| BR-014 | Monthly and yearly subscriptions grant the same logical workspace access level. |
+| BR-015 | Subscription prices shown to the user reflect platform/provider pricing rather than an independently maintained static value. |
+| BR-016 | A recurring store subscription is presented as recurring. |
+| BR-017 | Subscription management and cancellation are performed through the corresponding mobile platform. |
+| BR-018 | Completion of a client purchase flow does not bypass the common Aveli access decision. |
+| BR-019 | Restoring an existing valid subscription restores subscription-based workspace access after reconciliation. |
 
-Provider-specific subscription behavior and integration details belong to:
-
-`../../integrations/`
-
----
-
-## Workspace Data Ownership Rules
-
-Professional workspace information and commercial access are separate product concerns.
+## Workspace Data Ownership
 
 | ID | Rule |
 |---|---|
 | BR-020 | Clients, appointments, services, payments, visit notes, and visit photos belong to the professional workspace domain. |
 | BR-021 | Professional workspace information is not synchronized between devices in the current product model. |
-| BR-022 | Account and access responsibilities must remain separate from normal professional workspace ownership. |
-| BR-023 | Each user must have an isolated professional workspace. |
-| BR-024 | Visit photos and other user-specific workspace materials must not be exposed across different user workspaces. |
-| BR-025 | Logging out must not delete the user's persistent professional workspace information. |
+| BR-022 | Account/access responsibilities remain separate from normal professional workspace ownership. |
+| BR-023 | Each user has an isolated professional workspace. |
+| BR-024 | User-specific workspace materials must not be exposed across different user workspaces. |
+| BR-025 | Logout must not delete persistent professional workspace information. |
 | BR-026 | Expiration of trial, subscription, or another access source must not delete or modify existing professional workspace information. |
-
-These rules define the product ownership boundary.
-
-The physical data model is documented in:
-
-`../../database/`
-
----
 
 ## Appointment Rules
 
-Appointments represent planned professional work and must remain consistent with the specialist's schedule and visit lifecycle.
-
 | ID | Rule |
 |---|---|
-| BR-027 | An appointment must belong to a valid client. |
-| BR-028 | An appointment must reference a valid service when service selection is required by the workflow. |
-| BR-029 | Appointment date and time must satisfy the configured scheduling rules. |
-| BR-030 | Conflicting appointments must be rejected according to the current slot-availability rules. |
-| BR-031 | A cancelled appointment must not be treated as an active scheduled visit. |
-| BR-032 | A no-show must remain distinguishable from a cancelled or completed visit. |
-| BR-033 | A completed visit may contain notes, photos, and payment information. |
-
-Detailed scheduling constraints are defined separately from these high-level rules so they can evolve without changing the business meaning of an appointment.
-
----
+| BR-027 | An appointment belongs to a valid client. |
+| BR-028 | An appointment references a valid service when service selection is required by the workflow. |
+| BR-029 | Appointment date/time must satisfy the configured scheduling rules. |
+| BR-030 | Conflicting appointments are rejected according to the current slot-availability model. |
+| BR-031 | A cancelled appointment is not treated as an active scheduled visit. |
+| BR-032 | A no-show remains distinguishable from cancelled and completed visits. |
+| BR-033 | A completed visit may preserve notes, photos, and payment information. |
 
 ## Payment Rules
 
-Aveli tracks payment state as part of completed professional work.
-
-It is not intended to replace a full accounting system.
-
 | ID | Rule |
 |---|---|
-| BR-034 | Payment may be recorded only for work that is valid for payment under the current visit lifecycle. |
+| BR-034 | Payment may be recorded only for work valid for payment under the current visit lifecycle. |
 | BR-035 | A completed visit may remain unpaid. |
-| BR-036 | Outstanding payments must remain visible until they are resolved. |
-| BR-037 | Payment state must remain consistent with the related visit state. |
-| BR-038 | Financial summaries must be based on payment information recorded in the professional workspace. |
-
-Detailed payment data structures belong to the database documentation.
-
----
+| BR-036 | Outstanding payments remain visible until resolved. |
+| BR-037 | Payment state remains consistent with the related visit state. |
+| BR-038 | Financial summaries are based on payment information recorded in the professional workspace. |
 
 ## Client Rules
-
-Client records belong to the active specialist workspace and must preserve professional history.
 
 | ID | Rule |
 |---|---|
 | BR-039 | Client records belong only to the active user's professional workspace. |
-| BR-040 | Archiving a client must preserve historical information unless the user explicitly performs an allowed deletion action. |
-| BR-041 | Importing a device contact creates or enriches an Aveli client record and must not modify the original device contact as part of normal import behavior. |
-| BR-042 | Client visit history must be derived from the professional activity associated with that client. |
+| BR-040 | Archiving a client preserves historical information. |
+| BR-041 | Importing a device contact creates or enriches an Aveli client and does not modify the original device contact. |
+| BR-042 | Client history is derived from professional activity associated with that client. |
 
-Detailed delete/archive conditions should be maintained as explicit rules once the final client lifecycle is fixed.
-
----
-
-## Session and Account Switching Rules
-
-Authentication state and professional workspace ownership must remain separate.
+## Session and Account Switching
 
 | ID | Rule |
 |---|---|
-| BR-043 | Logging out must end the active authenticated session. |
-| BR-044 | Logging out must leave the previously active workspace inactive until the same user authenticates again. |
-| BR-045 | User-specific reminders associated with the outgoing account must no longer remain active after logout. |
-| BR-046 | Logging out must not remove the outgoing user's persistent professional workspace information. |
-| BR-047 | After another account becomes active, information belonging to the previous user must not be exposed in the new active workspace. |
+| BR-043 | Logout ends the active authenticated session. |
+| BR-044 | After logout the previous workspace remains inactive until that user authenticates again. |
+| BR-045 | User-specific reminders for the outgoing account are deactivated on logout. |
+| BR-046 | Logout does not remove the outgoing user's persistent workspace information. |
+| BR-047 | After another account becomes active, previous-user information is not exposed in the new active workspace. |
 
-Technical session lifecycle is documented in:
-
-`../../backend/auth/`
-
----
-
-## Offline Access Rules
-
-Aveli is designed for offline-oriented daily work, but offline access must not become permanent unverified access.
+## Offline Access
 
 | ID | Rule |
 |---|---|
-| BR-048 | A previously verified access state may temporarily allow the workspace to remain available without connectivity. |
-| BR-049 | Offline access is valid only within the current offline verification policy. |
-| BR-050 | When the offline verification period is exhausted, renewed access verification is required before continued workspace access. |
-| BR-051 | Normal professional workspace operations must not require continuous network connectivity. |
-| BR-052 | Operations that require current account, access, or subscription verification require connectivity. |
-
-The exact offline verification mechanism and duration belong to the technical documentation:
-
-`../../frontend/offline/`
-
-`../../backend/access/`
-
----
+| BR-048 | A previously verified access state may temporarily allow offline workspace access. |
+| BR-049 | Offline access is valid only within the current verification policy. |
+| BR-050 | When offline verification is no longer sufficient, renewed verification is required. |
+| BR-051 | Normal professional workspace operations do not require continuous network connectivity. |
+| BR-052 | Operations requiring current account/access/subscription verification require connectivity. |
 
 ## Reminder Rules
 
-Reminders are part of the active user's workspace context.
+| ID | Rule |
+|---|---|
+| BR-053 | Appointment reminders belong to appointments in the active user workspace. |
+| BR-054 | Reminders must not expose another user's appointment information after account switching. |
+| BR-055 | Logout deactivates reminders associated with the outgoing user. |
+| BR-056 | Opening a valid reminder navigates to the related appointment when it still exists and is available. |
+
+## Final Lifecycle Clarifications
 
 | ID | Rule |
 |---|---|
-| BR-053 | Appointment reminders are created for appointments belonging to the active user workspace. |
-| BR-054 | Reminders must not expose appointment information belonging to another user after account switching. |
-| BR-055 | Logging out must deactivate reminders associated with the outgoing user. |
-| BR-056 | Opening a valid appointment reminder should lead to the related appointment when that appointment still exists and can be opened. |
+| BR-062 | Permanent client deletion is allowed only when no appointment history references that client; otherwise the history-preserving lifecycle is archive. |
+| BR-063 | Archiving is the normal history-preserving way to remove a client from the active directory; restoring the client makes it active again. |
+| BR-064 | A service referenced by existing appointments must be preserved so historical appointment meaning is not invalidated. |
+| BR-065 | The current product does not define a separate service-deactivation state; a service is either available or safely deleted according to its references. |
+| BR-066 | Appointment start/end must fit the configured working schedule used by the current workspace. |
+| BR-067 | Creating or rescheduling an appointment must be rejected when its active scheduled interval conflicts with another active scheduled appointment under the current slot model. |
+| BR-068 | Cancelled appointments are not active scheduled work and therefore do not participate as active conflicts. |
+| BR-069 | The current payment model maintains at most one aggregate payment record for one appointment. |
+| BR-070 | An appointment payment may progress through unpaid, partial, and paid states inside the same aggregate payment record. |
+| BR-071 | Creating a second independent payment record for the same appointment is not a valid current product state. |
+| BR-072 | Export/import is a user-mediated transfer capability; automatic merge of divergent workspace copies is not part of the current stable product contract. |
 
-The notification implementation and platform behavior belong to:
+## Technical Ownership
 
-`../../frontend/notifications/`
-
----
-
-## Rule Relationships
-
-Many rules intentionally affect more than one technical area.
-
-Example:
-
-```text
-BR-026
-Access expiration must not delete workspace information
-        ↓
-database/
-frontend/
-backend/access/
-acceptance criteria
-```
-
-Another example:
-
-```text
-BR-047
-Different users must not see each other's workspace
-        ↓
-database/
-frontend/storage/
-backend/auth/
-reminders/
-```
-
-This is expected.
-
-Business rules define the invariant.
-
-Technical documents explain how each system component preserves it.
-
----
-
-## Rules Moved Out of Business
-
-Implementation-specific release and security constraints are not maintained as business rules.
-
-Examples include:
-
-```text
-HTTPS enforcement
-loopback-address restrictions
-development-mode restrictions
-secret placement
-release configuration validation
-```
-
-These concerns are still important, but their canonical documentation belongs to:
-
-```text
-../../operations/
-../../backend/security/
-../../system/decisions/
-```
-
-If one of those constraints becomes contractually or product-significant, its business consequence may be referenced here without duplicating the implementation rule.
-
----
+- access resolution → [`../../backend/access/`](../../backend/access/)
+- local persistence → [`../../database/local/`](../../database/local/)
+- client behavior → [`../../frontend/`](../../frontend/)
+- external billing → [`../../integrations/revenuecat/`](../../integrations/revenuecat/)
+- cross-system trust/failure/release → [`../../system/`](../../system/)
 
 ## Related Documentation
 
-- [`../scope/scope.md`](../scope/scope.md)
 - [`functional-requirements.md`](functional-requirements.md)
 - [`non-functional-requirements.md`](non-functional-requirements.md)
 - [`acceptance-criteria.md`](acceptance-criteria.md)
 - [`../traceability/`](../traceability/)
-- [`../../database/`](../../database/)
-- [`../../backend/`](../../backend/)
-- [`../../frontend/`](../../frontend/)
-- [`../../integrations/`](../../integrations/)

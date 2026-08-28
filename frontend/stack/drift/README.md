@@ -6,17 +6,22 @@
 
 `drift 2.34.3`
 
-Supporting native packages include `drift_flutter` and `sqlite3_flutter_libs`.
-
 ## Role
 
-Drift implements schema access, repositories, reactive table updates, migrations and in-memory database testing for the per-user workspace.
+```text
+Flutter repositories
+      ↓
+Drift
+      ↓
+SQLite
+```
 
-## Ownership
+Current usage includes schema/table declarations, typed queries/generated companions, schema versioning/migrations, reactive `.watch()` / table updates, generated database code, and in-memory database testing.
 
-- SQLite schema/data ownership → [`../../../database/local/`](../../../database/local/)
-- Drift client usage → frontend canonical here
+Canonical physical model: [`../../../database/local/`](../../../database/local/)
 
 ## Replaceability
 
-**Medium.** Repository boundaries protect screens/domain, but data implementations, generated code, migration logic and database tests are coupled to Drift.
+**Medium.** Replacing Drift while retaining SQLite affects repository implementations, generated-model/Companion usage, reactive reads, migration tooling and database tests.
+
+Closest alternatives are SQLite-oriented access layers such as `sqflite` + manual SQL or Floor. Moving to a non-relational store would be a persistence-model change, not only an ORM replacement.

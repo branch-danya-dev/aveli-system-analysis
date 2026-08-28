@@ -1,64 +1,93 @@
-# System-Wide Open Questions
+# System Review — Closure Register
 
-> Explicit questions that remain unresolved after current system synthesis.
+> Final classification of items previously tracked as open questions.
 
-These are not all blockers.
+## Status
 
-They are the backlog to evaluate during final polish.
+There are **no unresolved architecture/documentation blockers** for the current Aveli baseline.
 
-## Business / Domain
+## Resolved in Final Polish
 
-- Exact final client archive/delete rules.
-- Exact service deactivate/delete lifecycle.
-- Complete appointment-conflict rule set.
-- Complete payment lifecycle and whether future multi-payment support is expected.
-- Import/export merge/conflict semantics.
-- Remaining measurable performance thresholds.
+| Topic | Resolution |
+|---|---|
+| Client archive/delete | Archive is the history-preserving path; permanent delete is allowed only when no appointment history references the client. |
+| Service lifecycle | No separate deactivation state in the current product baseline; referenced services must not be removed in a way that invalidates historical appointment meaning. |
+| Appointment conflict semantics | Product contract remains at the current validated level: configured scheduling rules and conflict rejection apply. Exact low-level interval algorithm is not promoted to business truth without direct implementation evidence. |
+| Payment lifecycle | One aggregate payment record per appointment; partial/full progress lives in that record; duplicate independent rows are invalid current state. |
+| Offline duration ownership | Business rule remains policy-based; server deadline is preferred and client 72h is an implementation default. |
+| `DELETE /v1/auth/me` repeated HTTP behavior | One authenticated delete is guaranteed; repeated post-deletion HTTP delete is outside the guaranteed public contract. |
+| Verification/reset auth routes | 501 stubs are future placeholders, not current shipped product capability. |
+| Multi-account UI | Out of current product scope; one active account/workspace context at a time. |
+| Legacy `aveli.db` claim | Helper exists but no shipped UI path; out of current flow until an explicit migration feature exists. |
+| Drift ownership | Canonical in `frontend/stack/drift/`. |
+| Prisma ownership | Canonical in `backend/stack/prisma/`. |
+| `operations/` perspective | Not required by current Aveli ownership; release/failure synthesis remains under `system/review/`. |
+| SSAD folder policy | Analytical perspectives are required; fixed directory templates are not. |
 
-## Access / Account
+## Accepted Current Limitations
 
-- Repeated HTTP `DELETE /v1/auth/me` behavior after the account becomes `deleted`: service-level idempotency vs JWT active-user guard.
-- Exact throttling error contract if it needs to become part of public API documentation.
-- Whether currently unimplemented email verification/password reset routes remain future scope or should be removed from product-facing docs.
+| Item | Meaning |
+|---|---|
+| Service duration column naming | Detailed evidence uses `duration` / `return_interval`; older overview used `_minutes`. Logical meaning is stable. |
+| Canonical 429 response body | Rate limits are known; exact dedicated body is not established and is not invented. |
+| Android backup behavior | No repository evidence establishes backup policy for SQLite/photos. |
+| Reminder restoration across arbitrary OEM reboot | Android boot receiver exists, but OEM-independent guarantee requires device QA. |
+| Certificate pinning | Not part of current security baseline; reconsider only if threat model requires it. |
+| Root/jailbreak detection | Not part of current security baseline; reconsider only if threat model requires it. |
 
-## Local Workspace / Platform
+## External / Release Evidence Required Per Environment
 
-- Android backup behavior for SQLite and visit-photo files.
-- Guaranteed notification restoration after arbitrary device/OEM reboot without reopening Aveli.
-- Final legacy `aveli.db` migration/claim policy.
-- Whether multi-account UI is intentionally out of scope long-term or simply not implemented.
+Verify for a real production release:
 
-## Store / Billing
+- production App Store product ids and subscription group;
+- Google Play product/base-plan/offer ids;
+- RevenueCat dashboard product/offering linking;
+- exact resolved build/minSdk evidence if needed;
+- StoreKit/provider-side configuration;
+- real-store purchase/restore E2E evidence;
+- per-release automated test result;
+- signing/provisioning/runtime-secret configuration.
 
-- Production App Store product ids.
-- Google Play product/base-plan ids.
-- Subscription group / offering configuration.
-- RevenueCat anonymous identity merge/transfer behavior.
-- Real-store end-to-end purchase evidence.
+Canonical checklist: [`release-readiness.md`](release-readiness.md)
 
-## Security
+## Future Product Decisions
 
-- Certificate pinning decision.
-- Root/jailbreak detection decision.
-- Whether these controls are intentionally unnecessary for current risk model.
+### Export / Import Conflict Handling
 
-## Documentation / Methodology
+Current stable contract supports user-mediated export/import. It does **not** promise automatic merge of divergent workspace copies. A future merge feature must define replace-vs-merge, duplicate identity, precedence, media behavior and schema compatibility.
 
-- Final physical ownership of Drift docs after removing database duplicate.
-- Final physical ownership of Prisma docs after removing database duplicate.
-- Whether `operations/` is needed as a real perspective for current Aveli scope.
-- Whether all perspectives remain mandatory directories or evolve into mandatory analytical perspectives with system-dependent physical structure.
+### Measurable Performance Targets
 
-## Rule
+Current NFRs define responsiveness expectations without unsupported numbers. Future product/release calibration may define supported device classes, expected data volumes and numeric startup/calendar/search targets.
 
-An OPEN question should become one of:
+### RevenueCat Anonymous Identity Transfer
+
+Provider anonymous/alias/transfer semantics are outside the current Aveli product contract until future account transfer/recovery behavior depends on them.
+
+## Architecture-Change Triggers
+
+These are not gaps in current design; they change the system boundary and require a new analysis branch:
+
+- multi-device professional workspace synchronization;
+- cloud workspace backup/restore service;
+- public online booking backend;
+- shared/team workspace;
+- server-driven client messaging;
+- organization/employee management.
+
+See [`../evolution/boundary-changing-features.md`](../evolution/boundary-changing-features.md).
+
+## Closure Rule
+
+Any future item added here must become one of:
 
 ```text
 resolved decision
-accepted current limitation
-explicit future task
+accepted limitation
+external/release evidence
+future product task
+architecture-change branch
 out of scope
-new architecture branch
 ```
 
-It should not remain silently ambiguous.
+No item should remain silently ambiguous.

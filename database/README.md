@@ -1,18 +1,24 @@
 # Database
 
-> Canonical documentation for Aveli data ownership, models, persistence boundaries, physical schemas, and persistence technologies.
-
-## Purpose
-
-`database/` explains **what data exists, who owns it, how it is modeled, which persistence technologies are used, where its canonical state lives, and how it is physically persisted**.
+> Canonical documentation for Aveli data ownership, logical models, physical persistence, and storage-engine technologies.
 
 ## Status
 
 **Baseline: Stable**
 
-The current database documentation has been reconciled with the supplied persistence implementation description.
+The database baseline is reconciled with verified local/server persistence evidence. One non-blocking source naming discrepancy for Service duration fields remains explicitly documented.
 
-One known source-level naming discrepancy remains for the local Service duration fields and is explicitly documented in the local schema. This does not change the documented data meaning.
+## Purpose
+
+`database/` answers:
+
+```text
+What data exists?
+Who owns it?
+How is it logically related?
+Where is it physically persisted?
+How does persistence evolve?
+```
 
 ## Structure
 
@@ -30,46 +36,50 @@ database/
 
 | Area | Responsibility |
 |---|---|
-| `architecture/` | Ownership, source-of-truth boundaries, isolation, and lifecycle. |
-| `models/` | Conceptual and logical data models. |
-| `stack/` | Canonical persistence-technology decisions and replaceability. |
-| `local/` | Verified device-side persistence usage. |
-| `server/` | Verified backend persistence usage. |
-| `diagrams/` | Cross-area database knowledge maps. |
+| `architecture/` | Ownership, source-of-truth, isolation, lifecycle. |
+| `models/` | Conceptual/logical data models. |
+| `stack/` | Storage engines: SQLite and PostgreSQL. |
+| `local/` | Device-side physical persistence and files. |
+| `server/` | PostgreSQL physical persistence. |
+| `diagrams/` | Database knowledge maps. |
+
+## Technology Boundary
+
+Canonical storage technologies:
+
+```text
+SQLite      → database/stack/sqlite/
+PostgreSQL  → database/stack/postgresql/
+```
+
+Data-access technologies belong to their runtime components:
+
+```text
+Drift   → ../frontend/stack/drift/
+Prisma  → ../backend/stack/prisma/
+```
 
 ## Reading Path
 
 ```text
-Architecture
-    ↓
-Conceptual Model
-    ↓
-Logical Model
-    ↓
-Persistence Stack
-    ↓
-Local / Server Physical Usage
+Data ownership
+   ↓
+Conceptual model
+   ↓
+Logical model
+   ↓
+Storage engines
+   ↓
+Local / server physical models
 ```
 
-This follows the repository rule that canonical stack knowledge is documented before contextual technology usage.
+Start with [`architecture/data-ownership.md`](architecture/data-ownership.md).
 
-Start with:
-
-[`architecture/data-ownership.md`](architecture/data-ownership.md)
-
-Verification record:
-
-[`implementation-verification.md`](implementation-verification.md)
-
-Visual map:
-
-[`diagrams/database-map.puml`](diagrams/database-map.puml)
+Verification record: [`implementation-verification.md`](implementation-verification.md)
 
 ## Core Principle
 
-> **Data documentation progresses from ownership to conceptual structure, from conceptual structure to logical structure, and only then to technology selection and physical persistence usage.**
-
-Physical models remain owned by the persistence component that stores the data.
+> Data documentation progresses from ownership to conceptual structure, then logical structure, and only then to physical persistence.
 
 ## Documentation Rules
 

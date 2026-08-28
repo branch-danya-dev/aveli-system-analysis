@@ -1,47 +1,26 @@
 # Database Stack
 
-> Canonical documentation for persistence technologies used by Aveli.
-
-## Purpose
-
-The `stack/` directory explains **which persistence technologies are used, why they fit the system, where they are used, what depends on them, and what replacing them would affect**.
-
-Technology documentation is canonical here.
-
-Concrete schemas, entities, constraints, and migrations remain owned by:
-
-```text
-../local/
-../server/
-```
+> Canonical storage-engine technologies used by Aveli.
 
 ## Current Stack
 
-| Technology | Role |
+| Technology | Responsibility |
 |---|---|
-| `SQLite` | Local relational storage engine for the professional workspace. |
-| `Drift` | Typed Flutter persistence/data-access layer over SQLite. |
-| `PostgreSQL` | Backend relational database for identity, access, billing state, and webhook events. |
-| `Prisma` | Schema-first ORM, typed client, and migration layer for the NestJS backend. |
+| [`sqlite/`](sqlite/) | Device-local relational storage engine for the professional workspace. |
+| [`postgresql/`](postgresql/) | Server relational storage engine for identity, access, sessions, billing state, and webhook events. |
 
-## Navigation
+## Boundary
 
-- [`sqlite/`](sqlite/)
-- [`drift/`](drift/)
-- [`postgresql/`](postgresql/)
-- [`prisma/`](prisma/)
+`database/stack/` owns **storage-engine knowledge**.
 
-## Selection-Rationale Rule
+Runtime data-access technologies are canonical with the components that use them:
 
-The current implementation provides a strong technical rationale for these choices.
+- Drift → [`../../frontend/stack/drift/`](../../frontend/stack/drift/)
+- Prisma → [`../../backend/stack/prisma/`](../../backend/stack/prisma/)
 
-However, the repository does not contain a historical ADR proving that every listed alternative was formally evaluated before implementation.
+Concrete physical schemas remain owned by:
 
-Therefore stack documentation distinguishes:
+- [`../local/`](../local/)
+- [`../server/`](../server/)
 
-```text
-Current rationale        → supported by system structure and implementation
-Historical decision log  → not formally recorded
-```
-
-Rejected alternatives should not be presented as historical fact unless an ADR or equivalent evidence exists.
+Current rationale is implementation-supported. Historical alternative evaluation should not be presented as fact unless an ADR/equivalent record exists.

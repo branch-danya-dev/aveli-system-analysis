@@ -325,34 +325,145 @@ system/invariants
 
 ---
 
-## Technology Context
+## Technology Stack
 
-### Mobile
+The stack is documented by responsibility rather than as a flat dependency list.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### Mobile Application
+
+<p>
+  <img src="https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white" alt="Flutter">
+  <img src="https://img.shields.io/badge/Dart-0175C2?style=flat-square&logo=dart&logoColor=white" alt="Dart">
+  <img src="https://img.shields.io/badge/Riverpod-0D1117?style=flat-square" alt="Riverpod">
+  <img src="https://img.shields.io/badge/go__router-02569B?style=flat-square" alt="go_router">
+</p>
 
 ```text
 Flutter / Dart
 Riverpod
 go_router
+```
+
+Owns:
+
+```text
+UI
+Navigation
+Application state
+Local workspace behavior
+Access Gate
+Offline client behavior
+```
+
+</td>
+<td width="50%" valign="top">
+
+### Local Data & Device
+
+<p>
+  <img src="https://img.shields.io/badge/Drift-4B5563?style=flat-square" alt="Drift">
+  <img src="https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white" alt="SQLite">
+  <img src="https://img.shields.io/badge/Secure%20Storage-111827?style=flat-square" alt="Secure Storage">
+  <img src="https://img.shields.io/badge/Local%20Notifications-374151?style=flat-square" alt="Local Notifications">
+</p>
+
+```text
 Drift
 SQLite
 flutter_secure_storage
-purchases_flutter
 flutter_local_notifications
+Local filesystem
 ```
 
+Owns:
+
+```text
+Professional workspace persistence
+Per-user isolation
+Visit-photo files
+Trusted access snapshot
+Local reminders
+```
+
+</td>
+</tr>
+
+<tr>
+<td width="50%" valign="top">
+
 ### Backend
+
+<p>
+  <img src="https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs&logoColor=white" alt="NestJS">
+  <img src="https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white" alt="Prisma">
+  <img src="https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white" alt="JWT">
+  <img src="https://img.shields.io/badge/Argon2id-111827?style=flat-square" alt="Argon2id">
+</p>
 
 ```text
 NestJS
 Prisma
-PostgreSQL
 JWT access tokens
-rotating refresh tokens
+Rotating refresh tokens
 Argon2id
-RevenueCat REST + webhooks
+REST API
 ```
 
-### External boundaries
+Owns:
+
+```text
+Identity
+Authentication
+Sessions
+Trial / grants
+Access resolution
+Billing reconciliation
+```
+
+</td>
+<td width="50%" valign="top">
+
+### Server Data
+
+<p>
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/REST%20API-0D1117?style=flat-square" alt="REST API">
+  <img src="https://img.shields.io/badge/OpenAPI-6BA539?style=flat-square&logo=openapiinitiative&logoColor=white" alt="OpenAPI">
+</p>
+
+```text
+PostgreSQL
+Prisma migrations
+OpenAPI
+```
+
+Stores:
+
+```text
+Users
+Auth sessions
+Access grants
+Subscriptions
+Subscription events
+```
+
+</td>
+</tr>
+
+<tr>
+<td width="50%" valign="top">
+
+### External Integrations
+
+<p>
+  <img src="https://img.shields.io/badge/RevenueCat-F25A5A?style=flat-square" alt="RevenueCat">
+  <img src="https://img.shields.io/badge/App%20Store-0D96F6?style=flat-square&logo=appstore&logoColor=white" alt="App Store">
+  <img src="https://img.shields.io/badge/Google%20Play-414141?style=flat-square&logo=googleplay&logoColor=white" alt="Google Play">
+</p>
 
 ```text
 RevenueCat
@@ -362,8 +473,45 @@ Device Contacts
 OS Notifications
 Camera / Gallery
 Exchange Rate API
-OS Share / File Picker / SMS / Browser
+OS handoff
 ```
+
+</td>
+<td width="50%" valign="top">
+
+### Analysis & Documentation
+
+<p>
+  <img src="https://img.shields.io/badge/PlantUML-Diagrams-0D1117?style=flat-square" alt="PlantUML">
+  <img src="https://img.shields.io/badge/OpenAPI-Contracts-6BA539?style=flat-square&logo=openapiinitiative&logoColor=white" alt="OpenAPI">
+  <img src="https://img.shields.io/badge/Markdown-000000?style=flat-square&logo=markdown&logoColor=white" alt="Markdown">
+  <img src="https://img.shields.io/badge/SSAD-Documentation-4B5563?style=flat-square" alt="SSAD">
+</p>
+
+```text
+Markdown
+PlantUML
+OpenAPI
+SSAD
+GitHub
+```
+
+Used for:
+
+```text
+Requirements
+Architecture
+Data models
+API contracts
+Traceability
+System synthesis
+```
+
+</td>
+</tr>
+</table>
+
+Canonical technology ownership and rationale are documented inside the corresponding `stack/` and integration areas.
 
 ---
 
@@ -486,13 +634,41 @@ SSAD is not presented as a replacement for UML, BPMN, C4, ADR, OpenAPI or docs-a
 
 ## Current Status
 
-The major analytical perspectives have been migrated to the system-shaped structure and reconciled against implementation evidence used during the analysis.
+The analytical baseline is complete:
 
-Remaining unresolved or intentionally open items are kept explicitly in:
+```text
+business/      Stable
+database/      Stable
+backend/       Stable
+frontend/      Stable
+integrations/  Stable
+system/        Stable
+```
+
+The final whole-system review resolved repository-structure and technology-ownership issues and classified the remaining non-blocking items as accepted limitations, external release evidence, future product decisions, or architecture-change triggers.
+
+Closure register:
 
 [`system/review/open-questions.md`](system/review/open-questions.md)
 
-An unknown should remain visible as an open question rather than be silently converted into an architectural assumption.
+The repository therefore distinguishes a stable architecture baseline from facts that require future provider/device evidence or a new product decision.
+
+---
+
+## Contact
+
+<p align="center">
+  <strong>Daniel Rogulin</strong><br>
+  System Analyst · Software / System Design
+</p>
+
+<p align="center">
+  <a href="https://github.com/branch-danya-dev">
+    <img src="https://img.shields.io/badge/GitHub-branch--danya--dev-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+  </a>
+</p>
+
+If you want to discuss the system-analysis approach, architecture decisions, or the Aveli case, feel free to reach out.
 
 ---
 

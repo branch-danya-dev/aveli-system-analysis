@@ -1,182 +1,50 @@
 # Auth API Contracts
 
-## Shared Response Types
+> Canonical HTTP behavior for Aveli authentication/account endpoints.
 
-### `AuthUser`
-
-```json
-{
-  "id": "uuid",
-  "email": "master@example.com",
-  "emailVerified": false
-}
-```
-
-### `AuthTokensResponse`
+## Shared Auth Response
 
 ```json
 {
-  "user": {
-    "id": "uuid",
-    "email": "master@example.com",
-    "emailVerified": false
-  },
+  "user": { "id": "uuid", "email": "master@example.com", "emailVerified": false },
   "accessToken": "...",
   "refreshToken": "..."
 }
 ```
 
-Flutter mirror: `lib/features/auth/domain/entities/auth_session.dart`.
+## Endpoints
 
-## `POST /v1/auth/register`
+| Method | Path | Auth | Success | Notes |
+|---|---|---|---|---|
+| POST | `/v1/auth/register` | none | `201` auth response | validation; `409 AUTH_EMAIL_ALREADY_EXISTS`; 10/min |
+| POST | `/v1/auth/login` | none | `200` auth response | `401 AUTH_INVALID_CREDENTIALS`; 20/min |
+| POST | `/v1/auth/refresh` | refresh token | `200` rotated auth response | `401 AUTH_SESSION_EXPIRED`, `403 AUTH_USER_DISABLED`; 30/min |
+| POST | `/v1/auth/logout` | refresh token | `{ "ok": true }` | idempotent refresh-session revocation |
+| POST | `/v1/auth/logout-all` | Bearer | `{ "ok": true }` | 401 / `403 AUTH_USER_DISABLED` |
+| GET | `/v1/auth/me` | Bearer | `AuthUser` | 401 / `403 AUTH_USER_DISABLED` |
+| DELETE | `/v1/auth/me` | Bearer | `{ "ok": true }` | soft account deletion; 5/min |
 
-Auth: none  
-Success: `201 Created` → `AuthTokensResponse`
+## Delete Contract Boundary
 
-Request:
+The public contract guarantees one authenticated profile deletion request.
 
-```json
-{
-  "email": "master@example.com",
-  "password": "minimum8chars",
-  "deviceId": "optional",
-  "deviceName": "optional",
-  "platform": "optional"
-}
-```
+Service internals are described as idempotent for an already-deleted account, while Bearer authentication accepts only an active user. Therefore a second HTTP `DELETE /v1/auth/me` after successful deletion is **outside the guaranteed public contract**. Callers must not rely on repeated post-deletion HTTP idempotency.
 
-Validation:
+The backend does not delete the mobile professional workspace; current frontend profile deletion performs its own explicit local cleanup.
 
-| Field | Rule |
-|---|---|
-| `email` | valid email; normalized to lowercase + trim |
-| `password` | 8–128 characters |
-| `deviceId` | optional string |
-| `deviceName` | optional string |
-| `platform` | optional string |
+## 501 Contract Stubs
 
-Errors: `409 AUTH_EMAIL_ALREADY_EXISTS`, `400 AUTH_VALIDATION_FAILED`  
-Rate limit: `10/min`
+| Method | Path | Auth |
+|---|---|---|
+| POST | `/v1/auth/resend-verification` | Bearer |
+| POST | `/v1/auth/verify-email` | none |
+| POST | `/v1/auth/forgot-password` | none |
+| POST | `/v1/auth/reset-password` | none |
 
-## `POST /v1/auth/login`
+They return `501 AUTH_NOT_IMPLEMENTED` and are not current shipped end-to-end capabilities.
 
-Auth: none  
-Success: `200` → `AuthTokensResponse`
+## Rate-Limit Error Shape
 
-Request shape matches register credentials/device context.
+Route limits are implementation-verified, but a dedicated canonical `429` response body is not established by current evidence. No body is invented here.
 
-Error: `401 AUTH_INVALID_CREDENTIALS`  
-Rate limit: `20/min`
-
-The public credential error is intentionally unified.
-
-## `POST /v1/auth/refresh`
-
-Request:
-
-```json
-{ "refreshToken": "..." }
-```
-
-Success: `200` → `AuthTokensResponse`
-
-Errors:
-
-```text
-401 AUTH_SESSION_EXPIRED
-403 AUTH_USER_DISABLED
-```
-
-Rate limit: `30/min`
-
-## `POST /v1/auth/logout`
-
-Request:
-
-```json
-{ "refreshToken": "..." }
-```
-
-Success:
-
-```json
-{ "ok": true }
-```
-
-The operation is idempotent.
-
-## `POST /v1/auth/logout-all`
-
-Auth: Bearer
-
-Success:
-
-```json
-{ "ok": true }
-```
-
-Errors:
-
-```text
-401 — invalid/expired authentication
-403 AUTH_USER_DISABLED
-```
-
-## `GET /v1/auth/me`
-
-Auth: Bearer
-
-Success:
-
-```json
-{
-  "id": "uuid",
-  "email": "master@example.com",
-  "emailVerified": false
-}
-```
-
-Errors:
-
-```text
-401 — invalid/expired authentication
-403 AUTH_USER_DISABLED
-```
-
-## `DELETE /v1/auth/me`
-
-Auth: Bearer
-
-Success:
-
-```json
-{ "ok": true }
-```
-
-The backend performs soft account deletion and does not delete local workspace data.
-
-Rate limit: `5/min`
-
-Errors:
-
-```text
-401 — invalid/expired authentication
-403 AUTH_USER_DISABLED
-```
-
-The implementation description states service-level idempotency for an already deleted account while `JwtStrategy` is also documented as accepting only `active` users. Repeated HTTP deletion after deletion is therefore not guaranteed by this contract until controller/guard behavior is verified.
-
-## Current 501 Stubs
-
-All return `501 AUTH_NOT_IMPLEMENTED`.
-
-| Method | Path | Body | Auth |
-|---|---|---|---|
-| POST | `/v1/auth/resend-verification` | none | Bearer |
-| POST | `/v1/auth/verify-email` | `{ "token": "..." }` | none |
-| POST | `/v1/auth/forgot-password` | `{ "email": "..." }` | none |
-| POST | `/v1/auth/reset-password` | `{ "token": "...", "password": "..." }` | none |
-
-Rate limits: forgot-password `5/min`, reset-password `5/min`.
-
-These routes are contract stubs, not implemented product capabilities.
+Canonical machine contract: [`../openapi.yaml`](../openapi.yaml)

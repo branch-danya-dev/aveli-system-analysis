@@ -1,304 +1,148 @@
 # Aveli — Business Rules
 
-<p align="center">
-  <a href="business-rules.md">English</a> ·
-  <a href="business-rules.ru.md"><b>Русский</b></a>
-</p>
+<p align="center"><a href="business-rules.md">English</a> · <a href="business-rules.ru.md"><b>Русский</b></a></p>
 
-> Определяет продуктовые правила и ограничения, которые должны сохраняться во всех сценариях работы Aveli.
+> Product-level invariants и lifecycle constraints независимо от implementation.
 
----
+## Статус
 
-## Обзор
+**Baseline: Stable**
 
-Бизнес-правила описывают **условия, которые продукт обязан сохранять независимо от того, как реализован конкретный экран, API, база данных или сервис**.
+`BR-057`–`BR-061` intentionally retired historical identifiers из удалённой release-rule model и не переиспользуются.
 
-Они отличаются от функциональных требований:
-
-```text
-Функциональное требование
-    ↓
-Какую возможность должна предоставить система
-
-Бизнес-правило
-    ↓
-Какое условие или ограничение должно оставаться истинным
-```
-
-Одно бизнес-правило может влиять сразу на несколько функций.
-
-Например:
-
-```text
-Потеря доступа не должна удалять данные рабочего пространства.
-```
-
-Это правило влияет на доступ, хранение данных, logout, окончание подписки, восстановление доступа и приемочное тестирование.
-
-Техническая реализация описывается в соответствующих системных разделах.
-
----
-
-## Правила доступа
-
-Aveli использует единую модель доступа ко всему рабочему пространству.
-
-Источников доступа может быть несколько, но все они отвечают на один продуктовый вопрос:
-
-> **Может ли аутентифицированный пользователь открыть рабочее пространство сейчас?**
+## Access Rules
 
 | ID | Правило |
 |---|---|
-| BR-001 | Пользователь может открыть рабочее пространство только при наличии хотя бы одного действующего источника доступа. |
-| BR-002 | Источники доступа проверяются в следующем приоритете: Lifetime → Manual Grant → Active Subscription → Active Trial → None. |
-| BR-003 | Lifetime-доступ имеет приоритет над всеми другими источниками доступа. |
-| BR-004 | Ручной доступ имеет приоритет над подпиской и пробным доступом. |
-| BR-005 | Активная подписка имеет приоритет над активным пробным периодом. |
-| BR-006 | Если действующего источника доступа нет, рабочее пространство должно оставаться недоступным. |
-| BR-007 | Доступ предоставляется или блокируется для рабочего пространства целиком; отдельные функции в текущей продуктовой модели не имеют независимой paywall-логики. |
+| BR-001 | Пользователь может открыть workspace только при наличии хотя бы одного valid access source. |
+| BR-002 | Access sources оцениваются в priority Lifetime → Manual Grant → Active Subscription → Active Trial → None. |
+| BR-003 | Lifetime access имеет приоритет над остальными access sources. |
+| BR-004 | Manual access имеет приоритет над subscription и trial. |
+| BR-005 | Active subscription имеет приоритет над active trial. |
+| BR-006 | Если valid access source отсутствует, workspace недоступен. |
+| BR-007 | Workspace access выдаётся или блокируется целиком; current product не использует independent feature-level premium gates. |
 
-Приоритет нужен для предсказуемого поведения, если одновременно действуют несколько источников доступа.
-
-Подробная техническая логика определяется в:
-
-`../../backend/access/`
-
----
-
-## Правила пробного периода
-
-Пробный период Aveli относится к аккаунту пользователя, а не к конкретной установке приложения.
+## Trial Rules
 
 | ID | Правило |
 |---|---|
-| BR-008 | Новый аккаунт получает один пробный период длительностью 30 дней. |
-| BR-009 | Состояние пробного периода относится к аккаунту и не должно зависеть только от локального состояния приложения. |
-| BR-010 | Logout не должен перезапускать или продлевать пробный период. |
-| BR-011 | Переустановка приложения не должна создавать новый пробный период для того же аккаунта. |
-| BR-012 | Удаление локальных данных рабочего пространства не должно создавать новый пробный период для того же аккаунта. |
-| BR-013 | Текущая продуктовая модель не должна сочетать собственный trial Aveli с дополнительным store-managed free trial. |
+| BR-008 | Новый account получает один 30-day registration trial. |
+| BR-009 | Trial state принадлежит account, а не local installation state. |
+| BR-010 | Logout не перезапускает и не продлевает trial. |
+| BR-011 | Reinstall не создаёт новый trial для того же account. |
+| BR-012 | Удаление local workspace data не создаёт новый trial. |
+| BR-013 | Current product не комбинирует Aveli registration trial со вторым store-managed free trial. |
 
-Таким образом, trial является продуктовым правом доступа, а не локальным счетчиком установки.
-
----
-
-## Правила подписки
-
-Aveli поддерживает возобновляемый доступ по подписке через платежную инфраструктуру мобильных платформ.
+## Subscription Rules
 
 | ID | Правило |
 |---|---|
-| BR-014 | Месячный и годовой планы предоставляют одинаковый логический уровень доступа к рабочему пространству. |
-| BR-015 | Цена подписки, показываемая пользователю, должна соответствовать актуальной цене мобильной платформы, а не независимо поддерживаемому статическому значению. |
-| BR-016 | Возобновляемая подписка должна быть представлена пользователю как возобновляемая, если соответствующий store product настроен как auto-renewing. |
-| BR-017 | Пользователь должен быть информирован, что управление подпиской и ее отмена выполняются через соответствующую мобильную платформу. |
-| BR-018 | Успешное завершение purchase flow само по себе не должно обходить общую модель принятия решения о доступе в Aveli. |
-| BR-019 | Восстановление существующей действующей подписки должно восстанавливать соответствующий доступ к рабочему пространству. |
+| BR-014 | Monthly и yearly subscriptions дают одинаковый logical workspace access level. |
+| BR-015 | Показанная subscription price берётся из platform/provider pricing, а не из independently maintained static value. |
+| BR-016 | Recurring store subscription показывается пользователю как recurring. |
+| BR-017 | Subscription management/cancellation выполняется через соответствующую mobile platform. |
+| BR-018 | Успешный client purchase flow не обходит common Aveli access decision. |
+| BR-019 | Restore valid subscription восстанавливает subscription-based workspace access после reconciliation. |
 
-Конкретное поведение провайдеров и детали интеграции относятся к:
-
-`../../integrations/`
-
----
-
-## Правила ownership рабочего пространства
-
-Профессиональные данные пользователя и коммерческий доступ являются разными продуктовым областями.
+## Workspace Data Ownership
 
 | ID | Правило |
 |---|---|
-| BR-020 | Клиенты, записи, услуги, оплаты, заметки и фотографии визитов относятся к домену профессионального рабочего пространства. |
-| BR-021 | Профессиональные данные рабочего пространства не синхронизируются между устройствами в текущей продуктовой модели. |
-| BR-022 | Ответственность аккаунта и доступа должна оставаться отделенной от ownership обычных профессиональных данных. |
-| BR-023 | Каждый пользователь должен иметь изолированное профессиональное рабочее пространство. |
-| BR-024 | Фотографии визитов и другие пользовательские материалы не должны становиться доступны между разными рабочими пространствами пользователей. |
-| BR-025 | Logout не должен удалять постоянную информацию профессионального рабочего пространства пользователя. |
-| BR-026 | Истечение trial, подписки или другого источника доступа не должно удалять или изменять существующую информацию профессионального рабочего пространства. |
+| BR-020 | Clients, appointments, services, payments, visit notes и visit photos принадлежат professional workspace domain. |
+| BR-021 | Professional workspace information не синхронизируется между devices в current product model. |
+| BR-022 | Account/access responsibilities отделены от professional workspace ownership. |
+| BR-023 | Каждый user имеет isolated professional workspace. |
+| BR-024 | User-specific workspace materials не должны быть exposed между разными workspaces. |
+| BR-025 | Logout не удаляет persistent professional workspace information. |
+| BR-026 | Expiration trial/subscription/другого access source не удаляет и не меняет existing professional workspace information. |
 
-Эти правила определяют продуктовую границу ownership.
-
-Физическая модель данных описывается в:
-
-`../../database/`
-
----
-
-## Правила записей
-
-Запись представляет запланированную профессиональную работу и должна оставаться согласованной с расписанием специалиста и жизненным циклом визита.
+## Appointment Rules
 
 | ID | Правило |
 |---|---|
-| BR-027 | Запись должна принадлежать существующему клиенту. |
-| BR-028 | Запись должна ссылаться на существующую услугу, если выбор услуги обязателен в соответствующем сценарии. |
-| BR-029 | Дата и время записи должны соответствовать настроенным правилам планирования. |
-| BR-030 | Конфликтующие записи должны отклоняться согласно текущим правилам доступности временных слотов. |
-| BR-031 | Отмененная запись не должна считаться активным запланированным визитом. |
-| BR-032 | Неявка должна отличаться от отмененного или завершенного визита. |
-| BR-033 | Завершенный визит может содержать заметки, фотографии и информацию об оплате. |
+| BR-027 | Appointment принадлежит valid client. |
+| BR-028 | Appointment ссылается на valid service, когда service selection требуется workflow. |
+| BR-029 | Appointment date/time соответствует configured scheduling rules. |
+| BR-030 | Conflicting appointments отклоняются согласно current slot-availability model. |
+| BR-031 | Cancelled appointment не считается active scheduled visit. |
+| BR-032 | No-show остаётся отличимым от cancelled/completed visit. |
+| BR-033 | Completed visit может сохранять notes, photos и payment information. |
 
-Подробные ограничения планирования следует хранить отдельно от этих верхнеуровневых правил, чтобы они могли развиваться без изменения самого бизнес-смысла записи.
-
----
-
-## Правила оплат
-
-Aveli отслеживает состояние оплаты как часть завершенной профессиональной работы.
-
-Продукт не предназначен для замены полноценной бухгалтерской системы.
+## Payment Rules
 
 | ID | Правило |
 |---|---|
-| BR-034 | Оплата может быть зафиксирована только для работы, которая допускает оплату в текущем жизненном цикле визита. |
-| BR-035 | Завершенный визит может оставаться неоплаченным. |
-| BR-036 | Неоплаченные визиты должны оставаться видимыми до момента урегулирования задолженности. |
-| BR-037 | Состояние оплаты должно оставаться согласованным с состоянием связанного визита. |
-| BR-038 | Финансовые сводки должны рассчитываться на основе информации об оплатах, зафиксированной в профессиональном рабочем пространстве. |
+| BR-034 | Payment записывается только для work, valid for payment в current visit lifecycle. |
+| BR-035 | Completed visit может оставаться unpaid. |
+| BR-036 | Outstanding payments остаются visible до resolution. |
+| BR-037 | Payment state согласован с related visit state. |
+| BR-038 | Financial summaries основаны на payment information professional workspace. |
 
-Подробная структура платежных данных относится к документации базы данных.
-
----
-
-## Правила клиентов
-
-Карточки клиентов принадлежат активному рабочему пространству специалиста и должны сохранять профессиональную историю.
+## Client Rules
 
 | ID | Правило |
 |---|---|
-| BR-039 | Карточки клиентов принадлежат только профессиональному рабочему пространству активного пользователя. |
-| BR-040 | Архивирование клиента должно сохранять историческую информацию, если пользователь явно не выполняет разрешенное удаление. |
-| BR-041 | Импорт контакта устройства создает или дополняет карточку клиента Aveli и в обычном сценарии не должен изменять исходный контакт устройства. |
-| BR-042 | История клиента должна формироваться из профессиональной активности, связанной с этим клиентом. |
+| BR-039 | Client records принадлежат только active user workspace. |
+| BR-040 | Archive client сохраняет historical information. |
+| BR-041 | Import device contact создаёт/enriches Aveli client и не меняет original contact. |
+| BR-042 | Client history derived из professional activity данного client. |
 
-Подробные правила delete/archive следует зафиксировать отдельно после окончательного определения lifecycle клиента.
-
----
-
-## Правила сессии и смены аккаунта
-
-Состояние аутентификации и ownership профессионального рабочего пространства должны оставаться разделенными.
+## Session and Account Switching
 
 | ID | Правило |
 |---|---|
-| BR-043 | Logout должен завершать активную аутентифицированную сессию. |
-| BR-044 | После logout ранее активное рабочее пространство должно оставаться неактивным до повторной аутентификации этого пользователя. |
-| BR-045 | Пользовательские напоминания уходящего аккаунта не должны оставаться активными после logout. |
-| BR-046 | Logout не должен удалять постоянную информацию профессионального рабочего пространства уходящего пользователя. |
-| BR-047 | После активации другого аккаунта информация предыдущего пользователя не должна отображаться в новом активном рабочем пространстве. |
+| BR-043 | Logout завершает active authenticated session. |
+| BR-044 | После logout previous workspace inactive до повторной authentication. |
+| BR-045 | User-specific reminders outgoing account деактивируются на logout. |
+| BR-046 | Logout не удаляет persistent workspace outgoing user. |
+| BR-047 | После activation другого account данные previous user не exposed в новом workspace. |
 
-Технический lifecycle сессии описывается в:
-
-`../../backend/auth/`
-
----
-
-## Правила Offline Access
-
-Aveli рассчитан на offline-ориентированную ежедневную работу, но offline-доступ не должен превращаться в бессрочный непроверенный доступ.
+## Offline Access
 
 | ID | Правило |
 |---|---|
-| BR-048 | Ранее подтвержденное состояние доступа может временно позволять продолжать работу без подключения к сети. |
-| BR-049 | Offline-доступ действует только в рамках текущей политики проверки доступа. |
-| BR-050 | После окончания допустимого периода offline-проверки требуется повторное подтверждение доступа перед продолжением работы. |
-| BR-051 | Обычные операции профессионального рабочего пространства не должны требовать постоянного подключения к сети. |
-| BR-052 | Операции, которым требуется актуальная проверка аккаунта, доступа или подписки, требуют подключения. |
+| BR-048 | Previously verified access state может временно разрешать offline workspace access. |
+| BR-049 | Offline access valid только в current verification policy. |
+| BR-050 | Когда offline verification недостаточна, требуется renewed verification. |
+| BR-051 | Normal professional workspace operations не требуют continuous network connectivity. |
+| BR-052 | Operations для current account/access/subscription verification требуют connectivity. |
 
-Точный механизм и длительность offline-проверки относятся к технической документации:
-
-`../../frontend/offline/`
-
-`../../backend/access/`
-
----
-
-## Правила напоминаний
-
-Напоминания являются частью контекста активного пользовательского рабочего пространства.
+## Reminder Rules
 
 | ID | Правило |
 |---|---|
-| BR-053 | Напоминания о записи создаются для записей активного пользовательского рабочего пространства. |
-| BR-054 | После смены аккаунта напоминания не должны раскрывать информацию о записях другого пользователя. |
-| BR-055 | Logout должен деактивировать напоминания, связанные с уходящим пользователем. |
-| BR-056 | Открытие действующего напоминания должно вести к связанной записи, если эта запись все еще существует и доступна. |
+| BR-053 | Appointment reminders принадлежат appointments active user workspace. |
+| BR-054 | Reminders не должны expose appointment information другого user после account switching. |
+| BR-055 | Logout деактивирует reminders outgoing user. |
+| BR-056 | Opening valid reminder ведёт к related appointment, если он существует и доступен. |
 
-Реализация уведомлений и платформенное поведение относятся к:
+## Final Lifecycle Clarifications
 
-`../../frontend/notifications/`
+| ID | Правило |
+|---|---|
+| BR-062 | Permanent client deletion разрешён только если appointment history не references client; иначе используется archive. |
+| BR-063 | Archive — normal history-preserving способ убрать client из active directory; restore возвращает его. |
+| BR-064 | Service, referenced existing appointments, должен сохраняться, чтобы не инвалидировать historical appointment meaning. |
+| BR-065 | Current product не определяет отдельный service-deactivation state; service либо available, либо safely deleted по references. |
+| BR-066 | Appointment start/end должны помещаться в configured working schedule current workspace. |
+| BR-067 | Create/reschedule appointment отклоняется при conflict с другим active scheduled appointment. |
+| BR-068 | Cancelled appointments не являются active scheduled work и не участвуют как active conflicts. |
+| BR-069 | Current payment model поддерживает максимум один aggregate payment record на appointment. |
+| BR-070 | Appointment payment может проходить unpaid → partial → paid внутри одного aggregate payment record. |
+| BR-071 | Второй independent payment record для того же appointment не является valid current product state. |
+| BR-072 | Export/import — user-mediated transfer capability; automatic merge divergent workspace copies не входит в current stable product contract. |
 
----
+## Technical Ownership
 
-## Связи правил
+- access resolution → [`../../backend/access/`](../../backend/access/)
+- local persistence → [`../../database/local/`](../../database/local/)
+- client behavior → [`../../frontend/`](../../frontend/)
+- external billing → [`../../integrations/revenuecat/`](../../integrations/revenuecat/)
+- cross-system trust/failure/release → [`../../system/`](../../system/)
 
-Многие бизнес-правила намеренно затрагивают несколько технических областей.
+## Related Documentation
 
-Пример:
-
-```text
-BR-026
-Истечение доступа не должно удалять workspace information
-        ↓
-database/
-frontend/
-backend/access/
-acceptance criteria
-```
-
-Другой пример:
-
-```text
-BR-047
-Пользователи не должны видеть workspace друг друга
-        ↓
-database/
-frontend/storage/
-backend/auth/
-reminders/
-```
-
-Это нормальная ситуация.
-
-Бизнес-правило определяет инвариант.
-
-Технические документы объясняют, как каждый компонент системы обеспечивает его выполнение.
-
----
-
-## Правила, вынесенные из Business
-
-Специфичные для реализации release- и security-ограничения не должны поддерживаться как бизнес-правила.
-
-Например:
-
-```text
-обязательный HTTPS
-запрет loopback-адресов
-запрет development mode
-размещение secrets
-release configuration validation
-```
-
-Эти требования остаются важными, но их canonical documentation должна находиться в:
-
-```text
-../../operations/
-../../backend/security/
-../../system/decisions/
-```
-
-Если такое ограничение становится контрактно или продуктово значимым, в business можно зафиксировать его последствия без дублирования технического правила.
-
----
-
-## Связанная документация
-
-- [`../scope/scope.ru.md`](../scope/scope.ru.md)
 - [`functional-requirements.ru.md`](functional-requirements.ru.md)
 - [`non-functional-requirements.ru.md`](non-functional-requirements.ru.md)
 - [`acceptance-criteria.ru.md`](acceptance-criteria.ru.md)
 - [`../traceability/`](../traceability/)
-- [`../../database/`](../../database/)
-- [`../../backend/`](../../backend/)
-- [`../../frontend/`](../../frontend/)
-- [`../../integrations/`](../../integrations/)

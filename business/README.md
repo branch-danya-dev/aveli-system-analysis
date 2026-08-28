@@ -1,139 +1,68 @@
 # Business
 
-> Business-level documentation for Aveli: product context, scope, requirements, processes, and traceability.
+> Canonical business-level documentation for Aveli: product context, scope, requirements, processes, acceptance, and traceability.
 
----
+## Status
+
+**Baseline: Stable**
+
+The business baseline is aligned with the current product boundary and implementation-backed system model. Future product choices are explicitly classified in [`../system/review/open-questions.md`](../system/review/open-questions.md).
 
 ## Purpose
 
-The `business/` directory is the entry point for understanding **what Aveli is, why it exists, what the system must do, and where its product boundaries are**.
+`business/` explains **what Aveli is, why it exists, what behavior the system must provide, and which product rules and boundaries must remain true**.
 
-It contains business and analytical documentation only. Technical implementation is described in the corresponding system areas such as `database/`, `backend/`, `frontend/`, `integrations/`, and `operations/`.
+Business documentation owns intent and observable behavior. Technical implementation remains canonical in:
 
----
+```text
+database/
+backend/
+frontend/
+integrations/
+system/
+```
 
 ## Responsibility
 
-The `business/` area is responsible for documenting:
+This area owns:
 
-- product context and business goals;
-- system scope and product boundaries;
+- product context and goals;
+- system/product scope;
+- business rules;
 - functional and non-functional requirements;
-- business rules and constraints;
-- user and business processes;
 - acceptance criteria;
-- traceability from business decisions to technical implementation.
+- user/product processes;
+- traceability from business intent to technical ownership and verification.
 
-This layer defines **intent and expected behavior**.
+## Boundary
 
-Technical layers define **implementation**.
-
----
-
-## Boundaries
-
-Business documentation must answer questions such as:
+Business documentation answers:
 
 ```text
 Why does the product exist?
 Who uses it?
-What is in scope?
-What is out of scope?
+What is in / out of scope?
 What behavior is required?
-What rules must remain true?
-What result is considered acceptable?
+Which rules must remain true?
+What result is acceptable?
 ```
 
-It should not describe implementation details unless they directly affect product behavior or scope.
-
-Do not place details here such as:
-
-```text
-PostgreSQL
-SQLite
-NestJS
-Flutter
-JWT
-Redis
-Docker
-specific API payloads
-database schemas
-deployment configuration
-```
-
-Instead, describe the business meaning and reference the canonical technical documentation.
-
-Example:
-
-```text
-The workspace must remain available without permanent network connectivity.
-```
-
-Technical implementation:
-
-```text
-→ ../frontend/offline/
-→ ../database/
-```
-
----
+It does not own concrete database schemas, framework choices, API payload internals, or deployment configuration unless a technical constraint itself changes product behavior or an external contract.
 
 ## Structure
 
-The directory is divided into focused areas for context, scope, requirements, processes, and traceability.
-
-Each area should remain readable independently and link to deeper technical documentation when necessary.
-
----
-
-## Navigation
-
 | Area | Responsibility |
 |---|---|
-| `context/` | Product background, target users, goals, and positioning. |
-| `scope/` | Product boundary, in-scope capabilities, exclusions, and constraints. |
-| `requirements/` | Functional requirements, non-functional requirements, business rules, and acceptance criteria. |
-| `processes/` | User and business workflows. |
-| `traceability/` | Links between business rules, requirements, implementation, and verification. |
-| `diagrams/` | High-level map of business knowledge and its relationships. |
+| `context/` | Product background, users, goals, positioning. |
+| `scope/` | Product/system boundary and exclusions. |
+| `requirements/` | Rules, FR, NFR, acceptance criteria. |
+| `processes/` | User/product workflows. |
+| `traceability/` | Business → verification → technical ownership relationships. |
+| `diagrams/` | Business knowledge maps. |
 
-Business knowledge map:
+Business map: [`diagrams/business-map.puml`](diagrams/business-map.puml)
 
-[`diagrams/business-map.puml`](diagrams/business-map.puml)
-
-For technical implementation, continue to:
-
-```text
-../database/
-../backend/
-../frontend/
-../integrations/
-../operations/
-../system/
-```
-
----
-
-## Documentation Rules
-
-All documents in this directory follow the repository-wide rules defined in:
-
-[`../rules.md`](../rules.md)
-
-For `business/`, the main rules are:
-
-- describe **what** and **why** before **how**;
-- keep business meaning separate from technical implementation;
-- explain important concepts instead of only listing them;
-- reference canonical technical documentation instead of duplicating it;
-- maintain both English and Russian versions;
-- keep requirements and rules traceable to implementation where relevant.
-
----
-
-## Reading Entry Point
-
-A new reader should normally start with:
+## Reading Path
 
 ```text
 context/
@@ -143,6 +72,12 @@ scope/
 requirements/
   ↓
 processes/
+  ↓
+traceability/
 ```
 
-From there, the reader can move into the technical areas required for their role or task.
+For implementation, continue to [`../database/`](../database/), [`../backend/`](../backend/), [`../frontend/`](../frontend/), [`../integrations/`](../integrations/), and [`../system/`](../system/).
+
+## Documentation Rules
+
+[`../rules.md`](../rules.md)

@@ -1,148 +1,71 @@
 # Business
 
-> Бизнес-документация Aveli: контекст продукта, scope, требования, процессы и traceability.
+> Canonical business-level documentation Aveli: product context, scope, requirements, processes, acceptance и traceability.
 
----
+## Статус
+
+**Baseline: Stable**
+
+Business baseline согласована с current product boundary и implementation-backed system model. Future product choices явно классифицированы в [`../system/review/open-questions.ru.md`](../system/review/open-questions.ru.md).
 
 ## Назначение
 
-Директория `business/` является точкой входа для понимания **что представляет собой Aveli, зачем продукт существует, что система должна делать и где проходят её продуктовые границы**.
+`business/` объясняет **что такое Aveli, зачем продукт существует, какое behavior система должна предоставлять и какие product rules/boundaries должны сохраняться**.
 
-Здесь хранится только бизнес- и аналитическая документация. Техническая реализация описывается в соответствующих системных областях: `database/`, `backend/`, `frontend/`, `integrations/` и `operations/`.
-
----
-
-## Ответственность
-
-Область `business/` отвечает за описание:
-
-- продуктового контекста и бизнес-целей;
-- scope системы и продуктовых границ;
-- функциональных и нефункциональных требований;
-- бизнес-правил и ограничений;
-- пользовательских и бизнес-процессов;
-- критериев приемки;
-- traceability от бизнес-решений к технической реализации.
-
-Этот слой определяет **намерение и ожидаемое поведение**.
-
-Технические слои определяют **реализацию**.
-
----
-
-## Границы
-
-Бизнес-документация должна отвечать на вопросы:
+Business documentation владеет intent и observable behavior. Technical implementation canonical в:
 
 ```text
-Зачем существует продукт?
-Кто им пользуется?
-Что входит в scope?
-Что не входит в scope?
-Какое поведение требуется?
-Какие правила должны выполняться?
-Какой результат считается приемлемым?
+database/
+backend/
+frontend/
+integrations/
+system/
 ```
 
-Она не должна описывать детали реализации, если они напрямую не влияют на поведение продукта или его scope.
+## Responsibility
 
-Не следует размещать здесь детали вроде:
+Area владеет product context/goals, scope, business rules, FR/NFR, acceptance criteria, processes и traceability от business intent к technical ownership/verification.
+
+## Boundary
+
+Business documentation отвечает:
 
 ```text
-PostgreSQL
-SQLite
-NestJS
-Flutter
-JWT
-Redis
-Docker
-конкретные API payloads
-схемы базы данных
-deployment configuration
+Почему product существует?
+Кто его использует?
+Что in / out of scope?
+Какое behavior требуется?
+Какие rules должны оставаться true?
+Какой результат acceptable?
 ```
 
-Вместо этого описывается бизнес-смысл и даётся ссылка на каноническую техническую документацию.
-
-Пример:
-
-```text
-Рабочее пространство должно оставаться доступным без постоянного подключения к сети.
-```
-
-Техническая реализация:
-
-```text
-→ ../frontend/offline/
-→ ../database/
-```
-
----
+Она не владеет конкретными DB schemas, framework choices, API payload internals или deployment configuration, если technical constraint сам не меняет product behavior или external contract.
 
 ## Структура
 
-Директория разделена на отдельные области для контекста, scope, требований, процессов и traceability.
-
-Каждая область должна быть читаема самостоятельно и при необходимости ссылаться на более глубокую техническую документацию.
-
----
-
-## Навигация
-
-| Область | Ответственность |
+| Area | Responsibility |
 |---|---|
-| `context/` | Контекст продукта, целевые пользователи, цели и позиционирование. |
-| `scope/` | Границы продукта, in-scope возможности, исключения и ограничения. |
-| `requirements/` | Функциональные и нефункциональные требования, бизнес-правила и критерии приемки. |
-| `processes/` | Пользовательские и бизнес-процессы. |
-| `traceability/` | Связи между бизнес-правилами, требованиями, реализацией и проверкой. |
-| `diagrams/` | Верхнеуровневая карта бизнес-знаний и связей между ними. |
+| `context/` | Product background, users, goals, positioning. |
+| `scope/` | Product/system boundary и exclusions. |
+| `requirements/` | Rules, FR, NFR, acceptance criteria. |
+| `processes/` | User/product workflows. |
+| `traceability/` | Business → verification → technical ownership. |
+| `diagrams/` | Business knowledge maps. |
 
-Карта бизнес-знаний:
+Business map: [`diagrams/business-map.puml`](diagrams/business-map.puml)
 
-[`diagrams/business-map.puml`](diagrams/business-map.puml)
-
-Для изучения технической реализации:
-
-```text
-../database/
-../backend/
-../frontend/
-../integrations/
-../operations/
-../system/
-```
-
----
-
-## Правила документации
-
-Все документы в этой директории подчиняются общим правилам репозитория:
-
-[`../rules.ru.md`](../rules.ru.md)
-
-Для `business/` особенно важны следующие принципы:
-
-- сначала описывать **что** и **зачем**, а уже затем **как**;
-- отделять бизнес-смысл от технической реализации;
-- объяснять важные понятия, а не только перечислять их;
-- ссылаться на каноническую техническую документацию вместо дублирования;
-- поддерживать английскую и русскую версии;
-- сохранять traceability требований и правил до реализации там, где это важно.
-
----
-
-## Точка входа для чтения
-
-Новому читателю обычно следует начинать так:
+## Путь чтения
 
 ```text
 context/
-  ↓
-scope/
-  ↓
-requirements/
-  ↓
-processes/
+→ scope/
+→ requirements/
+→ processes/
+→ traceability/
 ```
 
-После этого можно переходить к тем техническим областям, которые нужны для конкретной роли или задачи.
+Implementation: [`../database/`](../database/), [`../backend/`](../backend/), [`../frontend/`](../frontend/), [`../integrations/`](../integrations/), [`../system/`](../system/).
+
+## Documentation Rules
+
+[`../rules.ru.md`](../rules.ru.md)

@@ -1,18 +1,24 @@
 # Database
 
-> Каноническая документация Aveli по ownership данных, моделям, persistence boundaries, physical schemas и persistence technologies.
-
-## Назначение
-
-`database/` объясняет **какие данные существуют, кто ими владеет, как они моделируются, какие persistence technologies используются, где находится canonical state и как данные физически хранятся**.
+> Canonical documentation Aveli по data ownership, logical models, physical persistence и storage-engine technologies.
 
 ## Статус
 
 **Baseline: Stable**
 
-Текущая database documentation сверена с предоставленным описанием реальной persistence implementation.
+Database baseline reconciled с verified local/server persistence evidence. Один non-blocking source naming discrepancy Service duration fields остаётся явно documented.
 
-Остается одно известное расхождение имен полей Service duration в исходных материалах. Оно явно зафиксировано в local schema и не меняет документированный смысл данных.
+## Назначение
+
+`database/` отвечает:
+
+```text
+Какие data существуют?
+Кто ими владеет?
+Как они logically связаны?
+Где physical persistence?
+Как persistence evolves?
+```
 
 ## Структура
 
@@ -28,49 +34,42 @@ database/
 └── diagrams/
 ```
 
-| Область | Ответственность |
+| Area | Responsibility |
 |---|---|
-| `architecture/` | Ownership, source-of-truth boundaries, isolation и lifecycle. |
-| `models/` | Conceptual и logical data models. |
-| `stack/` | Canonical persistence-technology decisions и replaceability. |
-| `local/` | Проверенный device-side persistence usage. |
-| `server/` | Проверенный backend persistence usage. |
-| `diagrams/` | Cross-area database knowledge maps. |
+| `architecture/` | Ownership, source-of-truth, isolation, lifecycle. |
+| `models/` | Conceptual/logical data models. |
+| `stack/` | Storage engines: SQLite и PostgreSQL. |
+| `local/` | Device-side physical persistence/files. |
+| `server/` | PostgreSQL physical persistence. |
+| `diagrams/` | Database knowledge maps. |
+
+## Technology Boundary
+
+```text
+SQLite      → database/stack/sqlite/
+PostgreSQL  → database/stack/postgresql/
+Drift       → ../frontend/stack/drift/
+Prisma      → ../backend/stack/prisma/
+```
 
 ## Путь чтения
 
 ```text
-Architecture
-    ↓
-Conceptual Model
-    ↓
-Logical Model
-    ↓
-Persistence Stack
-    ↓
-Local / Server Physical Usage
+Data ownership
+   ↓
+Conceptual model
+   ↓
+Logical model
+   ↓
+Storage engines
+   ↓
+Local / server physical models
 ```
 
-Порядок соответствует правилу репозитория: canonical stack knowledge документируется до contextual technology usage.
+Начать: [`architecture/data-ownership.ru.md`](architecture/data-ownership.ru.md)
 
-Начать с:
+Verification: [`implementation-verification.ru.md`](implementation-verification.ru.md)
 
-[`architecture/data-ownership.ru.md`](architecture/data-ownership.ru.md)
-
-Verification record:
-
-[`implementation-verification.ru.md`](implementation-verification.ru.md)
-
-Визуальная карта:
-
-[`diagrams/database-map.puml`](diagrams/database-map.puml)
-
-## Основной принцип
-
-> **Data documentation progresses from ownership to conceptual structure, from conceptual structure to logical structure, and only then to technology selection and physical persistence usage.**
-
-Physical models остаются у persistence component, который хранит данные.
-
-## Правила документации
+## Documentation Rules
 
 [`../rules.ru.md`](../rules.ru.md)

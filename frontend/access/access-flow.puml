@@ -1,12 +1,14 @@
 @startuml
 title Aveli — Frontend Access Flow
+
 start
-:Hydrate secure snapshot;
-if (Network access available?) then (yes)
+:Hydrate secure access snapshot;
+
+if (Network hint available?) then (yes)
   :GET /v1/access;
-  if (Success?) then (yes)
-    :Write secure snapshot;
+  if (Server access fetch succeeds?) then (yes)
     :Use server AccessState;
+    :Persist verified snapshot;
   else (no)
     :Evaluate cached snapshot;
   endif
@@ -14,17 +16,25 @@ else (no)
   :Evaluate cached snapshot;
 endif
 
-if (hasAccess == false?) then (yes)
-  :blocked;
+if (Usable access state exists?) then (no)
+  :needsNetwork;
+  :Access Gate;
   stop
 endif
 
-if (Verification policy satisfied?) then (yes)
+if (hasAccess == false?) then (yes)
+  :blocked;
+  :Access Gate;
+  stop
+endif
+
+if (Verification policy accepts state?) then (yes)
   :allowed;
   :Workspace;
 else (no)
   :needsNetwork;
   :Access Gate;
 endif
+
 stop
 @enduml

@@ -1,93 +1,10 @@
-# Aveli — Synthesis Review
+# Aveli — Final Synthesis Review
 
 ## Result
 
-The current lower-level documentation describes one coherent architecture:
+**Whole-system analytical baseline: Stable**
 
-```text
-Business intent
-    ↓
-local-first personal workspace
-    +
-backend-controlled account/access
-    +
-external billing/device integrations
-```
-
-No major cross-layer contradiction prevents system synthesis.
-
-## Strongly Aligned Decisions
-
-### Local Workspace
-
-Business scope, database ownership, frontend implementation, and system flows agree that professional workspace data remain device-local.
-
-### Access
-
-Business rules, backend decision logic, frontend Access Gate, and RevenueCat integration agree that backend access is authoritative and access does not own workspace data.
-
-### Trial
-
-Business and backend models agree that registration trial is account-owned and backend-controlled.
-
-### Billing
-
-Frontend, backend, and integrations agree that purchase/restore is reconciled by backend before workspace unlock.
-
-### Logout
-
-Frontend and data ownership agree that logout preserves professional workspace.
-
-### External Integrations
-
-Integrations are supporting boundaries and do not become accidental owners of Aveli product decisions.
-
-## Known Whole-System Cleanup Items
-
-The final polish should reconcile:
-
-1. legacy numbered documentation;
-2. root README/navigation;
-3. stale links to old numbered paths;
-4. technology canonical ownership;
-5. status labels (`in progress` vs `Stable`);
-6. RU/EN parity;
-7. duplicated canonical knowledge;
-8. stale diagrams;
-9. traceability links after path migration;
-10. remaining explicit OPEN questions.
-
-## Technology Ownership Cleanup
-
-Current final target:
-
-```text
-database/stack/
-→ SQLite
-→ PostgreSQL
-
-frontend/stack/
-→ Flutter
-→ Riverpod
-→ go_router
-→ Drift
-→ client HTTP / secure storage / mobile SDKs
-
-backend/stack/
-→ NestJS
-→ REST API
-→ JWT
-→ Argon2id
-→ Prisma
-```
-
-Contextual usage may link across perspectives.
-
-Do not retain duplicated canonical technology documents after final migration.
-
-## Legacy Structure
-
-The numbered legacy tree should be removed only after:
+Aveli now has one coherent documentation architecture:
 
 ```text
 business/
@@ -98,10 +15,36 @@ integrations/
 system/
 ```
 
-contain all canonical knowledge required by the repository.
+## Final Consistency Results
 
-Before deletion, perform a file-by-file orphan check for unique knowledge.
+### Structure
 
-## Final Target
+- legacy numbered artifact structure is no longer the canonical repository model;
+- root navigation reflects the system-shaped model;
+- failure scenarios and release readiness remain under `system/review/`;
+- no standalone `operations/` perspective is required by current ownership.
 
-After polish, the repository should read as a system rather than as a sequence of analyst artifacts.
+### Technology Ownership
+
+```text
+database/stack/   → SQLite / PostgreSQL
+frontend/stack/   → Flutter / Riverpod / go_router / Drift / client technologies
+backend/stack/    → NestJS / REST / JWT / Argon2id / Prisma
+integrations/     → external provider/device boundaries
+```
+
+### Business / Implementation Alignment
+
+Aligned: local-first workspace ownership; backend-controlled identity/access; account-owned trial; whole-workspace access; logout preserves workspace; profile delete is separate destructive cleanup; purchase requires backend reconciliation; one aggregate payment record per appointment; client archive/delete baseline; service-history preservation; policy-based offline verification.
+
+### Traceability
+
+Current functional product areas have business/requirement → acceptance → technical-owner mappings at the current product-contract level.
+
+### Known Limitations
+
+Remaining items are explicitly classified in [`open-questions.md`](open-questions.md) as accepted limitation, external release evidence, future product decision, measurable calibration, or architecture-change trigger.
+
+## Final Principle
+
+The repository is stable when an unknown is either resolved or explicitly classified — not when every possible future fact is invented.

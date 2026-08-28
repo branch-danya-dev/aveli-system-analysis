@@ -1,121 +1,36 @@
 # Frontend Implementation Verification
 
-> Reconciliation record between prior architecture documentation and the current Flutter client implementation.
+> Final reconciliation record for the current Flutter client.
 
 ## Status
 
-**Applied to this frontend implementation pass**
+**Applied — Frontend baseline Stable**
 
-This file is an audit record. Canonical knowledge should live in the owning frontend area.
+Verified baseline: Aveli `0.2.2+4`, Dart `^3.7.0`, feature-first/hybrid architecture, Riverpod 2.6.1, go_router 14.8.1, Drift 2.34.3.
 
-## Verified Baseline
+## Applied Corrections
 
-The current client is:
+- legacy `aveli.db` claim helper exists, but no current shipped UI invokes it;
+- RevenueCat `CustomerInfo` does not directly unlock workspace;
+- server verification deadline is preferred; 72h remains a client implementation default where applicable;
+- logout preserves SQLite/photos while explicit profile deletion performs local destructive cleanup;
+- backend logout-all exists but current Flutter UI/client does not expose it;
+- email verification/password-reset routes are backend 501 stubs;
+- verified source tree includes `legal/` and `more/`;
+- Drift canonical ownership is `frontend/stack/drift/`.
 
-```text
-Aveli 0.2.2+4
-Dart SDK ^3.7.0
-feature-first Flutter architecture
-Riverpod 2.6.1
-go_router 14.8.1
-Drift 2.34.3
-```
+## Classified Non-Blocking Evidence Items
 
-The verified startup/access/workspace model is now reflected across the frontend documentation.
-
-## Important Corrections Applied
-
-### Legacy Database Claim
-
-Prior documentation may imply automatic legacy `aveli.db` claim on first login.
-
-Current source reality:
-
-```text
-LocalDatabaseManager supports claimLegacyIfPresent
-BUT
-no current UI/client caller enables it
-```
-
-Therefore legacy auto-claim is not documented as current shipped behavior.
-
-### Access Authority
-
-RevenueCat `CustomerInfo` does not directly unlock the workspace.
-
-Current flow:
-
-```text
-purchase/restore
-→ RevenueCat result
-→ POST /v1/billing/sync
-→ backend AccessStatusView
-→ AccessState
-→ Access Gate
-```
-
-### Offline Grace
-
-The client contains a 72-hour default in `AccessVerificationPolicy`.
-
-The backend-provided `nextVerificationRequiredAt` is preferred when present.
-
-The documentation therefore treats 72h as a current client default, not a universal immutable product constant.
-
-### Logout vs Profile Delete
-
-Logout:
-
-```text
-preserve SQLite + photos
-```
-
-Profile delete:
-
-```text
-delete local SQLite + user photos + snapshot + session state
-```
-
-These lifecycles are now explicitly separated.
-
-### Logout All
-
-Backend supports logout-all, but no current Flutter client/UI method was found.
-
-### Email Verification / Password Reset
-
-Client routes/UI may exist, but current backend contract returns `501 AUTH_NOT_IMPLEMENTED`.
-
-They are not documented as shipped end-to-end capability.
-
-## Verified Source Mismatches / Gaps
-
-| Topic | Current source reality |
+| Item | Classification |
 |---|---|
-| Legacy DB claim | Helper exists, no UI caller. |
-| Logout all devices | Backend only, no Flutter method/UI. |
-| Profile phone/email verify | Local flags only; no real SMS/email verification API. |
-| Public listing/lifecycle profile fields | Local `app_settings`, no server sync. |
-| Brand string `Avile` | Present in some generated/localized source; product is Aveli. |
-| RC direct unlock | Not used; backend sync remains required. |
+| Android backup behavior | Platform-policy evidence not established; no claim made. |
+| Certificate pinning | Not part of current security baseline; revisit only if threat model requires it. |
+| Root/jailbreak detection | Not part of current security baseline; revisit only if threat model requires it. |
+| Production store product ids | External release configuration evidence. |
+| Multi-account UI | Out of current product scope; one active account/workspace context at a time. |
+| Reboot reminder guarantee | Platform/OEM QA limitation; boot receiver exists and app-resume rebuild is verified. |
+| Full test-suite pass rate | Per-release verification evidence, not architecture truth. |
+| Real-store E2E purchase coverage | Future release evidence. |
+| Legacy DB claim UI | Out of current shipped flow until an explicit migration feature is introduced. |
 
-## Open Questions
-
-- Android backup behavior for SQLite/files;
-- certificate pinning;
-- root/jailbreak detection;
-- exact production store product ids (runtime RevenueCat configuration);
-- future multi-account product behavior;
-- reboot-specific reminder restoration independent of app resume;
-- current full test-suite pass rate;
-- real-store E2E purchase coverage.
-
-## Baseline Recommendation
-
-After this package is merged, run a repository-level frontend audit similar to `database/` and `backend/`.
-
-If links, RU/EN maintenance, and ownership boundaries pass that audit, the frontend branch can be promoted to:
-
-```text
-Baseline: Stable
-```
+No item above blocks the stable frontend architecture baseline.

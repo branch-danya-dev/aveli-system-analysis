@@ -1,341 +1,135 @@
 # Aveli — Acceptance Criteria
 
-<p align="center">
-  <a href="acceptance-criteria.md">English</a> ·
-  <a href="acceptance-criteria.ru.md"><b>Русский</b></a>
-</p>
+<p align="center"><a href="acceptance-criteria.md">English</a> · <a href="acceptance-criteria.ru.md"><b>Русский</b></a></p>
 
-> Определяет наблюдаемые условия, по которым проверяется соответствие поведения Aveli согласованным бизнес-правилам, функциональным требованиям и продуктовым требованиям к качеству.
+> Observable product conditions для verification requirements/business rules.
 
----
+## Статус
 
-## Обзор
+**Baseline: Stable**
 
-Критерии приемки описывают **что должно наблюдаться, чтобы требование или правило можно было считать выполненным**.
+## Authentication
 
-Они проверяют поведение, не определяя способ реализации.
-
-Пример:
-
-```text
-Требование:
-Пользователь должен иметь возможность восстановить существующую подписку.
-
-Приемка:
-Пользователь с существующей действующей подпиской может восстановить ее
-и снова получить subscription-based доступ к workspace.
-```
-
-Implementation-specific проверки относятся к технической документации и test suites.
-
----
-
-## Аутентификация
-
-| ID | Критерий приемки |
+| ID | Acceptance Criterion |
 |---|---|
-| AC-001 | Новый пользователь может создать аккаунт и перейти в аутентифицированное состояние продукта. |
-| AC-002 | Существующий пользователь может войти с корректными учетными данными. |
-| AC-003 | Некорректные учетные данные не создают аутентифицированную сессию. |
-| AC-004 | Logout завершает активное аутентифицированное состояние. |
-| AC-005 | Logout не удаляет существующую информацию профессионального рабочего пространства пользователя. |
+| AC-001 | Новый user может создать account и войти в authenticated state. |
+| AC-002 | Existing user может sign in с valid credentials. |
+| AC-003 | Invalid credentials не создают authenticated session. |
+| AC-004 | Logout завершает active authenticated state. |
+| AC-005 | Logout не удаляет professional workspace. |
 
-Связанные требования:
+## Trial and Access
 
-`FR-001`–`FR-005`
-
-Связанные бизнес-правила:
-
-`BR-023`, `BR-043`–`BR-047`
-
----
-
-## Trial и Access
-
-| ID | Критерий приемки |
+| ID | Acceptance Criterion |
 |---|---|
-| AC-006 | Новый аккаунт получает один пробный период длительностью 30 дней. |
-| AC-007 | Logout и последующий вход не создают новый trial для того же аккаунта. |
-| AC-008 | Переустановка приложения не создает новый trial для того же аккаунта. |
-| AC-009 | Пользователь с хотя бы одним действующим источником доступа может открыть workspace. |
-| AC-010 | Пользователь без действующего источника доступа не может открыть workspace. |
-| AC-011 | Действующий доступ открывает workspace целиком, а не отдельные независимые платные группы функций. |
-| AC-012 | Существующая информация профессионального workspace сохраняется после истечения доступа. |
-| AC-013 | Восстановление действующего доступа снова делает ранее сохраненное workspace доступным. |
+| AC-006 | New account получает один 30-day trial. |
+| AC-007 | Logout/sign-in не создаёт новый trial. |
+| AC-008 | Reinstall не создаёт новый trial. |
+| AC-009 | Valid access source позволяет workspace entry. |
+| AC-010 | Без valid access source workspace entry blocked. |
+| AC-011 | Valid access unlocks whole workspace. |
+| AC-012 | Access expiry preserves workspace information. |
+| AC-013 | Restored access возвращает preserved workspace. |
 
-Связанные требования:
+## Subscription
 
-`FR-006`–`FR-013`
-
-Связанные бизнес-правила:
-
-`BR-001`–`BR-013`, `BR-025`, `BR-026`
-
----
-
-## Подписка
-
-| ID | Критерий приемки |
+| ID | Acceptance Criterion |
 |---|---|
-| AC-014 | Пользователь может начать purchase flow поддерживаемой месячной или годовой подписки. |
-| AC-015 | Действующая месячная или годовая подписка приводит к одинаковому логическому уровню доступа к workspace. |
-| AC-016 | Состояние подписки может быть согласовано с текущим состоянием доступа Aveli. |
-| AC-017 | Действующая согласованная подписка предоставляет доступ к workspace. |
-| AC-018 | Восстановление существующей действующей подписки восстанавливает subscription-based доступ. |
-| AC-019 | Цена подписки, показываемая пользователю, соответствует актуальной информации мобильной платформы. |
-| AC-020 | Возобновляемая подписка представлена как recurring, а пользователь понимает, где выполняется управление подпиской. |
+| AC-014 | User может начать monthly/yearly purchase flow. |
+| AC-015 | Monthly/yearly subscriptions дают same logical access. |
+| AC-016 | Subscription state reconciles с Aveli access. |
+| AC-017 | Valid reconciled subscription grants access. |
+| AC-018 | Restore valid subscription restores access. |
+| AC-019 | Displayed subscription price matches provider/platform. |
+| AC-020 | Recurring billing/management location clearly presented. |
 
-Связанные требования:
+## Professional Workspace Data
 
-`FR-014`–`FR-019`
-
-Связанные бизнес-правила:
-
-`BR-014`–`BR-019`
-
----
-
-## Данные профессионального Workspace
-
-| ID | Критерий приемки |
+| ID | Acceptance Criterion |
 |---|---|
-| AC-021 | Клиенты, записи, услуги, оплаты, заметки и поддерживаемые media визитов остаются доступными без постоянной backend-синхронизации. |
-| AC-022 | Workspace-информация, созданная активным пользователем, остается связана с workspace этого пользователя. |
-| AC-023 | Информация одного пользователя не отображается, когда активно workspace другого пользователя. |
-| AC-024 | Пользовательские media визитов не раскрываются между разными workspace. |
-| AC-025 | Logout закрывает текущий активный workspace-контекст без удаления постоянной профессиональной информации. |
+| AC-021 | Workspace entities usable без continuous backend sync. |
+| AC-022 | Created data stays with active user workspace. |
+| AC-023 | One user data not shown in another workspace. |
+| AC-024 | Visit media not exposed across users. |
+| AC-025 | Logout closes context without deleting data. |
 
-Связанные требования:
+## Clients
 
-`FR-058`–`FR-062`
-
-Связанные бизнес-правила:
-
-`BR-020`–`BR-026`
-
----
-
-## Клиенты
-
-| ID | Критерий приемки |
+| ID | Acceptance Criterion |
 |---|---|
-| AC-026 | Пользователь может создать клиента и затем найти его в каталоге. |
-| AC-027 | Пользователь может изменить существующего клиента и после сохранения увидеть обновленные данные. |
-| AC-028 | Пользователь может архивировать и впоследствии восстановить клиента согласно текущему client lifecycle. |
-| AC-029 | Пользователь может открыть карточку клиента и просмотреть доступную профессиональную историю, связанную с этим клиентом. |
-| AC-030 | При наличии разрешения на доступ к контактам пользователь может создать клиента Aveli из выбранного контакта устройства без изменения исходного контакта в обычном import-сценарии. |
+| AC-026 | Create client and find in directory. |
+| AC-027 | Update client and observe changes. |
+| AC-028 | Archive/restore client. |
+| AC-029 | Open client profile/history. |
+| AC-030 | Import permitted device contact without modifying source. |
 
-Связанные требования:
+## Appointments and Visits
 
-`FR-020`–`FR-026`
-
-Связанные бизнес-правила:
-
-`BR-039`–`BR-042`
-
----
-
-## Записи и визиты
-
-| ID | Критерий приемки |
+| ID | Acceptance Criterion |
 |---|---|
-| AC-031 | Пользователь может создать запись со всей информацией, обязательной по текущим scheduling rules. |
-| AC-032 | Созданная запись отображается в соответствующих Today и Calendar views. |
-| AC-033 | Состояние записи, нарушающее текущие scheduling rules, отклоняется. |
-| AC-034 | Пользователь может перенести существующую запись, а новое время отражается в соответствующих представлениях. |
-| AC-035 | Пользователь может отменить запись, после чего она не считается активным запланированным визитом. |
-| AC-036 | Пользователь может отметить неявку, и это состояние остается отличимым от отмены и завершения. |
-| AC-037 | Пользователь может завершить допустимый визит. |
-| AC-038 | Поддерживаемые заметки и фотографии могут быть сохранены как часть контекста завершенного визита. |
+| AC-031 | Create appointment satisfying scheduling rules. |
+| AC-032 | Created appointment appears Today/Calendar. |
+| AC-033 | Create/reschedule violating working hours/conflict rejected. |
+| AC-034 | Reschedule appointment and see updated time. |
+| AC-035 | Cancel appointment and it is not active scheduled work. |
+| AC-036 | No-show distinguishable from cancelled/completed. |
+| AC-037 | Complete valid visit. |
+| AC-038 | Notes/photos attached to completed visit. |
 
-Связанные требования:
+## Payments
 
-`FR-030`–`FR-038`
-
-Связанные бизнес-правила:
-
-`BR-027`–`BR-033`
-
----
-
-## Оплаты
-
-| ID | Критерий приемки |
+| ID | Acceptance Criterion |
 |---|---|
-| AC-039 | Пользователь может зафиксировать оплату для работы, которая допускает оплату согласно текущему lifecycle визита. |
-| AC-040 | Завершенный визит может оставаться неоплаченным и при этом не становиться некорректным состоянием визита. |
-| AC-041 | Неоплаченные визиты остаются видимыми до урегулирования задолженности. |
-| AC-042 | Финансовая информация за период отражает оплаты, зафиксированные в профессиональном workspace. |
+| AC-039 | Record payment for valid payable visit. |
+| AC-040 | Completed visit can remain unpaid/partial. |
+| AC-041 | Outstanding amount visible until resolved. |
+| AC-042 | Period finance reflects workspace payments. |
 
-Связанные требования:
+## Reminders
 
-`FR-039`–`FR-042`
-
-Связанные бизнес-правила:
-
-`BR-034`–`BR-038`
-
----
-
-## Напоминания
-
-| ID | Критерий приемки |
+| ID | Acceptance Criterion |
 |---|---|
-| AC-043 | Пользователь может создать поддерживаемое напоминание для записи. |
-| AC-044 | Открытие действующего напоминания ведет к связанной записи, если запись все еще существует и доступна. |
-| AC-045 | Logout деактивирует напоминания, связанные с уходящим пользователем. |
-| AC-046 | После смены аккаунта напоминания не раскрывают информацию о записях другого пользователя. |
-
-Связанные требования:
-
-`FR-047`–`FR-050`
-
-Связанные бизнес-правила:
-
-`BR-053`–`BR-056`
-
----
+| AC-043 | Create/use reminder. |
+| AC-044 | Open reminder to existing appointment. |
+| AC-045 | Logout deactivates reminders. |
+| AC-046 | Account switching does not expose reminders. |
 
 ## Offline Access
 
-| ID | Критерий приемки |
+| ID | Acceptance Criterion |
 |---|---|
-| AC-047 | Пользователь с ранее подтвержденным доступом может продолжать работу offline, пока эта верификация считается достаточной. |
-| AC-048 | Offline-доступ к workspace сохраняется только в рамках текущей verification policy. |
-| AC-049 | Когда предыдущей верификации больше недостаточно, продолжение работы требует повторной проверки доступа. |
-| AC-050 | Ошибка проверки доступа или временная недоступность account-сервисов не удаляет и не повреждает существующую информацию профессионального workspace. |
+| AC-047 | Verified access permits offline use while policy trusts. |
+| AC-048 | Offline access bounded by policy. |
+| AC-049 | Expired verification requires renewal. |
+| AC-050 | Verification failure does not delete/corrupt workspace. |
 
-Связанные требования:
+## Final Coverage Additions
 
-`FR-063`–`FR-066`
+| ID | Acceptance Criterion |
+|---|---|
+| AC-056 | Valid stored refresh session restores auth and opens correct local workspace. |
+| AC-057 | User can create/update service and use price/duration in planning. |
+| AC-058 | Referenced service cannot be removed if it invalidates appointment history. |
+| AC-059 | Today shows current daily projection and reflects changes. |
+| AC-060 | Calendar changes selected date and shows corresponding appointments. |
+| AC-061 | Supported local settings can be changed and remain available according to current persistence. |
+| AC-062 | RU/EN localization can be selected without changing workspace ownership. |
+| AC-063 | Supported export/import works; automatic conflict merge is not claimed. |
+| AC-064 | One appointment cannot have two independent payment records; partial/full stays in one aggregate. |
 
-Связанные бизнес-правила:
+## Historical Identifier Note
 
-`BR-048`–`BR-052`
+`AC-051`–`AC-055` использовались earlier release-specific acceptance model и intentionally не переиспользуются.
 
----
+Technical release verification canonical в [`../../system/review/release-readiness.ru.md`](../../system/review/release-readiness.ru.md), [`../../frontend/testing/`](../../frontend/testing/), [`../../frontend/security/`](../../frontend/security/), [`../../backend/security/`](../../backend/security/).
 
-## Product-Level Quality Verification
+## Remaining Measurement Work
 
-Следующие характеристики также должны проверяться через повторяемые продуктовые сценарии.
+Numeric performance targets и per-release store/device evidence классифицированы в [`../../system/review/open-questions.ru.md`](../../system/review/open-questions.ru.md).
 
-### Консистентность доступа
+## Related Documentation
 
-Одинаковое состояние аккаунта и доступа не должно приводить к противоречивой доступности workspace между startup, resume, purchase, restore и обычной навигацией.
-
-Связано с:
-
-`NFR-019`–`NFR-022`
-
-### Изоляция пользователей
-
-Смена активного аккаунта не должна раскрывать workspace-информацию, media визитов или reminders предыдущего пользователя.
-
-Связано с:
-
-`NFR-008`, `NFR-009`, `NFR-027`, `NFR-032`
-
-### Сохранность данных
-
-Logout, истечение доступа, временная backend-ошибка или failed subscription reconciliation не должны удалять существующую информацию профессионального workspace.
-
-Связано с:
-
-`NFR-010`, `NFR-028`–`NFR-031`
-
-### Usability
-
-Состояние trial и подписки должно быть понятно пользователю и не должно содержать вводящую в заблуждение информацию о доступе или оплате.
-
-Связано с:
-
-`NFR-037`–`NFR-042`
-
-Точные performance thresholds и low-level technical verification поддерживаются в соответствующих технических областях.
-
----
-
-## Technical Verification, вынесенный из Business
-
-В предыдущей версии документа `AC-051`–`AC-055` использовались для implementation-specific release checks.
-
-В новой структуре они больше не являются canonical business acceptance criteria.
-
-Они описывали такие проверки, как:
-
-```text
-запрет loopback / emulator endpoints
-запрет development-only mode
-production transport configuration
-размещение secrets
-release configuration validation
-```
-
-Эти проверки будут поддерживаться как technical verification в:
-
-```text
-../../operations/release/
-../../operations/testing/
-../../operations/configuration/
-../../backend/security/
-```
-
-Идентификаторы `AC-051`–`AC-055` намеренно не переиспользуются, чтобы не ломать историческую traceability.
-
----
-
-## Граница Acceptance Criteria
-
-Acceptance criteria в `business/` должны проверять **наблюдаемое поведение продукта**.
-
-Они не должны зависеть от реализации, если сама реализация не является частью согласованного внешнего контракта.
-
-Не следует писать:
-
-```text
-В PostgreSQL появилась строка.
-JWT содержит поле X.
-Flutter provider изменил state.
-Docker container запущен.
-```
-
-Предпочтительно:
-
-```text
-Пользователь остается авторизован после успешного восстановления сессии.
-
-Workspace недоступен при отсутствии действующего источника доступа.
-
-Существующая пользовательская информация снова доступна после восстановления доступа.
-```
-
-Более глубокие implementation checks проверяются отдельно техническими тестами.
-
----
-
-## Открытые Acceptance Areas
-
-Некоторые критерии нельзя сделать полностью точными до финализации соответствующих бизнес-правил.
-
-К ним относятся:
-
-- точные appointment-conflict scenarios;
-- точное delete/archive поведение клиента;
-- точное delete/deactivate поведение услуги;
-- точный payment lifecycle и duplicate-payment handling;
-- конфликты export/import;
-- измеримые performance thresholds;
-- точная длительность offline verification.
-
-После фиксации правил соответствующие acceptance criteria должны быть расширены без изменения несвязанных критериев.
-
----
-
-## Связанная документация
-
-- [`../scope/scope.ru.md`](../scope/scope.ru.md)
+- [`business-rules.ru.md`](business-rules.ru.md)
 - [`functional-requirements.ru.md`](functional-requirements.ru.md)
 - [`non-functional-requirements.ru.md`](non-functional-requirements.ru.md)
-- [`business-rules.ru.md`](business-rules.ru.md)
 - [`../traceability/`](../traceability/)
-- [`../../operations/testing/`](../../operations/testing/)

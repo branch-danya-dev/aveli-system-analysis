@@ -1,37 +1,28 @@
 # Backend Stack
 
-> Canonical technology knowledge for the Aveli backend.
+> Canonical runtime technology knowledge for the Aveli backend.
 
-## Current Runtime Stack
+## Current Stack
 
-| Technology | Verified Role |
-|---|---|
-| NestJS 11.x | HTTP/module/service application framework. |
-| REST/JSON | Public HTTP contract style. |
-| `@nestjs/jwt` + `passport-jwt` | JWT access-token authentication. |
-| Argon2id (`argon2` 0.45) | Password hashing. |
-| Prisma 6.19 | Backend data access and migrations. |
-| PostgreSQL | Backend physical persistence. |
-| `class-validator` | DTO validation. |
-| `@nestjs/throttler` | Global and per-route rate limiting. |
-| `helmet` | HTTP security headers. |
+| Technology | Role | Canonical |
+|---|---|---|
+| NestJS 11.x | Application/module/HTTP framework | [`nestjs/`](nestjs/) |
+| REST/JSON | HTTP architectural style | [`rest-api/`](rest-api/) |
+| JWT + passport-jwt | Access-token authentication | [`jwt/`](jwt/) |
+| Argon2id | Password hashing | [`argon2id/`](argon2id/) |
+| Prisma 6.19 | Backend data-access/migration technology | [`prisma/`](prisma/) |
+| PostgreSQL | Server storage engine | [`../../database/stack/postgresql/`](../../database/stack/postgresql/) |
 
-Persistence technology remains canonical in:
+Supporting libraries such as `class-validator`, `@nestjs/throttler`, and `helmet` are documented contextually.
 
-- [`../../database/stack/prisma/`](../../database/stack/prisma/)
-- [`../../database/stack/postgresql/`](../../database/stack/postgresql/)
+## Ownership Boundary
 
-## Canonical Technology Documents
+```text
+Prisma
+→ backend runtime data access
+→ backend/stack/prisma/
 
-- [`nestjs/`](nestjs/)
-- [`rest-api/`](rest-api/)
-- [`jwt/`](jwt/)
-- [`argon2id/`](argon2id/)
-
-Supporting libraries are documented contextually where their behavior matters rather than receiving separate stack directories by default.
-
-## Selection History
-
-The implementation confirms the current stack.
-
-Historical alternative evaluation is not formally recorded unless a later ADR provides it.
+PostgreSQL
+→ physical storage engine
+→ database/stack/postgresql/
+```

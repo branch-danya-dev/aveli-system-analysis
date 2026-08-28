@@ -1,64 +1,39 @@
-# System-Wide Open Questions
+# System Review — Closure Register
 
-> Explicit questions, оставшиеся unresolved после current system synthesis.
+> Final classification прежних open questions.
 
-Не все являются blockers.
+## Статус
 
-Это backlog для final polish.
+Для current Aveli baseline **нет unresolved architecture/documentation blockers**.
 
-## Business / Domain
+## Resolved
 
-- Exact final client archive/delete rules.
-- Exact service deactivate/delete lifecycle.
-- Complete appointment-conflict rule set.
-- Complete payment lifecycle и expected future multi-payment support.
-- Import/export merge/conflict semantics.
-- Remaining measurable performance thresholds.
+- Client delete: archive сохраняет history; permanent delete only without appointment references.
+- Service lifecycle: separate deactivate state отсутствует; historical appointment meaning нельзя invalidated.
+- Appointment conflict: business contract остаётся на verified level — configured scheduling rules + conflict rejection; exact interval algorithm не invented.
+- Payment: one aggregate record per appointment; partial/full в нём же.
+- Offline duration: policy-based; server deadline preferred, 72h client default.
+- Repeated profile DELETE: one authenticated delete guaranteed; repeated post-delete HTTP не guaranteed.
+- Verification/reset routes: 501 future stubs.
+- Multi-account UI: out of current scope.
+- Legacy DB claim: helper exists, shipped UI path отсутствует.
+- Drift owner: `frontend/stack/drift/`.
+- Prisma owner: `backend/stack/prisma/`.
+- `operations/`: отдельная perspective current Aveli не нужна.
+- SSAD: required perspectives, не fixed folder template.
 
-## Access / Account
+## Accepted Limitations
 
-- Repeated HTTP `DELETE /v1/auth/me` после account=`deleted`: service-level idempotency vs JWT active-user guard.
-- Exact throttling error contract, если он нужен как public API contract.
-- Остаются ли unimplemented email verification/password reset routes future scope или их убрать из product-facing docs.
+Service duration naming discrepancy, unknown dedicated 429 body, Android backup policy, OEM-independent reboot reminder guarantee, certificate pinning/root detection decisions are explicit limitations or threat-model decisions, не hidden blockers.
 
-## Local Workspace / Platform
+## External / Release Evidence
 
-- Android backup behavior SQLite/visit-photo files.
-- Guaranteed notification restoration после arbitrary OEM reboot без reopening Aveli.
-- Final legacy `aveli.db` migration/claim policy.
-- Multi-account UI intentionally long-term out of scope или просто not implemented.
+Store product/group/base-plan ids, RevenueCat dashboard linking, StoreKit/provider config, build evidence, real-store E2E, per-release tests, signing/provisioning/secrets verify per production environment.
 
-## Store / Billing
+## Future Product Decisions
 
-- Production App Store product ids.
-- Google Play product/base-plan ids.
-- Subscription group/offering configuration.
-- RevenueCat anonymous identity merge/transfer behavior.
-- Real-store end-to-end purchase evidence.
+Export/import merge semantics, numeric performance targets, RevenueCat anonymous transfer behavior require new product decision/evidence and are not current architecture truth.
 
-## Security
+## Architecture-Change Triggers
 
-- Certificate pinning decision.
-- Root/jailbreak detection decision.
-- Возможно ли считать эти controls unnecessary для current risk model.
-
-## Documentation / Methodology
-
-- Final physical ownership Drift docs после удаления database duplicate.
-- Final physical ownership Prisma docs после удаления database duplicate.
-- Нужен ли `operations/` как отдельный perspective в current Aveli scope.
-- Останутся ли perspectives mandatory directories или evolve в mandatory analytical perspectives с system-dependent physical structure.
-
-## Rule
-
-OPEN question должен превратиться в:
-
-```text
-resolved decision
-accepted current limitation
-explicit future task
-out of scope
-new architecture branch
-```
-
-Он не должен оставаться silently ambiguous.
+Multi-device sync, cloud backup, public booking backend, shared/team workspace, server messaging, organization/employee management → new analysis branch.
