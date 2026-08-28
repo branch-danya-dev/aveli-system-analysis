@@ -2,8 +2,8 @@
 
 > Physical database schema for backend-owned Aveli data.
 
-Canonical overview:
-[`schema.md`](schema.md)
+## Navigation
 
-Diagram:
-[`schema.puml`](schema.puml)
+- [`schema.md`](schema.md) — tables, relationships, and product-critical persistence rules.
+- [`enums.md`](enums.md) — PostgreSQL/Prisma enum values.
+- [`schema.puml`](schema.puml) — physical ER diagram.

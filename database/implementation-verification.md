@@ -1,81 +1,85 @@
-# Database Implementation Verification Notes
+# Database Implementation Verification
 
-> Differences and confirmations discovered when the logical model was compared with the supplied physical persistence description.
+> Record of the reconciliation between the logical data model and the supplied physical persistence description.
 
-## Confirmed
+## Status
+
+**Applied**
+
+The verified implementation facts listed below have already been incorporated into the current logical and physical database documentation.
+
+This file is an audit/verification record, not another canonical copy of the data model.
+
+## Applied Verification Results
+
+The following facts were confirmed and applied:
 
 - local workspace uses one SQLite database per authenticated user;
-- local business entity ids are UUID v4;
-- local entities have no FK to the server user UUID;
+- local business entity identifiers are UUID v4;
+- local entities do not contain foreign keys to the server user UUID;
 - one appointment has at most one physical payment row;
 - partial payment is represented through `amount_paid` in that row;
-- appointment stores start **and end** timestamps;
-- appointment stores a price snapshot;
-- appointment also stores denormalized `payment_status`;
-- visit-photo metadata stores both appointment and client references;
-- app settings are physically stored as key-value text;
+- appointments preserve both start and end timestamps;
+- appointments preserve a service-price snapshot;
+- appointments preserve denormalized `payment_status`;
+- Service persistence includes a return interval;
+- visit-photo metadata stores appointment and client references;
+- app settings use key-value text persistence;
 - server access grants and subscription state are physically separate;
-- registration trial uniqueness is enforced in PostgreSQL;
-- subscription state is a RevenueCat snapshot, while raw events are separately persisted.
+- registration-trial uniqueness is enforced in PostgreSQL;
+- subscription state is stored as a RevenueCat snapshot while raw events are persisted separately.
 
-## Logical Model Corrections to Apply
+Canonical results now live in:
 
-The logical model should now treat the following as verified rather than provisional:
+- [`models/logical/data-model.md`](models/logical/data-model.md)
+- [`local/`](local/)
+- [`server/`](server/)
 
-```text
-Appointment 1 → 0..1 Payment
-```
+## Findings Requiring Product Classification
 
-It should also include/clarify:
+Physical persistence contains concepts that are not yet strongly represented in business documentation:
 
-```text
-Appointment.endsAt
-Appointment.priceSnapshot
-Appointment.paymentStatus (derived/aggregated logical state)
-Service.returnInterval
-Payment.amountPaid
-Payment.paidAt
-```
-
-Some of these are implementation-confirmed attributes whose business traceability should be reviewed.
-
-## Traceability Gaps Exposed by Physical Persistence
-
-The physical schema contains concepts not yet strongly represented in business documentation, including:
-
-- service return interval;
+- `confirmed` appointment status;
+- business significance of Service `returnInterval`;
 - profile public slug / public listing;
 - local phone/email verification flags;
-- account lifecycle UI setting;
-- explicit exchange-rate cache persistence;
-- `confirmed` appointment status;
-- server `deleted` / `disabled` user states;
-- store/provider `trialing`, `past_due`, `grace_period`, and `revoked` subscription statuses.
+- local account lifecycle setting;
+- exchange-rate cache persistence;
+- backend `disabled` / `deleted` user states;
+- provider subscription states such as `trialing`, `past_due`, `grace_period`, and `revoked`.
 
-These are not necessarily business-model errors. They are candidates for one of three classifications:
+Each should be classified before promotion into business documentation:
 
 ```text
 current product requirement
-implementation-only support state
+implementation support state
 legacy/future capability
 ```
 
-They should be classified before being promoted upward into business documentation.
+These findings do not block the database baseline because the physical state is documented without inventing business meaning.
 
-## Source Naming Discrepancy
+## Known Source Naming Discrepancy
 
-The supplied document's local ER overview uses:
+The supplied local persistence description contains two naming forms for Service duration fields:
 
 ```text
-duration_minutes
-return_interval_minutes
+ER overview:      duration_minutes / return_interval_minutes
+Detailed table:  duration / return_interval
 ```
 
-while its detailed table section uses:
+Current physical documentation follows the detailed table definition:
 
 ```text
 duration
 return_interval
 ```
 
-Direct source-code verification is required before generating an exact SQLite DDL contract.
+The discrepancy remains explicitly visible until the exact Drift table declarations are checked directly.
+
+It affects naming certainty, not the logical meaning of the fields.
+
+## Baseline Result
+
+The database branch is considered **Stable / baseline-ready with one documented source naming discrepancy**.
+
+Future implementation changes should update the owning physical document first and then trigger logical/traceability review where required.

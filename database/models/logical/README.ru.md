@@ -6,7 +6,7 @@
 
 Директория `logical/` описывает **какие attributes, identifiers, relationships и cardinalities нужны системе**, не привязывая их к SQLite, PostgreSQL, Drift, Prisma или конкретному SQL dialect.
 
-Logical model является мостом между conceptual domain model и physical persistence.
+Logical model является мостом между conceptual domain model и проверенной physical persistence.
 
 ## Ответственность
 
@@ -17,7 +17,7 @@ Logical model является мостом между conceptual domain model �
 - необходимыми business attributes;
 - relationships между entities;
 - cardinality;
-- optionality там, где она уже известна;
+- optionality там, где она известна;
 - различиями, которые должна сохранить physical persistence.
 
 ## Границы
@@ -25,14 +25,19 @@ Logical model является мостом между conceptual domain model �
 Здесь не определяются:
 
 - SQL data types;
-- concrete table или column names, продиктованные реализацией;
+- implementation table или column names;
 - indexes;
 - ORM annotations;
 - migration syntax;
 - storage paths;
 - framework-specific persistence behavior.
 
-Они относятся к `../../../local/` и `../../../server/` после проверки реализации.
+Эти детали canonical в:
+
+- [`../../local/`](../../local/)
+- [`../../server/`](../../server/)
+
+Текущая logical model уже сверена с проверенным persistence description.
 
 ## Навигация
 
@@ -42,3 +47,7 @@ Logical model является мостом между conceptual domain model �
 Conceptual source:
 
 [`../conceptual/domain-model.ru.md`](../conceptual/domain-model.ru.md)
+
+Verification record:
+
+[`../../implementation-verification.ru.md`](../../implementation-verification.ru.md)

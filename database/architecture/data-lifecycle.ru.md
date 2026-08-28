@@ -48,7 +48,7 @@ User B becomes active
 Workspace B active
 ```
 
-Workspace data между пользователями не переносятся.
+Professional workspace data между пользователями не переносятся.
 
 ## Access Expiration
 
@@ -63,8 +63,28 @@ Persistent data preserved
     ↓
 Access restored
     ↓
-Same workspace available again
+Same preserved workspace available again
 ```
+
+## Reinstall / Local Data Loss
+
+Текущая persistence model имеет важную границу:
+
+```text
+Reinstall
+    ↓
+Local application data могут быть потеряны
+    ↓
+Тот же account выполняет sign in
+    ↓
+Может быть создан новый пустой aveli_<userId>.sqlite
+```
+
+Server-controlled registration trial state независим от local database и **не сбрасывается reinstall**.
+
+Legacy `aveli.db` не привязывается к account автоматически; без explicit claim/migration path данные остаются неприсвоенными.
+
+Это следствие текущей local-first ownership model. При появлении cloud backup или workspace synchronization правило необходимо пересмотреть.
 
 ## Client Lifecycle
 
@@ -78,29 +98,56 @@ Archived Client
 Historical information remains preserved
 ```
 
-Правила permanent deletion еще не финализированы и не должны придумывацца здесь.
+Permanent client deletion остается product-level open question.
 
 ## Appointment / Visit Lifecycle
 
-Известные business states: `Scheduled`, `Cancelled`, `No-show`, `Completed`. Completed work может содержать notes, photos и payment state.
+Известные business states: `Scheduled`, `Cancelled`, `No-show`, `Completed`.
 
-Database layer сохраняет необходимые различия, но не переопределяет transition rules.
+Physical implementation также содержит `confirmed`. Его product significance нужно классифицировать до продвижения в canonical business behavior.
+
+Completed work может содержать notes, photos и payment state.
 
 ## Payment Lifecycle
 
-Completed visit может быть paid или outstanding (`BR-034`–`BR-038`). Точные persisted states и transitions должны быть проверены по реализации.
+Physical persistence подтверждена:
+
+```text
+Appointment 1 → 0..1 Payment
+
+PaymentStatus:
+unpaid
+partial
+paid
+```
+
+Partial payment хранится в той же строке через `amount_paid`.
+
+Открытым остается **business transition policy**: какие transitions разрешены, когда они происходят и существуют ли правила correction/reversal.
 
 ## Workspace Media
 
-Visit photos и другие user-specific workspace media должны оставаться изолированными и сохраняться при logout и access expiration. Точное file deletion, orphan cleanup и retention behavior остаются открытыми до проверки реализации.
+Visit-photo persistence разделен между database metadata и device files:
 
-## Открытые вопросы
+```text
+visit_photos row
+    +
+documents/visit_photos/<userId>/<appointmentId>/...
+```
+
+Delete appointment каскадом удаляет связанные `visit_photos` metadata rows.
+
+Physical files очищаются отдельно repository/file-root логикой (`VisitPhotosRoot.deleteForUser` входит в документированное implementation behavior).
+
+Открытыми остаются policy-level guarantees: orphan cleanup coverage, retention, backup и recovery.
+
+## Открытые вопросы lifecycle
 
 - permanent client deletion;
 - service deactivation или deletion;
-- точные payment transitions;
+- business rules payment correction/transitions;
 - import/export conflict behavior;
-- visit-photo deletion и orphan cleanup;
+- orphan-file guarantees и media retention;
 - backup и restore behavior.
 
 Видимый gap лучше выдуманного правила.
@@ -108,5 +155,7 @@ Visit photos и другие user-specific workspace media должны оста
 ## Связанная документация
 
 - [`data-ownership.ru.md`](data-ownership.ru.md)
+- [`../local/`](../local/)
+- [`../server/`](../server/)
 - [`../../business/requirements/business-rules.ru.md`](../../business/requirements/business-rules.ru.md)
 - [`../../business/processes/`](../../business/processes/)

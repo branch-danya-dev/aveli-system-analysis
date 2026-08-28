@@ -10,10 +10,22 @@ Runtime database rule:
 PRAGMA foreign_keys = ON
 ```
 
-Обзор:
+## Baseline Status
 
-[`schema.ru.md`](schema.ru.md)
+Schema сверена с предоставленным persistence description.
 
-Диаграмма:
+Остается одно известное source naming discrepancy для Service duration fields:
 
-[`schema.puml`](schema.puml)
+```text
+duration_minutes / return_interval_minutes
+vs
+duration / return_interval
+```
+
+До прямой проверки Drift declarations используется detailed table definition: `duration`, `return_interval`.
+
+## Навигация
+
+- [`schema.ru.md`](schema.ru.md) — tables, relationships, denormalization, indexes.
+- [`enums.ru.md`](enums.ru.md) — persisted local enum values.
+- [`schema.puml`](schema.puml) — physical ER diagram.

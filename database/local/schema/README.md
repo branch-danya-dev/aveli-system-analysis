@@ -10,10 +10,22 @@ Runtime database rule:
 PRAGMA foreign_keys = ON
 ```
 
-Canonical overview:
+## Baseline Status
 
-[`schema.md`](schema.md)
+The schema is reconciled with the supplied persistence description.
 
-Diagram:
+One known source naming discrepancy remains for Service duration fields:
 
-[`schema.puml`](schema.puml)
+```text
+duration_minutes / return_interval_minutes
+vs
+duration / return_interval
+```
+
+The detailed table definition (`duration`, `return_interval`) is used until direct Drift declaration verification resolves the naming difference.
+
+## Navigation
+
+- [`schema.md`](schema.md) — tables, relationships, denormalization, indexes.
+- [`enums.md`](enums.md) — persisted local enum values.
+- [`schema.puml`](schema.puml) — physical ER diagram.

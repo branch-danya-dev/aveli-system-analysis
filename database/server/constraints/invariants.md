@@ -4,15 +4,22 @@
 
 | Invariant | Enforcement |
 |---|---|
-| One registration trial per user | Partial UNIQUE index on `access_grants(user_id)` for registration trial rows. |
+| One registration trial per user | Partial UNIQUE index on `access_grants(user_id)` for registration-trial rows. |
 | One subscription snapshot per entitlement per user | UNIQUE `(user_id, entitlement_id)`. |
 | Webhook/event idempotency | UNIQUE `subscription_events.external_event_id`. |
 | Valid session time window | CHECK `auth_sessions.expires_at > created_at`. |
 | Valid access-grant time window | CHECK around `starts_at` / `ends_at`. |
 | Lifetime has no end date | CHECK on access-grant type and `ends_at`. |
 
-Not every invariant is enforced by the database.
+## Enforcement Boundary
 
-For example, non-negative local payment amounts are currently described as application-layer enforcement rather than DB CHECK constraints.
+This document contains **server PostgreSQL-enforced** invariants.
 
-Database documentation must distinguish **DB-enforced** from **application-enforced** rules.
+Application-layer validation and local SQLite constraints belong to their owning documentation and should not be mixed into this server constraint set.
+
+## Related Documentation
+
+- [`../entities/access_grants.md`](../entities/access_grants.md)
+- [`../entities/auth_sessions.md`](../entities/auth_sessions.md)
+- [`../entities/subscriptions.md`](../entities/subscriptions.md)
+- [`../entities/subscription_events.md`](../entities/subscription_events.md)

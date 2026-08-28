@@ -2,8 +2,8 @@
 
 > Physical database schema backend-owned данных Aveli.
 
-Обзор:
-[`schema.ru.md`](schema.ru.md)
+## Навигация
 
-Диаграмма:
-[`schema.puml`](schema.puml)
+- [`schema.ru.md`](schema.ru.md) — tables, relationships и product-critical persistence rules.
+- [`enums.ru.md`](enums.ru.md) — PostgreSQL/Prisma enum values.
+- [`schema.puml`](schema.puml) — physical ER diagram.

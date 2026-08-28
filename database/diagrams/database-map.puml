@@ -18,26 +18,20 @@ rectangle "Data Architecture\nOwnership / Lifecycle" as Architecture
 rectangle "Conceptual Model\nSystem meaning" as Conceptual
 rectangle "Logical Model\nAttributes / Relations / Cardinality" as Logical
 
-rectangle "Local Persistence\nPer-user workspace" as Local
-rectangle "Server Persistence\nIdentity / Access / Billing" as Server
+rectangle "Local Stack\nSQLite + Drift" as LocalStack
+rectangle "Server Stack\nPostgreSQL + Prisma" as ServerStack
 
-rectangle "SQLite + Files\nPhysical local data" as LocalPhysical
-rectangle "PostgreSQL\nPhysical server data" as ServerPhysical
-
-rectangle "Drift\nLocal data-access layer" as Drift
-rectangle "Prisma\nServer data-access layer" as Prisma
+rectangle "Local Persistence Usage\nPer-user SQLite + Files + Secure State" as Local
+rectangle "Server Persistence Usage\nIdentity / Access / Billing / Events" as Server
 
 Architecture --> Conceptual
 Conceptual --> Logical
 
-Logical --> Local
-Logical --> Server
+Logical --> LocalStack
+Logical --> ServerStack
 
-Local --> LocalPhysical
-Server --> ServerPhysical
-
-LocalPhysical --> Drift : accessed through
-ServerPhysical --> Prisma : accessed through
+LocalStack --> Local : contextual usage
+ServerStack --> Server : contextual usage
 
 note bottom of Architecture
 Defines responsibility before storage detail.
@@ -45,6 +39,16 @@ end note
 
 note bottom of Logical
 Technology-independent structure.
+end note
+
+note bottom of LocalStack
+Canonical persistence technology
+knowledge is documented first.
+end note
+
+note bottom of ServerStack
+Canonical persistence technology
+knowledge is documented first.
 end note
 
 note bottom of Local
