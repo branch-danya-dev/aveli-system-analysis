@@ -3,6 +3,11 @@
 </p>
 
 <p align="center">
+  <a href="README.md"><b>English</b></a> ·
+  <a href="README.ru.md">Русский</a>
+</p>
+
+<p align="center">
   <strong>Mobile workspace for independent beauty professionals with local-first data, server-managed access and subscription billing.</strong>
 </p>
 
