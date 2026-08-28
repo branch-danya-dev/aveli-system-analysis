@@ -1,0 +1,55 @@
+@startuml
+title Aveli — Verified Frontend Map
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam rectangle {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  RoundCorner 8
+}
+skinparam ArrowColor black
+
+actor User
+
+rectangle "Flutter Client" as Client {
+  rectangle "app/\nRouter + Shell + Lifecycle" as App
+  rectangle "features/*\nVertical Slices" as Features
+  rectangle "core/\nShared Infrastructure" as Core
+}
+
+database "Per-user SQLite\naveli_<userId>.sqlite" as DB
+rectangle "Visit Photo Files" as Files
+rectangle "Secure Storage\nTokens + Access Snapshot" as Secure
+rectangle "OS Notifications" as Notify
+rectangle "Aveli Backend" as Backend
+rectangle "RevenueCat SDK" as RC
+rectangle "Device Contacts" as Contacts
+rectangle "Exchange Rate API" as FX
+
+User --> App
+App --> Features
+Features --> Core
+
+Core --> DB
+Features --> Files
+Features --> Secure
+Features --> Notify
+Features --> Backend : auth / access / billing
+Features --> RC : purchase / restore
+Features --> Contacts : read/import
+Features --> FX : rate lookup
+
+note bottom of DB
+Professional workspace
+is device-owned.
+end note
+
+note bottom of Backend
+Online identity and access
+authority remain backend-owned.
+end note
+
+@enduml

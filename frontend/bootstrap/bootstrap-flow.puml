@@ -1,0 +1,28 @@
+@startuml
+title Aveli — Bootstrap Flow
+start
+:main / bootstrap;
+:Release config gate;
+:ProviderContainer + runApp;
+:/bootstrap;
+:restore session;
+if (Session restored?) then (no)
+  :Welcome;
+  stop
+endif
+:open per-user DB;
+:RevenueCat logIn;
+:restore theme;
+if (Standalone mode?) then (yes)
+  :Workspace;
+  stop
+endif
+:GET /v1/access;
+:resolve access gate;
+if (Allowed?) then (yes)
+  :Workspace;
+else (no)
+  :Access Gate;
+endif
+stop
+@enduml

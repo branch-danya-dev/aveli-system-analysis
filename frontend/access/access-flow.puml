@@ -1,0 +1,30 @@
+@startuml
+title Aveli — Frontend Access Flow
+start
+:Hydrate secure snapshot;
+if (Network access available?) then (yes)
+  :GET /v1/access;
+  if (Success?) then (yes)
+    :Write secure snapshot;
+    :Use server AccessState;
+  else (no)
+    :Evaluate cached snapshot;
+  endif
+else (no)
+  :Evaluate cached snapshot;
+endif
+
+if (hasAccess == false?) then (yes)
+  :blocked;
+  stop
+endif
+
+if (Verification policy satisfied?) then (yes)
+  :allowed;
+  :Workspace;
+else (no)
+  :needsNetwork;
+  :Access Gate;
+endif
+stop
+@enduml

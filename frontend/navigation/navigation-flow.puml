@@ -1,0 +1,19 @@
+@startuml
+title Aveli — Navigation Flow
+[*] --> Bootstrap
+Bootstrap --> Welcome : no session
+Bootstrap --> AccessGate : blocked / needs network
+Bootstrap --> Today : allowed
+Welcome --> Register
+Welcome --> SignIn
+Register --> Bootstrap : success
+SignIn --> Bootstrap : success
+AccessGate --> Paywall
+Paywall --> Today : purchase/sync OK
+AccessGate --> Today : restore/retry OK
+AccessGate --> Welcome : sign out
+Today --> Calendar : tab
+Today --> Clients : tab
+Today --> More : tab
+Today --> AppointmentDetails : push
+@enduml
