@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&text=Aveli&fontAlign=50&fontAlignY=38&desc=System%20Analysis%20Case%20%C2%B7%20Offline-first%20Mobile%20Workspace&descAlign=50&descAlignY=58&animation=fadeIn&color=gradient&customColorList=12,14,19,20,24&fontColor=fff7f2&descColor=fff7f2" alt="Aveli banner" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&text=Aveli&fontAlign=50&fontAlignY=38&desc=System%20Analysis%20Case%20%C2%B7%20Local-first%20Mobile%20Workspace&descAlign=50&descAlignY=58&animation=fadeIn&color=gradient&customColorList=12,14,19,20,24&fontColor=fff7f2&descColor=fff7f2" alt="Aveli banner" />
 </p>
 
 <p align="center">
@@ -8,48 +8,50 @@
 </p>
 
 <p align="center">
-  <strong>Mobile workspace for independent beauty professionals with local-first data, server-managed access and subscription billing.</strong>
+  <strong>System-analysis case for a local-first mobile workspace with server-controlled identity, access and subscription billing.</strong>
 </p>
 
 <p align="center">
   <code>System Analysis</code>
-  <code>Mobile Architecture</code>
-  <code>Offline-first</code>
-  <code>REST API</code>
+  <code>Local-first</code>
   <code>Data Ownership</code>
+  <code>REST API</code>
+  <code>Offline Access</code>
   <code>Billing Integration</code>
+  <code>SSAD</code>
 </p>
 
 ---
 
 ## What is Aveli?
 
-**Aveli** is a mobile daily workspace for independent beauty professionals.
+**Aveli** is a personal mobile workspace for independent beauty professionals.
 
-It helps manage:
+It supports day-to-day work with:
 
-- appointments and daily schedule;
 - clients and visit history;
-- services and pricing;
+- appointments and calendar;
+- services and prices;
 - payments and outstanding balances;
 - visit notes and photos;
-- reminders and profile settings.
+- local reminders;
+- profile and workspace settings.
 
-The product is intentionally designed as a lightweight alternative to a heavy CRM.
+The product is intentionally lightweight. It is not designed as a salon-management platform or a server-hosted CRM.
 
-Its main architectural idea is simple:
+The defining architectural split is:
 
 ```text
-Operational Work Data
+Professional Workspace
         ↓
-     Device
+   User Device
 
 Identity / Access / Billing
         ↓
-     Backend
+      Backend
 ```
 
-Client, appointment and payment data stay on the device, while the backend manages identity, trial, subscription and entitlement.
+Professional data remain local. Account identity, sessions, trial, grants and normalized subscription state remain server-controlled.
 
 ---
 
@@ -58,109 +60,62 @@ Client, appointment and payment data stay on the device, while the backend manag
 <table>
 <tr>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-today-screen.png" alt="Aveli Today" />
-  <br>
-  <sub><b>Today</b> — daily schedule and workspace overview</sub>
+  <img src="screenshots/aveli-today-screen.png" alt="Aveli Today" />
+  <br><sub><b>Today</b> — current schedule and daily workspace</sub>
 </td>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-calendar-screen.png" alt="Aveli Calendar" />
-  <br>
-  <sub><b>Calendar</b> — appointments and day planning</sub>
+  <img src="screenshots/aveli-calendar-screen.png" alt="Aveli Calendar" />
+  <br><sub><b>Calendar</b> — appointments and day planning</sub>
 </td>
 </tr>
 <tr>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-clients-screen.png" alt="Aveli Clients" />
-  <br>
-  <sub><b>Clients</b> — directory and client history</sub>
+  <img src="screenshots/aveli-clients-screen.png" alt="Aveli Clients" />
+  <br><sub><b>Clients</b> — client directory and history</sub>
 </td>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-another-screen.png" alt="Aveli Screen" />
-  <br>
-  <sub><b>Workspace</b> — supporting application flow</sub>
+  <img src="screenshots/aveli-another-screen.png" alt="Aveli Workspace" />
+  <br><sub><b>Workspace</b> — supporting product flow</sub>
 </td>
 </tr>
 </table>
 
 ---
 
-## The System Problem
+## System Problem
 
-Aveli has two very different concerns.
+Aveli combines two concerns with very different ownership and availability requirements.
 
-The first is the user's actual work:
+### Professional work
 
 ```text
 Clients
-Appointments
 Services
+Appointments
 Payments
-Notes
-Photos
+Visit notes
+Visit photos
 Schedule
+Workspace settings
 ```
 
-The second is commercial and account infrastructure:
+These data are operational and useful even when the backend is temporarily unavailable.
+
+### Account and commercial infrastructure
 
 ```text
 Authentication
-Trial
+Sessions
+Registration trial
+Manual / lifetime grants
 Subscription
-Access Grants
-Billing
+Billing reconciliation
+Workspace access
 ```
 
-Mixing these concerns would make everyday work dependent on network availability and would move sensitive client data into backend infrastructure unnecessarily.
+These require a trusted server-side authority.
 
-So the solution was designed around a strict system boundary.
-
----
-
-## Solution
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### Local Workspace
-
-Stored on the user's device:
-
-- Clients
-- Appointments
-- Services
-- Payments
-- Visit notes
-- Visit photos
-- Schedule
-- Local settings
-
-**Storage:** Drift / SQLite + device files
-
-</td>
-<td width="50%" valign="top">
-
-### Account & Access
-
-Managed by the backend:
-
-- User accounts
-- Sessions
-- Trial state
-- Manual grants
-- Lifetime grants
-- Subscription state
-- Billing synchronization
-
-**Storage:** PostgreSQL
-
-</td>
-</tr>
-</table>
-
-The backend decides **whether the workspace can be opened**.
-
-It does not become the source of truth for the user's professional data.
+The current architecture therefore avoids making professional work a synchronized backend domain unless the product boundary changes in the future.
 
 ---
 
@@ -171,57 +126,59 @@ It does not become the source of truth for the user's professional data.
 </p>
 
 ```text
-Flutter Application
-        │
-        ├── Local Workspace ──────→ Drift / SQLite
-        │                           Local Files
-        │
-        └── Account & Access ─────→ NestJS API
-                                      │
-                                      ├── PostgreSQL
-                                      │
-                                      └── RevenueCat
-                                             │
-                                   Google Play / App Store
+Independent Specialist
+        ↓
+   Aveli Mobile Client
+      /            \
+     /              \
+Local Workspace     Account / Access API
+     ↓                    ↓
+SQLite + Files        Aveli Backend
+                           ↓
+                    PostgreSQL
+                           ↕
+                       RevenueCat
+                           ↕
+                Apple App Store / Google Play
 ```
+
+Supporting external boundaries include device contacts, local notifications, camera/gallery, OS handoff and an exchange-rate API.
+
+The full cross-layer view lives in [`system/`](system/).
 
 ---
 
-## Key System Decisions
+## Core System Decisions
 
 ### 01 · Local-first workspace
 
-Daily work remains available without permanent backend connectivity.
-
-The application reads and writes operational data directly from local storage.
-
-### 02 · Per-user data isolation
-
-Each authenticated account has its own local workspace database:
+Normal professional operations read and write local persistence directly.
 
 ```text
+User action
+   ↓
+Frontend domain/repository
+   ↓
+Drift / SQLite + local files
+```
+
+No cloud copy of clients, appointments, payments, notes or photos is required for ordinary work.
+
+### 02 · Per-user workspace isolation
+
+Authenticated backend identity selects the local workspace:
+
+```text
+users.id
+   ↓
 aveli_<userId>.sqlite
 ```
 
-Visit photos follow the same user-specific ownership model.
+Visit photos and the cached access snapshot follow the same user-specific boundary.
 
-### 03 · Server-controlled trial
+### 03 · Backend-controlled access
 
-The 30-day trial is created on the backend.
-
-That means:
-
-```text
-Logout      ─┐
-Reinstall   ├─→ does not reset trial
-Clear data  ─┘
-```
-
-The server account remains the source of truth.
-
-### 04 · Unified Access Gate
-
-The workspace is either available or blocked as a whole.
+The backend resolves one effective source:
 
 ```text
 Lifetime
@@ -235,223 +192,149 @@ Trial
 None
 ```
 
-The application does not scatter individual premium checks across screens.
+The frontend consumes the resolved result rather than independently calculating entitlement precedence.
 
-### 05 · Access does not own data
-
-Expiration of trial or subscription blocks workspace availability.
-
-It does **not** delete:
-
-- clients;
-- appointments;
-- payments;
-- notes;
-- photos.
-
-When access is restored, the same local workspace becomes available again.
-
-### 06 · Controlled offline access
-
-A trusted access snapshot is stored in secure storage.
-
-This allows temporary offline operation while preserving server authority over entitlement.
+### 04 · Access does not own data
 
 ```text
-Last verified access
-        ↓
-Secure snapshot
-        ↓
-Offline grace
-        ↓
-Verification required
+Access expired
+      ≠
+Delete workspace
 ```
 
-### 07 · Billing behind an entitlement model
+Loss of trial/subscription access can block workspace availability, but it does not delete local professional data.
 
-Aveli does not base access directly on a client-side `isPremium` flag.
+### 05 · Controlled offline trust
+
+A previously verified access state is stored in secure storage.
 
 ```text
-Google Play / App Store
-          ↓
-      RevenueCat
-          ↓
-     Aveli Backend
-          ↓
-     Access Decision
+Backend verification
+      ↓
+Trusted snapshot
+      ↓
+Temporary offline authorization
+      ↓
+Verification required again
 ```
 
-Monthly and yearly plans map to one logical entitlement:
+The server-provided verification deadline is preferred. The current client also contains a 72-hour implementation default when applicable.
+
+### 06 · Purchase is not direct workspace access
 
 ```text
-support
-```
-
----
-
-## Access State Model
-
-<p align="center">
-  <img src="renderer/access-state-machine.svg" alt="Aveli Access State Machine" width="900" />
-</p>
-
-The access layer resolves one effective source and then decides whether the workspace can open.
-
-This keeps trial, subscription and manual grants inside one deterministic model.
-
----
-
-## Data Model
-
-<p align="center">
-  <img src="renderer/data-model.svg" alt="Aveli Data Model" width="900" />
-</p>
-
-The important distinction is not only entity relationships, but **ownership**:
-
-```text
-SERVER DOMAIN
-Account
-Session
-Access
-Subscription
-
-        │ controls availability
-        ▼
-
-LOCAL DOMAIN
-Client
-Service
-Appointment
-Payment
-Visit Notes
-Visit Photos
-Schedule
-```
-
----
-
-## Integration Flow
-
-<p align="center">
-  <img src="renderer/integration-sequence.svg" alt="Aveli Integration Sequence" width="900" />
-</p>
-
-The main integration surface includes:
-
-- authentication;
-- access resolution;
-- billing synchronization;
-- RevenueCat webhooks;
-- purchase restore;
-- offline fallback.
-
-Key backend endpoints:
-
-```text
-/v1/auth/*
-GET  /v1/access
+Store purchase
+      ↓
+RevenueCat
+      ↓
 POST /v1/billing/sync
-POST /v1/webhooks/revenuecat
+      ↓
+Backend reconciliation
+      ↓
+AccessStatusView
+      ↓
+Frontend Access Gate
 ```
 
+A client-side RevenueCat result does not bypass the Aveli backend access model.
+
+### 07 · Logout is not profile deletion
+
+Logout clears the active identity/access context and closes the local database while preserving the professional workspace.
+
+Explicit profile deletion is a separate destructive lifecycle.
+
 ---
 
-## Development Flow
+## Documentation Architecture
 
-The product was developed from system boundaries inward rather than from isolated screens.
+This repository is organized using the working methodology **System-Structured Analysis Documentation (SSAD)**.
+
+> **Documentation mirrors the system.**
+
+Knowledge is owned by the part of the system responsible for it:
 
 ```text
-Product idea
-    ↓
-User workflows
-    ↓
-Domain model
-    ↓
-Data ownership
-    ↓
-Authentication & access
-    ↓
-External integrations
-    ↓
-Offline behavior
-    ↓
-Security & release constraints
-    ↓
-Implementation
-    ↓
-Automated verification
+business/
+database/
+backend/
+frontend/
+integrations/
+system/
 ```
 
-The most important decisions were made around the points where different concerns meet:
-
-- local data vs backend data;
-- authentication vs entitlement;
-- subscription state vs workspace access;
-- cached access vs server authority;
-- development flexibility vs production safety.
-
----
-
-## System Analysis Artifacts
-
-| Area | Documentation |
-|---|---|
-| Context & Scope | [`01-Context-and-Scope`](01-Context-and-Scope/) |
-| User Journey | [`02-User-Journey`](02-User-Journey/) |
-| Requirements | [`03-Requirements`](03-Requirements/) |
-| System Design | [`04-System-Design`](04-System-Design/) |
-| Data & Domain | [`05-Data-and-Domain`](05-Data-and-Domain/) |
-| Auth & Access | [`06-Auth-and-Access`](06-Auth-and-Access/) |
-| Integrations | [`07-Integrations`](07-Integrations/) |
-| Offline & Errors | [`08-Offline-and-Error-Handling`](08-Offline-and-Error-Handling/) |
-| Security & Release | [`09-Security-and-Release`](09-Security-and-Release/) |
-| Traceability | [`10-Traceability`](10-Traceability/) |
-| Result | [`11-Result`](11-Result/) |
-
----
-
-## Diagram Set
-
-The repository contains rendered diagrams for fast review:
+Supporting repository areas:
 
 ```text
+screenshots/
 renderer/
-├── user-flow.svg
-├── system-context.svg
-├── component-model.svg
-├── data-model.svg
-├── access-sequence.svg
-├── access-state-machine.svg
-└── integration-sequence.svg
+methodology.md
+rules.md
 ```
 
-Source `.puml` files remain next to the corresponding analytical documents.
+| Area | Canonical responsibility |
+|---|---|
+| [`business/`](business/) | Product context, scope, requirements, rules, processes and traceability. |
+| [`database/`](database/) | Data ownership, conceptual/logical models and physical persistence. |
+| [`backend/`](backend/) | Account, authentication, access, billing, API and server behavior. |
+| [`frontend/`](frontend/) | Flutter runtime, navigation, state, local workspace, offline behavior and device usage. |
+| [`integrations/`](integrations/) | RevenueCat, stores, device capabilities and third-party boundaries. |
+| [`system/`](system/) | Cross-component context, flows, trust, invariants, evolution and review. |
+| [`methodology.md`](methodology.md) | Why SSAD is structured this way. |
+| [`rules.md`](rules.md) | Normative documentation rules. |
+
+> **Storage is hierarchical. Knowledge is graph-based.**
 
 ---
 
-## Technology Stack
+## Recommended Reading Paths
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white">
-  <img src="https://img.shields.io/badge/Dart-0175C2?style=flat-square&logo=dart&logoColor=white">
-  <img src="https://img.shields.io/badge/Riverpod-0D1117?style=flat-square">
-  <img src="https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white">
-  <img src="https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs&logoColor=white">
-  <img src="https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white">
-  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white">
-  <img src="https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white">
-  <img src="https://img.shields.io/badge/RevenueCat-F25A5A?style=flat-square">
-  <img src="https://img.shields.io/badge/PlantUML-Diagrams-0D1117?style=flat-square">
-</p>
-
-### Client
+### Fast system review
 
 ```text
-Flutter
+README
+  ↓
+business/README
+  ↓
+system/README
+  ↓
+system/architecture
+  ↓
+system/flows
+  ↓
+system/invariants
+```
+
+### Key canonical areas
+
+- Product and requirements → [`business/`](business/)
+- Data ownership and persistence → [`database/`](database/)
+- Backend contracts and access → [`backend/`](backend/)
+- Client runtime and local workspace → [`frontend/`](frontend/)
+- External providers and device boundaries → [`integrations/`](integrations/)
+- Whole-system synthesis → [`system/`](system/)
+
+### Whole-system review
+
+- [`system/trust/`](system/trust/)
+- [`system/invariants/`](system/invariants/)
+- [`system/evolution/`](system/evolution/)
+- [`system/review/failure-scenarios.md`](system/review/failure-scenarios.md)
+- [`system/review/release-readiness.md`](system/review/release-readiness.md)
+- [`system/review/open-questions.md`](system/review/open-questions.md)
+
+---
+
+## Technology Context
+
+### Mobile
+
+```text
+Flutter / Dart
 Riverpod
 go_router
-Drift / SQLite
+Drift
+SQLite
 flutter_secure_storage
 purchases_flutter
 flutter_local_notifications
@@ -463,68 +346,187 @@ flutter_local_notifications
 NestJS
 Prisma
 PostgreSQL
+JWT access tokens
+rotating refresh tokens
 Argon2id
-JWT access + rotating refresh
 RevenueCat REST + webhooks
+```
+
+### External boundaries
+
+```text
+RevenueCat
+Apple App Store
+Google Play
+Device Contacts
+OS Notifications
+Camera / Gallery
+Exchange Rate API
+OS Share / File Picker / SMS / Browser
 ```
 
 ---
 
-## Quality & Release Safety
+## API Surface
 
-The project includes automated verification around:
+The backend API is intentionally narrow because professional workspace entities are not server-owned.
 
-- authentication and session lifecycle;
-- access state;
-- subscription flows;
-- appointment rules;
-- payment rules;
-- database migrations;
-- offline access;
-- release configuration.
-
-Production builds explicitly reject unsafe development configuration such as:
+Key contracts include:
 
 ```text
-localhost
-127.0.0.1
-10.0.2.2
-AVELI_STANDALONE=true
+/v1/auth/*
+GET  /v1/access
+POST /v1/billing/sync
+POST /v1/webhooks/revenuecat
+/health
+/ready
 ```
+
+Canonical API documentation: [`backend/api/`](backend/api/)
+
+---
+
+## Data Ownership
+
+The important distinction is not only entity relationships, but ownership.
+
+```text
+LOCAL PROFESSIONAL WORKSPACE
+Client
+Service
+Appointment
+Payment
+Visit Note
+Visit Photo
+Workspace Settings
+
+SERVER IDENTITY / ACCESS
+User
+Auth Session
+Access Grant
+Subscription
+Subscription Event
+```
+
+Canonical data architecture: [`database/`](database/)
+
+---
+
+## Failure and Release Model
+
+Aveli follows a cross-system isolation principle:
+
+```text
+Technical Failure
+      ≠
+Delete User Work
+```
+
+Backend outages, billing failures, unavailable stores, denied permissions or exchange-rate failures should remain isolated from unrelated local professional data.
+
+Production readiness is treated as a whole-system concern because mobile configuration, backend secrets, migrations, store products, RevenueCat mapping and the Access Gate must agree.
+
+See:
+
+- [`system/review/failure-scenarios.md`](system/review/failure-scenarios.md)
+- [`system/review/release-readiness.md`](system/review/release-readiness.md)
+
+---
+
+## Diagram Set
+
+Rendered diagrams are kept in [`renderer/`](renderer/):
+
+```text
+system-context.svg
+component-model.svg
+data-model.svg
+access-sequence.svg
+access-state-machine.svg
+integration-sequence.svg
+user-flow.svg
+```
+
+Machine-maintainable diagram sources remain next to analytical documents where applicable.
+
+---
+
+## Methodology
+
+This repository is the first full validation case for the working SSAD approach.
+
+SSAD favors:
+
+```text
+system-shaped hierarchy
++
+canonical ownership
++
+progressive depth
++
+contextual usage
++
+evidence-first construction
++
+explicit technology modeling
++
+traceability
++
+late system synthesis
+```
+
+Read:
+
+- [`methodology.md`](methodology.md)
+- [`rules.md`](rules.md)
+
+SSAD is not presented as a replacement for UML, BPMN, C4, ADR, OpenAPI or docs-as-code. It is an evolving way to organize and connect those forms of knowledge around the actual system.
+
+---
+
+## Current Status
+
+The major analytical perspectives have been migrated to the system-shaped structure and reconciled against implementation evidence used during the analysis.
+
+Remaining unresolved or intentionally open items are kept explicitly in:
+
+[`system/review/open-questions.md`](system/review/open-questions.md)
+
+An unknown should remain visible as an open question rather than be silently converted into an architectural assumption.
 
 ---
 
 ## Outcome
 
-Aveli demonstrates analysis of a system where mobile UX, local persistence, backend identity, billing and offline behavior must remain consistent with each other.
-
-The case covers:
+Aveli demonstrates system analysis across:
 
 ```text
-Requirements
+Business rules
 +
-Domain Modeling
+Data ownership
 +
-Data Ownership
+Local-first architecture
 +
-Mobile Architecture
+REST contracts
 +
-REST API
+Authentication and sessions
 +
-Authentication
+Workspace entitlement
 +
-Entitlement
+External billing
 +
-Billing Integration
+Offline trust
 +
-Offline Strategy
+Device integrations
 +
-Security
+Failure isolation
 +
-Release Constraints
+Release readiness
++
+Cross-layer synthesis
 ```
 
-The result is a real implemented product with explicit system boundaries and traceable design decisions.
+The result is both an implemented product case and a structured technical knowledge base designed to preserve meaning as analysis moves into real code.
 
 ---
 

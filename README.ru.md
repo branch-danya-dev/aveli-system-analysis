@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&text=Aveli&fontAlign=50&fontAlignY=38&desc=System%20Analysis%20Case%20%C2%B7%20Offline-first%20Mobile%20Workspace&descAlign=50&descAlignY=58&animation=fadeIn&color=gradient&customColorList=12,14,19,20,24&fontColor=fff7f2&descColor=fff7f2" alt="Aveli banner" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&text=Aveli&fontAlign=50&fontAlignY=38&desc=System%20Analysis%20Case%20%C2%B7%20Local-first%20Mobile%20Workspace&descAlign=50&descAlignY=58&animation=fadeIn&color=gradient&customColorList=12,14,19,20,24&fontColor=fff7f2&descColor=fff7f2" alt="Aveli banner" />
 </p>
 
 <p align="center">
@@ -8,48 +8,50 @@
 </p>
 
 <p align="center">
-  <strong>Мобильное рабочее пространство для независимых специалистов индустрии красоты с local-first хранением данных, серверным управлением доступом и подписочной моделью.</strong>
+  <strong>Кейс системного анализа local-first мобильного рабочего пространства с серверным управлением identity, access и subscription billing.</strong>
 </p>
 
 <p align="center">
   <code>Системный анализ</code>
-  <code>Мобильная архитектура</code>
-  <code>Offline-first</code>
-  <code>REST API</code>
+  <code>Local-first</code>
   <code>Владение данными</code>
-  <code>Интеграция биллинга</code>
+  <code>REST API</code>
+  <code>Offline Access</code>
+  <code>Billing Integration</code>
+  <code>SSAD</code>
 </p>
 
 ---
 
 ## Что такое Aveli?
 
-**Aveli** — мобильное рабочее пространство для ежедневной работы независимых специалистов индустрии красоты.
+**Aveli** — персональное мобильное рабочее пространство для независимых специалистов индустрии красоты.
 
-Приложение помогает управлять:
+Приложение поддерживает ежедневную работу с:
 
-- записями и ежедневным расписанием;
 - клиентами и историей визитов;
+- записями и календарём;
 - услугами и ценами;
 - оплатами и задолженностями;
 - заметками и фотографиями визитов;
-- напоминаниями и настройками профиля.
+- локальными напоминаниями;
+- настройками профиля и рабочего пространства.
 
-Продукт намеренно спроектирован как лёгкая альтернатива тяжёлым CRM-системам.
+Продукт намеренно остаётся лёгким. Это не система управления салоном и не server-hosted CRM.
 
-Основная архитектурная идея проста:
+Главная архитектурная граница:
 
 ```text
-Рабочие данные
-      ↓
-   Устройство
+Professional Workspace
+        ↓
+   User Device
 
 Identity / Access / Billing
-      ↓
-    Backend
+        ↓
+      Backend
 ```
 
-Данные клиентов, записей и оплат остаются на устройстве, а backend управляет идентификацией пользователя, trial-периодом, подпиской и правами доступа.
+Профессиональные данные остаются локальными. Identity аккаунта, sessions, trial, grants и normalized subscription state остаются под контролем backend.
 
 ---
 
@@ -58,26 +60,22 @@ Identity / Access / Billing
 <table>
 <tr>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-today-screen.png" alt="Aveli Today" />
-  <br>
-  <sub><b>Сегодня</b> — ежедневное расписание и обзор рабочего пространства</sub>
+  <img src="screenshots/aveli-today-screen.png" alt="Aveli Today" />
+  <br><sub><b>Сегодня</b> — текущее расписание и рабочий день</sub>
 </td>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-calendar-screen.png" alt="Aveli Calendar" />
-  <br>
-  <sub><b>Календарь</b> — записи и планирование дня</sub>
+  <img src="screenshots/aveli-calendar-screen.png" alt="Aveli Calendar" />
+  <br><sub><b>Календарь</b> — записи и планирование дня</sub>
 </td>
 </tr>
 <tr>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-clients-screen.png" alt="Aveli Clients" />
-  <br>
-  <sub><b>Клиенты</b> — справочник клиентов и история взаимодействий</sub>
+  <img src="screenshots/aveli-clients-screen.png" alt="Aveli Clients" />
+  <br><sub><b>Клиенты</b> — справочник и история взаимодействий</sub>
 </td>
 <td width="50%" align="center">
-  <img src="11-Result/screenshots/aveli-another-screen.png" alt="Aveli Screen" />
-  <br>
-  <sub><b>Рабочее пространство</b> — вспомогательный пользовательский сценарий приложения</sub>
+  <img src="screenshots/aveli-another-screen.png" alt="Aveli Workspace" />
+  <br><sub><b>Рабочее пространство</b> — дополнительный сценарий продукта</sub>
 </td>
 </tr>
 </table>
@@ -86,81 +84,38 @@ Identity / Access / Billing
 
 ## Системная проблема
 
-В Aveli существуют две принципиально разные области ответственности.
+Aveli объединяет две области с принципиально разными требованиями к ownership и availability.
 
-Первая — непосредственная рабочая деятельность пользователя:
+### Профессиональная работа
 
 ```text
 Клиенты
-Записи
 Услуги
+Записи
 Оплаты
 Заметки
 Фотографии
 Расписание
+Настройки workspace
 ```
 
-Вторая — коммерческая и учетная инфраструктура:
+Это operational data, которые должны быть полезны даже при временной недоступности backend.
+
+### Account и коммерческая инфраструктура
 
 ```text
-Аутентификация
-Trial
-Подписка
-Права доступа
-Биллинг
+Authentication
+Sessions
+Registration trial
+Manual / lifetime grants
+Subscription
+Billing reconciliation
+Workspace access
 ```
 
-Если смешать эти области, ежедневная работа пользователя станет зависимой от доступности сети, а чувствительные клиентские данные будут без необходимости перенесены в backend-инфраструктуру.
+Здесь нужен trusted server-side authority.
 
-Поэтому решение строится вокруг чёткой системной границы.
-
----
-
-## Решение
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### Локальное рабочее пространство
-
-На устройстве пользователя хранятся:
-
-- Клиенты
-- Записи
-- Услуги
-- Оплаты
-- Заметки по визитам
-- Фотографии визитов
-- Расписание
-- Локальные настройки
-
-**Хранилище:** Drift / SQLite + файлы устройства
-
-</td>
-<td width="50%" valign="top">
-
-### Аккаунт и доступ
-
-Backend управляет:
-
-- Пользовательскими аккаунтами
-- Сессиями
-- Состоянием trial
-- Ручными правами доступа
-- Lifetime-доступом
-- Состоянием подписки
-- Синхронизацией биллинга
-
-**Хранилище:** PostgreSQL
-
-</td>
-</tr>
-</table>
-
-Backend определяет, **может ли пользователь открыть рабочее пространство**.
-
-При этом он не становится источником истины для профессиональных данных пользователя.
+Поэтому current architecture не превращает профессиональные данные в synchronized backend domain, пока сама граница продукта не изменится.
 
 ---
 
@@ -171,57 +126,59 @@ Backend определяет, **может ли пользователь отк�
 </p>
 
 ```text
-Flutter Application
-        │
-        ├── Local Workspace ──────→ Drift / SQLite
-        │                           Local Files
-        │
-        └── Account & Access ─────→ NestJS API
-                                      │
-                                      ├── PostgreSQL
-                                      │
-                                      └── RevenueCat
-                                             │
-                                   Google Play / App Store
+Independent Specialist
+        ↓
+   Aveli Mobile Client
+      /            \
+     /              \
+Local Workspace     Account / Access API
+     ↓                    ↓
+SQLite + Files        Aveli Backend
+                           ↓
+                    PostgreSQL
+                           ↕
+                       RevenueCat
+                           ↕
+                Apple App Store / Google Play
 ```
+
+Дополнительные external boundaries: device contacts, local notifications, camera/gallery, OS handoff и exchange-rate API.
+
+Полный cross-layer view находится в [`system/`](system/).
 
 ---
 
 ## Ключевые системные решения
 
-### 01 · Local-first рабочее пространство
+### 01 · Local-first workspace
 
-Ежедневная работа остаётся доступной без постоянного подключения к backend.
-
-Приложение читает и записывает операционные данные напрямую в локальное хранилище.
-
-### 02 · Изоляция данных между пользователями
-
-Каждый аутентифицированный аккаунт имеет собственную локальную базу данных:
+Обычные профессиональные операции работают напрямую с local persistence.
 
 ```text
+User action
+   ↓
+Frontend domain/repository
+   ↓
+Drift / SQLite + local files
+```
+
+Cloud copy клиентов, записей, оплат, заметок и фотографий для обычной работы не требуется.
+
+### 02 · Изоляция workspace по пользователю
+
+Authenticated backend identity выбирает local workspace:
+
+```text
+users.id
+   ↓
 aveli_<userId>.sqlite
 ```
 
-Фотографии визитов используют тот же принцип владения и изоляции по пользователю.
+Visit photos и cached access snapshot используют ту же user-specific boundary.
 
-### 03 · Trial под управлением сервера
+### 03 · Backend-controlled access
 
-30-дневный trial создаётся на backend.
-
-Это означает:
-
-```text
-Logout      ─┐
-Reinstall   ├─→ не сбрасывают trial
-Clear data  ─┘
-```
-
-Источником истины остаётся серверный аккаунт.
-
-### 04 · Единый Access Gate
-
-Рабочее пространство либо доступно целиком, либо заблокировано целиком.
+Backend выбирает один effective source:
 
 ```text
 Lifetime
@@ -235,223 +192,149 @@ Trial
 None
 ```
 
-Приложение не распределяет отдельные premium-проверки по экранам.
+Frontend использует resolved result и не вычисляет entitlement precedence самостоятельно.
 
-### 05 · Доступ не владеет данными
-
-Окончание trial или подписки блокирует доступ к рабочему пространству.
-
-При этом система **не удаляет**:
-
-- клиентов;
-- записи;
-- оплаты;
-- заметки;
-- фотографии.
-
-После восстановления доступа то же локальное рабочее пространство становится доступно снова.
-
-### 06 · Контролируемая работа offline
-
-Доверенный snapshot состояния доступа хранится в secure storage.
-
-Это позволяет временно работать без сети, сохраняя за сервером роль доверенного источника entitlement-состояния.
+### 04 · Access не владеет данными
 
 ```text
-Последняя проверка доступа
-        ↓
-Secure snapshot
-        ↓
-Offline grace
-        ↓
-Требуется повторная проверка
+Access expired
+      ≠
+Delete workspace
 ```
 
-### 07 · Биллинг через entitlement-модель
+Окончание trial/subscription может заблокировать доступность workspace, но не удаляет local professional data.
 
-Aveli не основывает доступ на клиентском флаге вроде `isPremium`.
+### 05 · Контролируемое offline trust
+
+Ранее проверенный access state хранится в secure storage.
 
 ```text
-Google Play / App Store
-          ↓
-      RevenueCat
-          ↓
-     Aveli Backend
-          ↓
-     Access Decision
+Backend verification
+      ↓
+Trusted snapshot
+      ↓
+Temporary offline authorization
+      ↓
+Verification required again
 ```
 
-Месячный и годовой планы отображаются в один логический entitlement:
+Server-provided verification deadline имеет приоритет. В current client также существует 72-hour implementation default для соответствующего случая.
+
+### 06 · Purchase не равен прямому workspace access
 
 ```text
-support
-```
-
----
-
-## Модель состояния доступа
-
-<p align="center">
-  <img src="renderer/access-state-machine.svg" alt="Aveli Access State Machine" width="900" />
-</p>
-
-Слой доступа определяет один эффективный источник доступа и на его основе решает, может ли пользователь открыть рабочее пространство.
-
-Это объединяет trial, подписку и ручные права доступа в одну детерминированную модель.
-
----
-
-## Модель данных
-
-<p align="center">
-  <img src="renderer/data-model.svg" alt="Aveli Data Model" width="900" />
-</p>
-
-Ключевое различие заключается не только в связях между сущностями, но и во **владении данными**:
-
-```text
-SERVER DOMAIN
-Account
-Session
-Access
-Subscription
-
-        │ контролирует доступность
-        ▼
-
-LOCAL DOMAIN
-Client
-Service
-Appointment
-Payment
-Visit Notes
-Visit Photos
-Schedule
-```
-
----
-
-## Поток интеграций
-
-<p align="center">
-  <img src="renderer/integration-sequence.svg" alt="Aveli Integration Sequence" width="900" />
-</p>
-
-Основной интеграционный контур включает:
-
-- аутентификацию;
-- разрешение доступа;
-- синхронизацию биллинга;
-- RevenueCat webhooks;
-- восстановление покупок;
-- offline fallback.
-
-Ключевые backend endpoints:
-
-```text
-/v1/auth/*
-GET  /v1/access
+Store purchase
+      ↓
+RevenueCat
+      ↓
 POST /v1/billing/sync
-POST /v1/webhooks/revenuecat
+      ↓
+Backend reconciliation
+      ↓
+AccessStatusView
+      ↓
+Frontend Access Gate
 ```
 
+Client-side RevenueCat result не обходит access model Aveli backend.
+
+### 07 · Logout не равен profile deletion
+
+Logout очищает active identity/access context и закрывает local database, сохраняя professional workspace.
+
+Explicit profile deletion — отдельный destructive lifecycle.
+
 ---
 
-## Процесс разработки
+## Архитектура документации
 
-Продукт разрабатывался от системных границ внутрь, а не от отдельных экранов.
+Репозиторий организован по рабочей методологии **System-Structured Analysis Documentation (SSAD)**.
+
+> **Документация отражает систему.**
+
+Knowledge принадлежит части системы, которая реально владеет соответствующей responsibility:
 
 ```text
-Идея продукта
-    ↓
-Пользовательские сценарии
-    ↓
-Доменная модель
-    ↓
-Владение данными
-    ↓
-Аутентификация и доступ
-    ↓
-Внешние интеграции
-    ↓
-Offline-поведение
-    ↓
-Безопасность и release-ограничения
-    ↓
-Реализация
-    ↓
-Автоматизированная проверка
+business/
+database/
+backend/
+frontend/
+integrations/
+system/
 ```
 
-Наиболее важные решения принимались в точках соприкосновения разных областей:
-
-- локальные данные vs backend-данные;
-- аутентификация vs entitlement;
-- состояние подписки vs доступ к рабочему пространству;
-- кэшированный доступ vs серверный источник истины;
-- гибкость разработки vs безопасность production.
-
----
-
-## Артефакты системного анализа
-
-| Область | Документация |
-|---|---|
-| Контекст и Scope | [`01-Context-and-Scope`](01-Context-and-Scope/) |
-| Пользовательские сценарии | [`02-User-Journey`](02-User-Journey/) |
-| Требования | [`03-Requirements`](03-Requirements/) |
-| Проектирование системы | [`04-System-Design`](04-System-Design/) |
-| Данные и домен | [`05-Data-and-Domain`](05-Data-and-Domain/) |
-| Аутентификация и доступ | [`06-Auth-and-Access`](06-Auth-and-Access/) |
-| Интеграции | [`07-Integrations`](07-Integrations/) |
-| Offline и обработка ошибок | [`08-Offline-and-Error-Handling`](08-Offline-and-Error-Handling/) |
-| Безопасность и Release | [`09-Security-and-Release`](09-Security-and-Release/) |
-| Трассируемость | [`10-Traceability`](10-Traceability/) |
-| Результат | [`11-Result`](11-Result/) |
-
----
-
-## Набор диаграмм
-
-В репозитории хранятся отрендеренные диаграммы для быстрого просмотра:
+Supporting areas:
 
 ```text
+screenshots/
 renderer/
-├── user-flow.svg
-├── system-context.svg
-├── component-model.svg
-├── data-model.svg
-├── access-sequence.svg
-├── access-state-machine.svg
-└── integration-sequence.svg
+methodology.md
+rules.md
 ```
 
-Исходные `.puml`-файлы остаются рядом с соответствующими аналитическими документами.
+| Область | Canonical responsibility |
+|---|---|
+| [`business/`](business/) | Product context, scope, requirements, rules, processes и traceability. |
+| [`database/`](database/) | Data ownership, conceptual/logical models и physical persistence. |
+| [`backend/`](backend/) | Account, authentication, access, billing, API и server behavior. |
+| [`frontend/`](frontend/) | Flutter runtime, navigation, state, local workspace, offline behavior и device usage. |
+| [`integrations/`](integrations/) | RevenueCat, stores, device capabilities и third-party boundaries. |
+| [`system/`](system/) | Cross-component context, flows, trust, invariants, evolution и review. |
+| [`methodology.ru.md`](methodology.ru.md) | Почему SSAD устроен именно так. |
+| [`rules.ru.md`](rules.ru.md) | Нормативные правила документации. |
+
+> **Storage is hierarchical. Knowledge is graph-based.**
 
 ---
 
-## Технологический стек
+## Рекомендуемые пути чтения
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white">
-  <img src="https://img.shields.io/badge/Dart-0175C2?style=flat-square&logo=dart&logoColor=white">
-  <img src="https://img.shields.io/badge/Riverpod-0D1117?style=flat-square">
-  <img src="https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white">
-  <img src="https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs&logoColor=white">
-  <img src="https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white">
-  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white">
-  <img src="https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white">
-  <img src="https://img.shields.io/badge/RevenueCat-F25A5A?style=flat-square">
-  <img src="https://img.shields.io/badge/PlantUML-Diagrams-0D1117?style=flat-square">
-</p>
-
-### Client
+### Быстрый обзор системы
 
 ```text
-Flutter
+README
+  ↓
+business/README
+  ↓
+system/README
+  ↓
+system/architecture
+  ↓
+system/flows
+  ↓
+system/invariants
+```
+
+### Основные canonical areas
+
+- Product и requirements → [`business/`](business/)
+- Data ownership и persistence → [`database/`](database/)
+- Backend contracts и access → [`backend/`](backend/)
+- Client runtime и local workspace → [`frontend/`](frontend/)
+- External providers и device boundaries → [`integrations/`](integrations/)
+- Whole-system synthesis → [`system/`](system/)
+
+### Whole-system review
+
+- [`system/trust/`](system/trust/)
+- [`system/invariants/`](system/invariants/)
+- [`system/evolution/`](system/evolution/)
+- [`system/review/failure-scenarios.ru.md`](system/review/failure-scenarios.ru.md)
+- [`system/review/release-readiness.ru.md`](system/review/release-readiness.ru.md)
+- [`system/review/open-questions.ru.md`](system/review/open-questions.ru.md)
+
+---
+
+## Технологический контекст
+
+### Mobile
+
+```text
+Flutter / Dart
 Riverpod
 go_router
-Drift / SQLite
+Drift
+SQLite
 flutter_secure_storage
 purchases_flutter
 flutter_local_notifications
@@ -463,71 +346,190 @@ flutter_local_notifications
 NestJS
 Prisma
 PostgreSQL
+JWT access tokens
+rotating refresh tokens
 Argon2id
-JWT access + rotating refresh
 RevenueCat REST + webhooks
+```
+
+### External boundaries
+
+```text
+RevenueCat
+Apple App Store
+Google Play
+Device Contacts
+OS Notifications
+Camera / Gallery
+Exchange Rate API
+OS Share / File Picker / SMS / Browser
 ```
 
 ---
 
-## Качество и безопасность релиза
+## API Surface
 
-Проект включает автоматизированные проверки для:
+Backend API намеренно узкий: professional workspace entities не являются server-owned.
 
-- аутентификации и жизненного цикла сессии;
-- состояния доступа;
-- сценариев подписки;
-- правил записей;
-- правил оплат;
-- миграций базы данных;
-- offline-доступа;
-- release-конфигурации.
-
-Production-сборки явно отклоняют небезопасные development-конфигурации, например:
+Ключевые contracts:
 
 ```text
-localhost
-127.0.0.1
-10.0.2.2
-AVELI_STANDALONE=true
+/v1/auth/*
+GET  /v1/access
+POST /v1/billing/sync
+POST /v1/webhooks/revenuecat
+/health
+/ready
 ```
+
+Canonical API documentation: [`backend/api/`](backend/api/)
+
+---
+
+## Владение данными
+
+Ключевое различие — не только entity relationships, но и ownership.
+
+```text
+LOCAL PROFESSIONAL WORKSPACE
+Client
+Service
+Appointment
+Payment
+Visit Note
+Visit Photo
+Workspace Settings
+
+SERVER IDENTITY / ACCESS
+User
+Auth Session
+Access Grant
+Subscription
+Subscription Event
+```
+
+Canonical data architecture: [`database/`](database/)
+
+---
+
+## Failure и Release Model
+
+Aveli использует cross-system isolation principle:
+
+```text
+Technical Failure
+      ≠
+Delete User Work
+```
+
+Backend outages, billing failures, unavailable stores, denied permissions или exchange-rate failures должны быть изолированы от unrelated local professional data.
+
+Production readiness рассматривается как whole-system concern: mobile config, backend secrets, migrations, store products, RevenueCat mapping и Access Gate должны быть согласованы.
+
+См.:
+
+- [`system/review/failure-scenarios.ru.md`](system/review/failure-scenarios.ru.md)
+- [`system/review/release-readiness.ru.md`](system/review/release-readiness.ru.md)
+
+---
+
+## Набор диаграмм
+
+Rendered diagrams находятся в [`renderer/`](renderer/):
+
+```text
+system-context.svg
+component-model.svg
+data-model.svg
+access-sequence.svg
+access-state-machine.svg
+integration-sequence.svg
+user-flow.svg
+```
+
+Machine-maintainable diagram sources остаются рядом с analytical documents, где это применимо.
+
+---
+
+## Методология
+
+Этот репозиторий — первый полный validation case рабочего подхода SSAD.
+
+SSAD делает акцент на:
+
+```text
+system-shaped hierarchy
++
+canonical ownership
++
+progressive depth
++
+contextual usage
++
+evidence-first construction
++
+explicit technology modeling
++
+traceability
++
+late system synthesis
+```
+
+Читайте:
+
+- [`methodology.ru.md`](methodology.ru.md)
+- [`rules.ru.md`](rules.ru.md)
+
+SSAD не позиционируется как замена UML, BPMN, C4, ADR, OpenAPI или docs-as-code. Это развивающийся способ организовать и связать эти формы знаний вокруг реальной системы.
+
+---
+
+## Текущий статус
+
+Основные analytical perspectives мигрированы в system-shaped структуру и сверены с implementation evidence, использованным во время анализа.
+
+Оставшиеся unresolved или intentionally open вопросы явно собраны в:
+
+[`system/review/open-questions.ru.md`](system/review/open-questions.ru.md)
+
+Unknown должен оставаться visible open question, а не silently превращаться в architectural assumption.
 
 ---
 
 ## Результат
 
-Aveli демонстрирует системный анализ приложения, в котором мобильный UX, локальное хранение данных, backend-идентификация, биллинг и offline-поведение должны оставаться согласованными друг с другом.
-
-Кейс охватывает:
+Aveli демонстрирует системный анализ через:
 
 ```text
-Требования
+Business rules
 +
-Доменное моделирование
+Data ownership
 +
-Владение данными
+Local-first architecture
 +
-Мобильная архитектура
+REST contracts
 +
-REST API
+Authentication and sessions
 +
-Аутентификация
+Workspace entitlement
 +
-Entitlement
+External billing
 +
-Интеграция биллинга
+Offline trust
 +
-Offline-стратегия
+Device integrations
 +
-Безопасность
+Failure isolation
 +
-Release-ограничения
+Release readiness
++
+Cross-layer synthesis
 ```
 
-Результат — реально реализованный продукт с явными системными границами и трассируемыми архитектурными решениями.
+Результат — одновременно реализованный product case и structured technical knowledge base, сохраняющий смысл аналитических решений при переходе к реальному коду.
 
 ---
 
 <p align="center">
-  <strong>Системный анализ, рассчитанный на реальную реализацию.</strong>
+  <strong>System analysis designed to survive implementation.</strong>
 </p>

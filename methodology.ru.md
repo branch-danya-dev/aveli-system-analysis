@@ -1,62 +1,31 @@
 # System-Structured Analysis Documentation
 
 > **Рабочее название:** System-Structured Analysis Documentation (SSAD)  
-> **Статус:** развивающаяся методология  
-> **Назначение:** описать идею, структуру и философию подхода к документации в этом репозитории.
+> **Статус:** Развивающаяся методология, проверенная на кейсе Aveli  
+> **Назначение:** Объяснить модель мышления, лежащую в основе структуры репозитория.
+
+[English version](methodology.md) · [Правила репозитория](rules.ru.md)
 
 ---
 
-## Что это за документ
+## 1. Что такое SSAD
 
-`methodology.ru.md` объясняет **суть подхода к документации**.
+SSAD организует документацию системного анализа вокруг **реальных responsibilities и boundaries системы**, а не вокруг фиксированного набора типов аналитических артефактов.
 
-Это не набор обязательных правил.
+Главная идея:
 
-Правила репозитория определены отдельно:
+> **Документация должна отражать анализируемую систему.**
 
-[`rules.ru.md`](rules.ru.md)
-
-Разница:
-
-```text
-methodology.ru.md
-    ↓
-Зачем существует подход
-Как он должен работать
-Какую проблему решает
-Как связаны его части
-
-rules.ru.md
-    ↓
-Каким требованиям должны соответствовать документы
-Что допустимо
-Что недопустимо
-Как проверяется консистентность
-```
-
-Методология может развиваться по мере роста репозитория и появления новых проектов, которые выявляют слабые или отсутствующие концепции.
-
----
-
-## Основная идея
-
-Центральная идея проста:
-
-> **Документация системного анализа должна повторять структуру анализируемой системы.**
-
-Традиционные аналитические репозитории часто организованы по типам артефактов:
+Поэтому репозиторий должен быть меньше похож на:
 
 ```text
 requirements/
-uml/
+diagrams/
 api/
-database/
 security/
 ```
 
-Это удобно автору документов, но не всегда соответствует тому, как саму систему понимают люди, которые ее разрабатывают и поддерживают.
-
-SSAD вместо этого организует знания вокруг реальных ответственностей системы:
+и больше — на саму систему:
 
 ```text
 business/
@@ -64,291 +33,151 @@ database/
 backend/
 frontend/
 integrations/
-operations/
 system/
 ```
 
-Конкретная структура не является жесткой.
+если эти области действительно существуют.
 
-Иерархия должна следовать реальной системе.
+Физическое дерево — не сама методология. Методология — это ownership model, по которой это дерево строится.
 
----
-
-## Зачем нужен такой подход
-
-Система не воспринимается как набор аналитических артефактов.
-
-Backend-разработчик мыслит сервисами, API, authentication, billing, messaging, errors и инфраструктурой.
-
-Frontend-разработчик мыслит экранами, state, navigation, local storage, offline behavior и integrations.
-
-Специалист по данным мыслит ownership, schemas, entities, constraints, migrations и lifecycle.
-
-Системный аналитик должен понимать все эти представления.
-
-Поэтому документация должна позволять каждому участнику войти в репозиторий через ту часть системы, которая ему нужна, и при этом иметь возможность перейти к полной картине.
+Plugin, mobile product и distributed banking platform не должны искусственно иметь одинаковую структуру директорий.
 
 ---
 
-## Документация как модель системы
+## 2. Methodology и Rules
 
-Сам репозиторий становится моделью системы.
+Этот файл объясняет, почему подход существует, как строится знание, как определяется ownership и как связаны system perspectives.
 
-На верхнем уровне:
+[`rules.ru.md`](rules.ru.md) задаёт нормативный contract репозитория: что должно быть документировано, что нельзя дублировать, где должно жить знание и как проверяется consistency.
 
-```text
-Система
-  ↓
-Крупная ответственность
-  ↓
-Компонент
-  ↓
-Технология
-  ↓
-Поведение
-  ↓
-Детали реализации
-```
-
-Глубину выбирает читатель.
-
-Так появляется **progressive depth**.
-
-Новому участнику может быть достаточно:
-
-```text
-business/
-system/
-```
-
-Backend-разработчик может продолжить в:
-
-```text
-backend/
-backend/api/
-backend/auth/
-backend/stack/
-```
-
-Специалист по данным может начать непосредственно с:
-
-```text
-database/
-```
-
-Репозиторий должен поддерживать все эти пути и не требовать одного обязательного линейного порядка чтения.
+Методология может развиваться из опыта реальных проектов. Rules должны меняться тогда, когда это развитие становится явным стандартом репозитория.
 
 ---
 
-## Иерархия и Knowledge Graph
+## 3. Репозиторий как модель системы
 
-У репозитория одновременно существуют две структуры.
-
-### Физическая структура
-
-Файлы и директории образуют иерархию.
+Документация должна поддерживать progressive depth:
 
 ```text
-backend/
-└── auth/
-    ├── README.md
-    ├── sessions.md
-    └── token-lifecycle.md
+System
+  ↓
+Responsibility / Component
+  ↓
+Behavior / Contract / Data
+  ↓
+Technology
+  ↓
+Usage
+  ↓
+Implementation evidence
 ```
 
-Она удобна для навигации и ownership.
+Разные читатели могут входить на разной глубине. Product reader может начать с `business/`; System Analyst перемещается между `business/`, `system/`, `database/`, `backend/`, `frontend/` и `integrations/`; developer может войти сразу через component, которым владеет.
 
-### Структура знаний
+Чтобы понять локальный concern, reader не должен читать репозиторий строго линейно.
 
-Реальные знания о системе не являются иерархическими.
+---
 
-Authentication может зависеть от:
+## 4. Storage Is Hierarchical; Knowledge Is Graph-Based
+
+Файлы и директории иерархичны, потому что ownership и navigation требуют дерева. Реальное system knowledge не иерархично.
+
+Authentication может одновременно затрагивать:
 
 ```text
 business requirements
-database session entities
-backend auth logic
+backend session logic
+server data
 frontend bootstrap
+secure storage
+access policy
 security constraints
-architecture decisions
 ```
 
-Поэтому документы должны ссылаться на связанные знания.
+Поэтому в репозитории существуют две структуры:
 
-Ключевой принцип:
+```text
+Physical hierarchy
+→ где живёт canonical knowledge
 
-> **Хранение иерархическое. Знания графовые.**
+Cross-reference graph
+→ как система реально связана
+```
 
-Дерево директорий помогает найти информацию.
-
-Cross-references объясняют реальное устройство системы.
+> **Storage is hierarchical. Knowledge is graph-based.**
 
 ---
 
-## Canonical Knowledge
+## 5. Canonical Knowledge и Contextual Usage
 
-У каждой важной концепции должно быть одно каноническое место.
+У каждого важного факта должен быть один canonical owner.
 
 Примеры:
 
 ```text
 backend/api/
-    → canonical API contracts
+→ concrete backend HTTP contracts
 
 database/
-    → canonical data model
+→ canonical data architecture и physical persistence
 
-backend/stack/kafka/
-    → canonical описание Kafka в backend
+frontend/stack/drift/
+→ Drift как frontend data-access technology
 
-business/requirements/
-    → canonical business requirements
+integrations/revenuecat/
+→ cross-component RevenueCat boundary
 ```
 
-Другие документы ссылаются на canonical source вместо повторения его содержания.
+Другие документы могут повторять столько context, сколько нужно для читаемости, но должны ссылаться на owner, а не создавать второй source of truth.
 
-Отсюда второй базовый принцип:
-
-> **Не дублируем знания. При необходимости дублируем контекст.**
-
-Например:
-
-```text
-backend/stack/kafka/
-```
-
-может объяснять:
-
-- почему используется Kafka;
-- какую роль она играет в backend;
-- какие существуют альтернативы;
-- какие зависимости она создает.
-
-А:
-
-```text
-backend/logs/
-```
-
-описывает:
-
-- как logging использует Kafka;
-- какие события передаются;
-- какие failure scenarios важны.
-
-Второй документ не переопределяет Kafka.
-
-Он описывает ее в контексте logging.
+> **Do not duplicate knowledge. Duplicate context when necessary.**
 
 ---
 
-## Stack как самостоятельный объект анализа
+## 6. Perspectives обязательны; folder template — нет
 
-Выбор технологий не рассматривается как случайная implementation detail.
+Проект должен отвечать на ключевые аналитические вопросы, даже если его physical tree отличается.
 
-Stack является отдельным аналитическим измерением.
-
-Недостаточно написать:
+Как минимум analysis должен позволять понять:
 
 ```text
-"Используем Redis."
+Product / business intent
+System boundary and scope
+Data ownership and lifecycle
+Runtime responsibilities / components
+Interfaces and external integrations
+Technology choices and usages
+Failure / trust / security constraints
+Verification / acceptance
+Whole-system relationships
 ```
 
-Документация должна со временем позволять ответить:
+Для Aveli эти вопросы естественно превратились в:
 
 ```text
-Почему Redis?
-Где он используется?
-Какие компоненты от него зависят?
-Какое требование он поддерживает?
-Что сломается при его удалении?
-Можно ли его заменить?
-Какие альтернативы рассматривались?
-Какую operational cost он создает?
-```
-
-Поэтому stack явно документируется внутри технических областей.
-
-Пример:
-
-```text
+business/
+database/
 backend/
-└── stack/
-    ├── redis/
-    ├── kafka/
-    ├── rest-api/
-    └── docker/
+frontend/
+integrations/
+system/
 ```
 
-После этого технология появляется в других местах только через contextual usage там, где реально применяется.
+Для другой системы `backend/` или `frontend/` могут быть неприменимы, а `worker/`, `plugin/`, `gateway/` или `operations/` могут заслуживать top-level ownership.
+
+> **Сделай явной каждую важную system perspective и позволь реальной архитектуре определить её physical owner.**
 
 ---
 
-## Три измерения технических знаний
+## 7. Business и Technical Knowledge связаны, но разделены
 
-SSAD рассматривает технические знания в трех связанных измерениях.
-
-### 1. Structural Knowledge
-
-Что существует в системе?
-
-```text
-backend
-auth
-billing
-logs
-notifications
-database
-frontend
-```
-
-### 2. Technology Knowledge
-
-Какие технологии используются?
-
-```text
-NestJS
-PostgreSQL
-Redis
-Kafka
-Flutter
-Drift
-Docker
-```
-
-### 3. Usage Knowledge
-
-Где и зачем каждая технология участвует?
-
-```text
-Kafka
-  → logs
-  → audit
-  → notifications
-
-Redis
-  → cache
-  → session support
-
-Drift
-  → local workspace persistence
-```
-
-Эта модель важна как для людей, так и для будущего автоматизированного анализа.
-
----
-
-## Граница Business и Technical
-
-Business и technical documentation должны быть связаны, но разделены.
-
-Business отвечает:
+Business documentation отвечает:
 
 ```text
 Зачем это существует?
-Что нужно пользователю?
+Кому это нужно?
 Что входит в scope?
-Какое поведение должно оставаться истинным?
+Какое behavior должно сохраняться?
 Какой результат считается приемлемым?
 ```
 
@@ -356,430 +185,255 @@ Technical documentation отвечает:
 
 ```text
 Как это реализовано?
-Какой компонент этим владеет?
-Какая технология используется?
-Какие данные участвуют?
-Какие интерфейсы задействованы?
-Как это ломается?
-Как это эксплуатируется?
+Какой component этим владеет?
+Какие data/interfaces участвуют?
+Какая technology это поддерживает?
+Как это может сломаться?
 ```
 
-Business statement может иметь технические последствия.
-
-Пример:
-
-```text
-Business:
-Профессиональные данные workspace не синхронизируются между устройствами.
-
-Technical consequences:
-→ frontend/storage/
-→ database/local/
-→ system/decisions/
-```
-
-Business document определяет product truth.
-
-Technical documents объясняют, как система сохраняет эту истину.
-
----
-
-## Business — не техническое summary
-
-Business document не должен становиться сокращенной архитектурой.
-
-Например:
-
-```text
-Stored in PostgreSQL
-Uses JWT
-Implemented with NestJS
-```
-
-не относится к business, если сама технология не имеет прямого product-level последствия.
+Technical fact попадает в business только если materially меняет product behavior, scope, external contract или user-visible capability.
 
 Предпочтительно:
 
 ```text
 Account state is server-managed.
-Access контролируется на уровне workspace.
-Профессиональные данные не синхронизируются между устройствами.
+Professional workspace data is not synchronized between devices.
 ```
 
-После этого дается ссылка на technical implementation.
+а не:
 
-Так business остается читаемым, а traceability сохраняется.
+```text
+Stored in PostgreSQL.
+Implemented with NestJS.
+```
 
 ---
 
-## Технические области — не Artifact Buckets
+## 8. Ownership Before Detail
 
-Техническая директория — не просто место для хранения файлов определенного формата.
+До детализации implementation нужно определить owner responsibility.
 
-Например:
-
-```text
-backend/api/
-```
-
-владеет реальными API contracts.
+Для важного behavior задаём вопросы:
 
 ```text
-backend/stack/rest-api/
+Кто принимает решение?
+Кто хранит canonical state?
+Кто может его менять?
+Кто только потребляет?
+Кто его проверяет?
 ```
 
-владеет REST как архитектурным и технологическим решением.
-
-Эти области связаны, но не взаимозаменяемы.
-
-Аналогично:
-
-```text
-database/
-```
-
-владеет data architecture.
-
-Это не просто папка для ER diagrams.
-
-Она может содержать:
-
-```text
-architecture
-stack
-entities
-schemas
-constraints
-indexes
-migrations
-queries
-ownership
-```
-
-Принцип организации — responsibility, а не file format.
+Только после этого стоит финализировать API, schema, state model, technology или UI behavior.
 
 ---
 
-## Cross-Cutting Views
+## 9. Data Documentation: от Ownership к Persistence
 
-Некоторые знания не принадлежат одному компоненту.
-
-Например:
+Data моделируются в dependency order:
 
 ```text
-system architecture
-technology map
-dependency graph
-architecture decisions
-traceability
-delivery changes
+Data ownership
+    ↓
+Conceptual model
+    ↓
+Logical model
+    ↓
+Physical persistence model
+    ↓
+Migrations / constraints / lifecycle
 ```
 
-Это cross-cutting views.
+System-wide logical model не должен стирать реальные storage boundaries. Physical model принадлежит persistence owner.
 
-Они должны связывать component-level knowledge, а не дублировать его.
-
-Например:
-
-```text
-system/
-```
-
-может показать, как backend, frontend, database и integrations образуют одну систему.
-
-Но он не должен становиться второй копией всей component documentation.
+Если продукт одновременно использует local SQLite и server PostgreSQL, эти physical models остаются раздельными, даже если logical domain view их связывает.
 
 ---
 
-## Traceability как навигация между уровнями абстракции
+## 10. Technology как Analytical Object
 
-Traceability — это не только:
+Technology documentation должна отвечать больше, чем «мы используем X».
 
-```text
-Requirement → Test
-```
-
-В SSAD целевая цепочка шире:
+Полезный technology document объясняет, где известно:
 
 ```text
-Business Need
-    ↓
-Business Rule
-    ↓
-Requirement
-    ↓
-Architecture Decision
-    ↓
-Component
-    ↓
-Technology / Interface / Data
-    ↓
-Acceptance
-    ↓
-Verification
+Какую responsibility поддерживает?
+Почему используется здесь?
+Где используется?
+Кто зависит от неё?
+Какие ограничения создаёт?
+Насколько critical?
+Можно ли заменить?
+Какие alternatives важны?
 ```
 
-Не каждый trace обязан содержать каждый уровень.
+Technology ownership следует за responsibility, которую technology primarily реализует.
 
-Важно, чтобы значимые решения можно было читать в обе стороны.
-
-### Вперед
+Примеры Aveli:
 
 ```text
-Зачем системе это нужно?
-    ↓
-Как это реализовано?
+SQLite / PostgreSQL
+→ database persistence technologies
+
+Drift
+→ frontend data-access technology
+
+Prisma
+→ backend data-access technology
+
+RevenueCat
+→ external integration с frontend/backend consumers
 ```
 
-### Назад
-
-```text
-Зачем существует эта технология или компонент?
-    ↓
-Какая продуктовая потребность их оправдывает?
-```
-
-Второе направление особенно важно при архитектурном review.
+Contextual usage может появляться в других местах, но canonical technology knowledge не должна дублироваться между perspectives.
 
 ---
 
-## Tasks и Change Artifacts
+## 11. Три измерения Technical Knowledge
 
-Task сам по себе не является бизнес-артефактом.
+SSAD разделяет три связанных вопроса.
 
-Задачи могут существовать в любой области:
+### Structural knowledge
 
-```text
-backend
-frontend
-database
-operations
-integration
-```
+Что существует?
 
-Task принадлежит контексту изменения, которое описывает.
+### Technology knowledge
 
-Поэтому task-directories не должны автоматически создаваться в каждом слое.
+Что используется?
 
-Они появляются только тогда, когда проекту действительно нужна task-level documentation.
+### Usage knowledge
 
-На business-уровне scope, requirements, business rules, processes и acceptance criteria уже определяют, чего должен достичь продукт.
-
-Дополнительный универсальный слой `business/tasks/` обычно только дублировал бы этот смысл.
-
----
-
-## Ownership бизнес-знаний
-
-Ветка `business/` в идеальной модели формируется совместно **бизнес-аналитиком** и **системным аналитиком**.
-
-Их зоны пересекаются, но основной фокус различается.
-
-### Бизнес-аналитик
-
-Бизнес-аналитик в первую очередь защищает:
-
-- бизнес-цели;
-- намерения стейкхолдеров;
-- пользовательские проблемы;
-- контекст продукта;
-- бизнес-процессы;
-- бизнес-правила;
-- приемку бизнес-результата.
-
-### Системный аналитик
-
-Системный аналитик в первую очередь защищает:
-
-- консистентность границ системы;
-- формализацию требований;
-- traceability от продукта к системе;
-- нефункциональные ожидания;
-- технические последствия бизнес-решений;
-- согласованность business knowledge с технической архитектурой.
-
-Поэтому `business/` — это **совместная аналитическая граница**, а не набор артефактов, принадлежащий исключительно одной профессии.
-
-Если бизнес-аналитика в проекте нет, stewardship этой ветки переходит к системному аналитику.
-
-При этом системный аналитик должен сохранять различие:
-
-```text
-Бизнес-решение
-        ≠
-Техническое архитектурное решение
-```
-
-Недостающие бизнес-решения должны подтверждаться product owner, domain expert или другими стейкхолдерами, а не выводиться только из удобства технической реализации.
-
----
-
-## Dependency-Driven Construction Strategy
-
-SSAD не следует строить в произвольном порядке.
-
-У документации есть зависимости так же, как у программной архитектуры.
-
-Если downstream-артефакты финализируются до того, как понятны их upstream-предпосылки, проект вынужден постоянно возвращаться к уже готовым документам и переписывать их.
-
-Поэтому методология следует принципу:
-
-> **Знания строятся в порядке зависимостей, а upstream-решения стабилизируются до глубокой детализации downstream-реализации.**
-
-Это не устраняет итерации полностью.
-
-Цель — сделать итерации **локальными, видимыми и осознанными**, а не постоянно перестраивать весь репозиторий.
-
-### Базовое направление построения
-
-Обычный проект рекомендуется развивать примерно так:
-
-```text
-Существующие evidence / реальность продукта
-        ↓
-Business Context
-        ↓
-Scope
-        ↓
-Business Rules / Requirements / Processes
-        ↓
-Первичные границы компонентов
-        ↓
-Data ownership и domain model
-        ↓
-Interfaces и integration boundaries
-        ↓
-Component architecture
-        ↓
-Technology stack и implementation details
-        ↓
-Operations / security / release behavior
-        ↓
-System-wide synthesis
-        ↓
-Финальная traceability и consistency review
-```
-
-Точный порядок может меняться, если у системы есть сильные внешние ограничения, но принцип зависимостей сохраняется.
-
-Например, обязательный внешний API contract может потребовать анализа раньше внутренней архитектуры backend, потому что именно внешний контракт является upstream constraint.
-
----
-
-## Принципы построения архитектуры
-
-### 1. Начинать с evidence, а не с желаемой диаграммы
-
-При анализе существующей системы сначала устанавливается то, что реально существует:
-
-- source code;
-- текущее поведение продукта;
-- database schemas;
-- external contracts;
-- deployment configuration;
-- знания стейкхолдеров;
-- существующая документация.
-
-Документация должна моделировать реальную систему, если артефакт явно не описывает целевое состояние.
-
-### 2. Определять product boundary до декомпозиции реализации
-
-До описания backend services, databases, integrations или frontend modules необходимо определить:
-
-```text
-За что отвечает система?
-Что находится за ее границей?
-Какое поведение требуется?
-```
-
-Без этой границы техническая декомпозиция начинает фиксировать предположения, которые затем приходится удалять.
-
-### 3. Сначала ownership, потом детали
-
-Перед описанием implementation details определяется компонент-владелец ответственности.
+Где и зачем technology участвует?
 
 Пример:
 
 ```text
-Решение о subscription access
-        ↓
-Кто владеет этим решением?
-        ↓
-Только затем API, data, integration и stack.
+Drift
+→ local repository implementations
+→ reactive workspace data
+→ local migrations
 ```
 
-Так одна ответственность не описывается независимо в нескольких слоях.
-
-### 4. Рано моделировать data ownership
-
-Ownership данных желательно понять до окончательной фиксации многих API и component interactions.
-
-На раннем этапе важны вопросы:
-
-```text
-Какие данные существуют?
-Кто ими владеет?
-Где находится canonical state?
-Кто может их изменять?
-Кто только потребляет?
-Каков lifecycle?
-```
-
-Физические детали хранения могут быть описаны позже.
-
-### 5. Сначала canonical contract, затем consumers
-
-Интерфейс должен иметь одного владельца.
-
-Если backend API является canonical, frontend описывает его потребление, а не определяет API повторно.
-
-Если внешний provider contract ограничивает систему, его необходимо описать до финализации внутренних компонентов, которые от него зависят.
-
-### 6. Технология описывается после понимания ответственности
-
-Технология может уже существовать в реализации, но ее документация все равно должна отвечать:
-
-```text
-Какую ответственность она поддерживает?
-Почему она здесь?
-Где используется?
-Что от нее зависит?
-```
-
-Technology не должна становиться отправной точкой для придумывания границ системы.
-
-### 7. Сначала component documentation, затем финальный system view
-
-Документация компонентов является исходным материалом для итоговой cross-system модели.
-
-Предварительный component skeleton может существовать раньше для навигации, но финальный `system/` должен синтезироваться после описания основных областей.
-
-System view суммирует уже установленные знания, а не придумывает отсутствующее поведение компонентов.
-
-### 8. Traceability поддерживается постоянно
-
-Traceability нельзя откладывать до полного завершения проекта.
-
-По мере стабилизации каждого слоя добавляются важные связи:
-
-```text
-Business
-    → Data
-    → Component
-    → Interface
-    → Technology
-    → Verification
-```
-
-Тогда финальный traceability review проверяет полноту, а не восстанавливает связи по памяти.
+Такое разделение делает human navigation и automated analysis надёжнее.
 
 ---
 
-## Стабилизация до расширения
+## 12. Internal Interfaces и External Integrations — разные boundaries
 
-Документы полезно воспринимать как артефакты разной степени зрелости.
+Internal interface связывает components внутри анализируемой системы:
 
-Концептуальный lifecycle:
+```text
+Aveli Mobile
+↕
+Aveli Backend
+```
+
+Concrete contracts принадлежат owning component, например `backend/api/`.
+
+External integration пересекает system boundary:
+
+```text
+Aveli
+↕
+RevenueCat / App Store / Google Play / OS service / third-party API
+```
+
+Integration documentation владеет cross-boundary relationship: external responsibility, identity mapping, exchanged data, trust, authentication, failure behavior и reconciliation.
+
+Это не позволяет `integrations/` превратиться в общий bucket для каждого API call.
+
+---
+
+## 13. System View как Synthesis Layer
+
+Final `system/` обычно строится после того, как major component perspectives уже понятны.
+
+Он владеет knowledge, которое нельзя назначить одному component:
+
+```text
+system context
+component relationships
+end-to-end flows
+cross-component data movement
+trust / authority map
+system invariants
+boundary-changing evolution
+whole-system failure scenarios
+```
+
+Он не должен становиться второй копией backend/frontend/database/integrations.
+
+> **Слой может ссылаться на другой слой, но модель, описывающая сразу несколько слоёв, принадлежит их ближайшему общему системному уровню.**
+
+Preliminary system sketch может существовать рано. Final system model должен синтезироваться из stabilized lower-level evidence.
+
+---
+
+## 14. Dependency-Driven Construction
+
+Documentation имеет dependencies так же, как implementation.
+
+Полезный default order:
+
+```text
+Existing evidence / product reality
+        ↓
+Business context and scope
+        ↓
+Rules / requirements / processes
+        ↓
+Initial responsibility boundaries
+        ↓
+Data ownership and domain model
+        ↓
+Interfaces and external constraints
+        ↓
+Component architecture
+        ↓
+Technology and implementation evidence
+        ↓
+System-wide synthesis
+        ↓
+Traceability / open questions / final consistency review
+```
+
+Точный порядок может меняться, если external constraint является upstream.
+
+> **Build knowledge in dependency order and stabilize upstream decisions before detailing downstream implementation.**
+
+---
+
+## 15. Evidence-First Documentation
+
+При анализе существующей реализации сначала собирается evidence:
+
+```text
+source code
+schemas
+API contracts
+configuration
+native project files
+provider contracts
+current behavior
+tests
+existing documentation
+stakeholder decisions
+```
+
+Нужно разделять:
+
+```text
+VERIFIED
+INFERRED
+OPEN
+```
+
+Assumption не должна превращаться в system truth только потому, что так архитектура выглядит аккуратнее. Target-state proposal должен быть явно помечен как target state.
+
+---
+
+## 16. Stabilization и Review
+
+Полезный lifecycle:
 
 ```text
 Draft
@@ -789,312 +443,171 @@ Baseline
 Stable
 ```
 
-### Draft
+- **Draft** — система ещё исследуется.
+- **Baseline** — artifact достаточно стабилен, чтобы стать upstream input для более глубокой работы.
+- **Stable** — artifact cross-checked с relevant implementation, contracts или stakeholder decisions и может быть canonical.
 
-Артефакт еще используется для исследования системы.
-
-Downstream-документы не должны считать нестабильные детали окончательной истиной.
-
-### Baseline
-
-Артефакт достаточно согласован и понятен, чтобы стать входом для более глубокого анализа.
-
-Небольшие изменения все еще ожидаемы.
-
-### Stable
-
-Артефакт сверяется с соответствующей реализацией, контрактами или решениями стейкхолдеров и может выступать canonical reference.
-
-Пока методология не требует обязательной status metadata, но такое разделение помогает не детализировать систему преждевременно.
-
-Downstream-артефакт может обнаружить проблему в upstream-документе.
-
-Это нормально.
-
-Цель не запретить исправления, а избежать исправлений, возникающих только из-за неправильного порядка анализа.
+Downstream discovery может снова открыть upstream decision. Цель — не исключить iteration, а исключить accidental rework из-за неправильного порядка анализа.
 
 ---
 
-## System View как слой синтеза
+## 17. Tasks, Changes и Optional Perspectives
 
-Ветка `system/` описывает знания, пересекающие границы компонентов.
-
-Финализировать ее следует **после** того, как описаны соответствующие component areas.
-
-Например, итоговая системная модель может связывать:
+Task не является по своей природе business artifact. Он принадлежит области изменения:
 
 ```text
-Business
-Database
-Backend
-Frontend
-Integrations
-Operations
+backend
+frontend
+database
+integration
+operations
+cross-system
 ```
 
-но canonical details остаются внутри этих областей.
+Task/change directories создаются только при наличии реальных artifacts.
 
-Отсюда следует принцип ownership:
-
-> **Слой может ссылаться на другой слой, но модель, описывающая сразу несколько слоев, принадлежит их ближайшему общему системному уровню.**
-
-Поэтому business document может ссылаться на последствия для backend или database.
-
-Но диаграмма, одновременно моделирующая business, backend, frontend, database и integrations, должна находиться в `system/`, а не в `business/`.
-
-
-## Документация должна поддерживать реальную реализацию
-
-SSAD должен выходить за пределы абстрактных аналитических описаний.
-
-Где это уместно, technical documentation должна содержать или ссылаться на реальные артефакты:
-
-```text
-OpenAPI
-SQL
-DDL
-Prisma schema
-Drift tables
-JSON examples
-configuration examples
-Docker files
-migration scripts
-code fragments
-PlantUML
-```
-
-Цель — не превратить документацию в source code.
-
-Цель — уменьшить разрыв между аналитическим намерением и реальной системой.
+То же относится к optional perspectives вроде `operations/`. Она появляется, когда система действительно имеет самостоятельную operational responsibility: deployment, observability, backups, incident recovery, release operations и т. п.
 
 ---
 
-## Документация для разных ролей
+## 18. Traceability как Navigation Between Abstraction Levels
 
-Один репозиторий должен быть полезен разным читателям.
-
-### Product / Business
+Traceability должна позволять идти и вперёд, и назад:
 
 ```text
-business/
+Business Need
+    ↓
+Business Rule / Requirement
+    ↓
+Component / Decision
+    ↓
+Interface / Data / Technology
+    ↓
+Acceptance
+    ↓
+Verification
 ```
 
-### System Analyst
+Не каждая trace обязана содержать каждый шаг. Полезные вопросы:
 
 ```text
-business/
-system/
-database/
-backend/
-frontend/
-integrations/
+Почему этот component/technology существует?
+Как business rule сохраняет смысл в implementation?
+Как подтверждено нужное behavior?
 ```
-
-### Backend Developer
-
-```text
-backend/
-database/
-integrations/
-```
-
-### Frontend Developer
-
-```text
-frontend/
-backend/api/
-database/local/
-```
-
-### DevOps / Operations
-
-```text
-operations/
-system/
-backend/deployment/
-```
-
-### QA
-
-```text
-business/requirements/
-business/traceability/
-operations/testing/
-technical component behavior
-```
-
-Методология не скрывает от роли остальные знания.
-
-Она дает понятную точку входа и возможность углубляться при необходимости.
 
 ---
 
-## Human-Readable и Machine-Readable Knowledge
+## 19. Human-Readable и Machine-Analyzable Knowledge
 
-Репозиторий проектируется одновременно для людей и автоматизированного анализа.
+Основной repository пишется для людей, но structure должна позволять automated review.
 
-Human-readable documentation объясняет смысл и контекст.
-
-Machine-readable metadata в будущем может описывать связи.
-
-Пример:
+Future metadata может описывать relationships:
 
 ```yaml
-technology: redis
-layer: backend
-category: cache
-
+technology: drift
+owner: frontend
 used_by:
-  - sessions
-  - access
-
+  - local repositories
 supports:
-  - NFR-036
-
-criticality: medium
-replaceable: true
+  - local-first workspace
+criticality: high
+replaceability: medium
 ```
 
-Это позволит задавать автоматические вопросы:
+Это позволяет задавать cross-project questions о technologies, traceability, dependency risk и repeated architecture patterns.
 
-```text
-Где используется Redis?
-Какие проекты зависят от Kafka?
-Какие технологии регулярно создают operational complexity?
-У каких requirements нет acceptance criteria?
-У каких компонентов не описаны failure scenarios?
-Какие architecture decisions повторяются между проектами?
-```
-
-Методология изначально проектируется так, чтобы AI-инструменты могли анализировать структуру репозитория, не заменяя human-readable documentation.
+AI может помогать находить contradictions, stale links, uncovered requirements и dependency gaps. Он не заменяет ownership и human-readable explanation.
 
 ---
 
-## Multi-Project Analysis
+## 20. Bilingual Documentation
 
-Одна из долгосрочных целей — сделать документацию разных проектов сравнимой.
-
-Если несколько репозиториев используют одну концептуальную модель, их можно анализировать совместно.
-
-Например:
-
-```text
-Project A использует Kafka для logs и audit.
-Project B использует Kafka только для notifications.
-Project C вообще не использует broker.
-
-Почему?
-
-Какие требования оправдывали выбор?
-
-Стоила ли operational cost результата?
-```
-
-Поэтому methodology рассматривает architecture decisions, technology usage, ownership, criticality и traceability как потенциально анализируемые данные.
-
-Это не обязательно для первой версии проекта.
-
-Но структура должна позволять прийти к этому позже.
-
----
-
-## Двуязычная документация
-
-Human-readable project documentation поддерживается на английском и русском.
-
-Это не два независимых набора документации.
-
-Они представляют одни и те же знания на двух языках.
-
-Machine-readable artifacts остаются общими, если перевод создавал бы бессмысленное дублирование.
-
-Пример:
+Human-readable docs могут поддерживаться парами:
 
 ```text
 README.md
 README.ru.md
-
-openapi.yaml       ← общий
-schema.sql         ← общий
-dependencies.yaml  ← общий
 ```
 
----
+Обе версии описывают одно knowledge, а не являются независимыми documents.
 
-## Чем SSAD не является
-
-SSAD не предназначен для замены:
-
-- UML;
-- BPMN;
-- C4;
-- OpenAPI;
-- ADR;
-- SQL documentation;
-- source code;
-- testing documentation;
-- operational runbooks;
-- product management.
-
-Это способ **организовать и связать эти формы знаний вокруг самой системы**.
-
-Также методология не требует одинаковых директорий во всех проектах.
-
-Revit plugin, mobile application и distributed banking platform не должны иметь одинаковое физическое дерево документации, если их архитектуры различаются.
-
----
-
-## Рабочее определение
-
-Текущее рабочее определение:
-
-> **System-Structured Analysis Documentation — методология документации, в которой аналитические и технические знания организуются вокруг реальной структуры и ответственностей системы, а cross-references связывают бизнес-смысл, архитектуру, технологии, implementation context и verification в навигируемый knowledge graph.**
-
-Методология ставит в приоритет:
+Machine-readable artifacts остаются общими:
 
 ```text
-system-oriented hierarchy
+openapi.yaml
+schema.sql
+PlantUML source
+JSON / YAML schemas
+```
+
+Implementation identifiers не переводятся.
+
+---
+
+## 21. Чем SSAD не является
+
+SSAD не заменяет UML, BPMN, C4, ADR, OpenAPI, SQL/schema documentation, source code, tests, product management или operational runbooks.
+
+Это способ **организовать и связать эти формы знания вокруг самой системы**.
+
+Методология также не заявляет, что её отдельные практики являются новыми. Она объединяет established documentation practices вокруг system-oriented ownership model и проверяет этот подход на реальных проектах.
+
+---
+
+## 22. Aveli как первый полный Validation Case
+
+Aveli выявил несколько важных corrections:
+
+- обязательные analytical questions важнее обязательных названий папок;
+- data ownership нужно стабилизировать до physical schemas и многих API;
+- technology ownership следует за responsibility, а не за первым документом, где library упомянута;
+- internal API не является автоматически external integration;
+- `system/` лучше работает как late synthesis layer;
+- failure scenarios и release readiness могут быть system-level review views без обязательного `operations/`;
+- legacy artifact-oriented docs нужно удалять только после orphan-knowledge check.
+
+Итоговая структура Aveli:
+
+```text
+business/
+database/
+backend/
+frontend/
+integrations/
+system/
+```
+
+с supporting screenshots, rendered diagrams, methodology и repository rules.
+
+Эта структура появилась из архитектуры Aveli и не является template для копирования во все проекты.
+
+---
+
+## Working Definition
+
+> **System-Structured Analysis Documentation — развивающаяся методология документации, в которой analytical и technical knowledge организованы вокруг реальных responsibilities и boundaries системы, а canonical ownership, contextual references, traceability и system-level synthesis связывают business intent с implementation и verification.**
+
+Кратко:
+
+```text
+system-shaped hierarchy
++
+canonical ownership
 +
 progressive depth
 +
-canonical knowledge
-+
 contextual usage
++
+evidence-first construction
 +
 explicit technology modeling
 +
 traceability
 +
-real technical artifacts
+system synthesis
 +
-human and machine readability
+human-readable knowledge graph
 ```
 
----
-
-## Развитие
-
-Методология намеренно не считается завершенной.
-
-Новые проекты могут выявить:
-
-- недостающие уровни абстракции;
-- слабые границы;
-- ненужное дублирование;
-- более удачные названия;
-- лучшие metadata models;
-- новые возможности cross-project analysis.
-
-Тогда процесс выглядит так:
-
-```text
-Observation
-    ↓
-Methodology change
-    ↓
-Rule update if necessary
-    ↓
-Repository structure evolves
-```
-
-Методология должна развиваться из реального опыта проектов, а не из попытки заранее описать абсолютно все.
+Методология должна продолжать развиваться из evidence реальных проектов, а не из стремления к теоретической полноте.

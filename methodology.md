@@ -1,62 +1,31 @@
 # System-Structured Analysis Documentation
 
 > **Working name:** System-Structured Analysis Documentation (SSAD)  
-> **Status:** Evolving methodology  
-> **Purpose:** Describe the reasoning, structure, and philosophy behind this repository approach.
+> **Status:** Evolving methodology, validated on the Aveli case  
+> **Purpose:** Explain the reasoning model behind this repository structure.
+
+[Русская версия](methodology.ru.md) · [Repository rules](rules.md)
 
 ---
 
-## What This Document Is
+## 1. What SSAD Is
 
-`methodology.md` explains **the idea behind the documentation approach**.
+SSAD organizes system-analysis documentation around the **actual responsibilities and boundaries of a system**, rather than around a fixed list of analyst artifact types.
 
-It is not a rulebook.
+The core idea is:
 
-The repository rules are defined separately in:
+> **Documentation should mirror the system being analyzed.**
 
-[`rules.md`](rules.md)
-
-The distinction is:
-
-```text
-methodology.md
-    ↓
-Why the approach exists
-How it is intended to work
-What problem it solves
-How its parts relate
-
-rules.md
-    ↓
-What repository documents must follow
-What is allowed
-What is not allowed
-How consistency is checked
-```
-
-The methodology may evolve as the repository grows and new projects expose weaknesses or missing concepts.
-
----
-
-## Core Idea
-
-The central idea is simple:
-
-> **System analysis documentation should mirror the structure of the system being analyzed.**
-
-Traditional analytical repositories are often organized by artifact type:
+A repository should therefore read less like:
 
 ```text
 requirements/
-uml/
+diagrams/
 api/
-database/
 security/
 ```
 
-This is useful for the author, but it does not always reflect how the system itself is understood by the people who build and maintain it.
-
-SSAD instead organizes knowledge around system responsibilities:
+and more like the system itself:
 
 ```text
 business/
@@ -64,289 +33,149 @@ database/
 backend/
 frontend/
 integrations/
-operations/
 system/
 ```
 
-The exact structure is not fixed.
+when those areas really exist.
 
-The hierarchy should follow the real system.
+The physical tree is not the methodology. The methodology is the ownership model behind the tree.
 
----
-
-## Why This Approach Exists
-
-A system is not experienced as a collection of analyst artifacts.
-
-A backend developer thinks in services, APIs, authentication, billing, messaging, errors, and infrastructure.
-
-A frontend developer thinks in screens, state, navigation, local storage, offline behavior, and integrations.
-
-A database specialist thinks in data ownership, schemas, entities, constraints, migrations, and lifecycle.
-
-A system analyst must understand all of these perspectives.
-
-Therefore the documentation should allow every participant to enter the repository through the part of the system that is relevant to them, while still being able to navigate toward the full picture.
+A plugin, a mobile product, and a distributed banking platform should not be forced into identical directory structures.
 
 ---
 
-## Documentation as a System Model
+## 2. Methodology vs Rules
 
-The repository itself becomes a model of the system.
+This file explains why the approach exists, how knowledge is constructed, how ownership is chosen, and how system perspectives relate.
 
-At the highest level:
+[`rules.md`](rules.md) defines the normative repository contract: what must be documented, what must not be duplicated, where knowledge belongs, and how consistency is reviewed.
+
+The methodology may evolve from project experience. The rules should change only when that evolution becomes an explicit repository standard.
+
+---
+
+## 3. The Repository Is a System Model
+
+Documentation should support progressive depth:
 
 ```text
 System
   ↓
-Major responsibility
+Responsibility / Component
   ↓
-Component
+Behavior / Contract / Data
   ↓
 Technology
   ↓
-Behavior
+Usage
   ↓
-Implementation detail
+Implementation evidence
 ```
 
-A reader chooses how deep to go.
+Different readers can enter at different points. A product reader may start from `business/`; a system analyst may move between `business/`, `system/`, `database/`, `backend/`, `frontend/`, and `integrations/`; a developer can enter directly through the component they own.
 
-This creates **progressive depth**.
-
-A newcomer may only need:
-
-```text
-business/
-system/
-```
-
-A backend developer may continue into:
-
-```text
-backend/
-backend/api/
-backend/auth/
-backend/stack/
-```
-
-A database specialist may enter directly through:
-
-```text
-database/
-```
-
-The repository should support all of these reading paths without requiring one mandatory linear document sequence.
+The reader should not be forced through one linear sequence to understand one local concern.
 
 ---
 
-## Hierarchy and Knowledge Graph
+## 4. Storage Is Hierarchical; Knowledge Is Graph-Based
 
-The repository has two simultaneous structures.
+Files and folders are hierarchical because ownership and navigation need a tree. Real system knowledge is not hierarchical.
 
-### Physical Structure
-
-Files and folders form a hierarchy.
-
-```text
-backend/
-└── auth/
-    ├── README.md
-    ├── sessions.md
-    └── token-lifecycle.md
-```
-
-This is useful for navigation and ownership.
-
-### Knowledge Structure
-
-Real system knowledge is not hierarchical.
-
-Authentication may depend on:
+Authentication can simultaneously involve:
 
 ```text
 business requirements
-database session entities
-backend auth logic
+backend session logic
+server data
 frontend bootstrap
+secure storage
+access policy
 security constraints
-architecture decisions
 ```
 
-Therefore documents must cross-reference related knowledge.
+The repository therefore has two simultaneous structures:
 
-The core principle is:
+```text
+Physical hierarchy
+→ where canonical knowledge lives
+
+Cross-reference graph
+→ how the system actually fits together
+```
 
 > **Storage is hierarchical. Knowledge is graph-based.**
 
-The directory tree helps the reader find information.
-
-Cross-references explain how the system actually works.
-
 ---
 
-## Canonical Knowledge
+## 5. Canonical Knowledge and Contextual Usage
 
-Every important concept should have one canonical location.
+Every important fact should have one canonical owner.
 
 Examples:
 
 ```text
 backend/api/
-    → canonical API contracts
+→ concrete backend HTTP contracts
 
 database/
-    → canonical data model
+→ canonical data architecture and physical persistence
 
-backend/stack/kafka/
-    → canonical explanation of Kafka usage in the backend
+frontend/stack/drift/
+→ Drift as a frontend data-access technology
 
-business/requirements/
-    → canonical business requirements
+integrations/revenuecat/
+→ the cross-component RevenueCat boundary
 ```
 
-Other documents reference the canonical source instead of repeating it.
-
-This creates another core principle:
+Other documents may repeat enough context to remain readable, but they should link back to the owner instead of creating a second source of truth.
 
 > **Do not duplicate knowledge. Duplicate context when necessary.**
 
-For example:
-
-```text
-backend/stack/kafka/
-```
-
-may explain:
-
-- why Kafka is used;
-- what role it has in the backend;
-- what alternatives exist;
-- what dependencies it creates.
-
-Then:
-
-```text
-backend/logs/
-```
-
-may explain:
-
-- how logging uses Kafka;
-- which events are published;
-- which failure scenarios matter.
-
-The second document does not redefine Kafka.
-
-It describes Kafka in the context of logging.
-
 ---
 
-## Stack as an Analytical Object
+## 6. Perspectives Are Required; Folder Templates Are Not
 
-Technology choices are not treated as incidental implementation details.
+A project must answer certain analytical questions even when its physical directory tree differs.
 
-The stack is a first-class analytical dimension.
-
-A technology should answer more than:
+At minimum, the analysis should make it possible to understand:
 
 ```text
-"We use Redis."
+Product / business intent
+System boundary and scope
+Data ownership and lifecycle
+Runtime responsibilities / components
+Interfaces and external integrations
+Technology choices and usages
+Failure / trust / security constraints
+Verification / acceptance
+Whole-system relationships
 ```
 
-Documentation should eventually make it possible to understand:
+For Aveli, those questions naturally became:
 
 ```text
-Why Redis?
-Where is it used?
-Which components depend on it?
-Which requirement does it support?
-What breaks if it is removed?
-Could it be replaced?
-What alternatives were considered?
-What operational cost does it introduce?
-```
-
-This is why stack documentation exists explicitly inside technical areas.
-
-Example:
-
-```text
+business/
+database/
 backend/
-└── stack/
-    ├── redis/
-    ├── kafka/
-    ├── rest-api/
-    └── docker/
+frontend/
+integrations/
+system/
 ```
 
-The technology then appears again only through contextual references where it is actually used.
+For another system, `backend/` or `frontend/` may be inapplicable, while `worker/`, `plugin/`, `gateway/`, or `operations/` may deserve top-level ownership.
+
+> **Make every important system perspective explicit, and let the real architecture determine its physical owner.**
 
 ---
 
-## Three Dimensions of Technical Knowledge
+## 7. Business and Technical Knowledge Stay Connected but Separate
 
-SSAD treats technical knowledge as three connected dimensions.
-
-### 1. Structural Knowledge
-
-What exists in the system?
-
-```text
-backend
-auth
-billing
-logs
-notifications
-database
-frontend
-```
-
-### 2. Technology Knowledge
-
-What technologies are used?
-
-```text
-NestJS
-PostgreSQL
-Redis
-Kafka
-Flutter
-Drift
-Docker
-```
-
-### 3. Usage Knowledge
-
-Where and why does each technology participate?
-
-```text
-Kafka
-  → logs
-  → audit
-  → notifications
-
-Redis
-  → cache
-  → session support
-
-Drift
-  → local workspace persistence
-```
-
-This model is important for both human understanding and future automated analysis.
-
----
-
-## Business and Technical Boundaries
-
-Business documentation and technical documentation must remain connected but separate.
-
-Business answers:
+Business documentation answers:
 
 ```text
 Why does this exist?
-What does the user need?
+Who needs it?
 What is in scope?
 What behavior must remain true?
 What result is acceptable?
@@ -355,429 +184,254 @@ What result is acceptable?
 Technical documentation answers:
 
 ```text
-How is it implemented?
+How is that behavior realized?
 Which component owns it?
+Which data and interfaces participate?
 Which technology supports it?
-Which data is used?
-Which interfaces are involved?
-How does it fail?
-How is it operated?
+How can it fail?
 ```
 
-A business statement may have technical consequences.
+A technical fact belongs in business documentation only when it materially changes product behavior, scope, an external contract, or a user-visible capability.
+
+Prefer product truth such as:
+
+```text
+Account state is server-managed.
+Professional workspace data is not synchronized between devices.
+```
+
+instead of implementation detail such as:
+
+```text
+Stored in PostgreSQL.
+Implemented with NestJS.
+```
+
+---
+
+## 8. Ownership Before Detail
+
+Before documenting implementation, determine who owns the responsibility.
+
+For important behavior, ask:
+
+```text
+Who decides this?
+Who stores the canonical state?
+Who may change it?
+Who only consumes it?
+Who verifies it?
+```
+
+Only after ownership is understood should the analysis finalize APIs, schemas, state models, technologies, or UI behavior.
+
+---
+
+## 9. Data Documentation Progresses from Ownership to Persistence
+
+Data should be modeled in dependency order:
+
+```text
+Data ownership
+    ↓
+Conceptual model
+    ↓
+Logical model
+    ↓
+Physical persistence model
+    ↓
+Migrations / constraints / lifecycle
+```
+
+A system-wide logical model should not erase real storage boundaries. Physical models belong to the persistence owner that stores them.
+
+When one product uses local SQLite and server PostgreSQL, those physical models remain distinct even if the logical domain view connects them.
+
+---
+
+## 10. Technology Is an Analytical Object
+
+Technology choices should answer more than "we use X".
+
+A meaningful technology document should explain, where known:
+
+```text
+What responsibility does it support?
+Why is it used here?
+Where is it used?
+What depends on it?
+What limitations does it introduce?
+How critical is it?
+Could it be replaced?
+What alternatives matter?
+```
+
+Technology ownership follows the responsibility it primarily realizes.
+
+Examples from Aveli:
+
+```text
+SQLite / PostgreSQL
+→ database persistence technologies
+
+Drift
+→ frontend data-access technology
+
+Prisma
+→ backend data-access technology
+
+RevenueCat
+→ external integration with frontend and backend consumers
+```
+
+Contextual usage can appear elsewhere, but canonical technology knowledge should not be duplicated across perspectives.
+
+---
+
+## 11. Three Dimensions of Technical Knowledge
+
+SSAD separates three connected questions.
+
+### Structural knowledge
+
+What exists?
+
+### Technology knowledge
+
+What is used?
+
+### Usage knowledge
+
+Where and why does each technology participate?
 
 Example:
 
 ```text
-Business:
-Professional workspace data is not synchronized between devices.
-
-Technical consequences:
-→ frontend/storage/
-→ database/local/
-→ system/decisions/
+Drift
+→ local repository implementations
+→ reactive workspace data
+→ local migrations
 ```
 
-The business document defines the product truth.
-
-The technical documents define how the system preserves that truth.
+Keeping these dimensions distinct improves both human navigation and automated analysis.
 
 ---
 
-## Business Is Not a Technical Summary
+## 12. Internal Interfaces and External Integrations Are Different Boundaries
 
-A business document should not become a shortened version of the architecture.
-
-For example:
+An internal interface connects components inside the analyzed system:
 
 ```text
-Stored in PostgreSQL
-Uses JWT
-Implemented with NestJS
+Aveli Mobile
+↕
+Aveli Backend
 ```
 
-does not belong in business documentation unless the technology itself has a direct product-level consequence.
+Its concrete contracts belong to the component that owns them, such as `backend/api/`.
 
-Prefer:
+An external integration crosses the system boundary:
 
 ```text
-Account state is server-managed.
-Access is controlled at workspace level.
-Professional data is not synchronized between devices.
+Aveli
+↕
+RevenueCat / App Store / Google Play / OS service / third-party API
 ```
 
-Then link to the technical implementation.
+Integration documentation owns the cross-boundary relationship: external responsibility, identity mapping, exchanged data, trust, authentication, failure behavior, and reconciliation.
 
-This keeps business documentation readable while preserving traceability.
+This prevents `integrations/` from becoming a generic bucket for every API call.
 
 ---
 
-## Technical Areas Are Not Artifact Buckets
+## 13. System View Is a Synthesis Layer
 
-A technical directory is not simply a place to store every document of a certain format.
+The final `system/` view should normally be built after major component perspectives are understood.
 
-For example:
-
-```text
-backend/api/
-```
-
-owns actual API contracts.
+It owns knowledge that cannot be assigned to only one component:
 
 ```text
-backend/stack/rest-api/
+system context
+component relationships
+end-to-end flows
+cross-component data movement
+trust / authority map
+system invariants
+boundary-changing evolution
+whole-system failure scenarios
 ```
 
-owns REST as an architectural and technological decision.
+It should not become another copy of backend, frontend, database, or integration documentation.
 
-These are related but not interchangeable.
+> **A layer may reference another layer, but a model that describes several layers together belongs to their nearest common system-level owner.**
 
-Similarly:
-
-```text
-database/
-```
-
-owns data architecture.
-
-It is not merely a folder containing ER diagrams.
-
-It may include:
-
-```text
-architecture
-stack
-entities
-schemas
-constraints
-indexes
-migrations
-queries
-ownership
-```
-
-The organizing principle is responsibility, not file format.
+A preliminary system sketch may exist early. The final system model should be synthesized from stabilized lower-level evidence.
 
 ---
 
-## Cross-Cutting Views
+## 14. Dependency-Driven Construction
 
-Some knowledge does not belong to one component.
+Documentation has dependencies just like implementation.
 
-Examples:
-
-```text
-system architecture
-technology map
-dependency graph
-architecture decisions
-traceability
-delivery changes
-```
-
-These are cross-cutting views.
-
-They should connect component-level knowledge rather than duplicate it.
-
-For example:
-
-```text
-system/
-```
-
-can show how backend, frontend, database, and integrations form one system.
-
-It should not become a second copy of all component documentation.
-
----
-
-## Traceability as Navigation Between Abstraction Levels
-
-Traceability is not only:
-
-```text
-Requirement → Test
-```
-
-In SSAD, the goal is to connect several levels:
-
-```text
-Business Need
-    ↓
-Business Rule
-    ↓
-Requirement
-    ↓
-Architecture Decision
-    ↓
-Component
-    ↓
-Technology / Interface / Data
-    ↓
-Acceptance
-    ↓
-Verification
-```
-
-Not every trace needs every step.
-
-The important part is that significant decisions can be followed both forward and backward.
-
-### Forward
-
-```text
-Why does the system need this?
-    ↓
-How is it implemented?
-```
-
-### Backward
-
-```text
-Why does this technology or component exist?
-    ↓
-Which product need justifies it?
-```
-
-The second direction is especially valuable when reviewing architecture.
-
----
-
-## Tasks and Change Artifacts
-
-A task is not inherently a business artifact.
-
-Tasks can exist in any area:
-
-```text
-backend
-frontend
-database
-operations
-integration
-```
-
-A task belongs to the context of the change it describes.
-
-Therefore task directories should not be created automatically inside every layer.
-
-They appear only when the project actually needs task-level documentation.
-
-At the business level, scope, requirements, business rules, processes, and acceptance criteria already define what the product must achieve.
-
-Creating an additional generic `business/tasks/` layer would usually duplicate that intent.
-
----
-
-## Business Knowledge Ownership
-
-The `business/` branch is ideally maintained through collaboration between a **Business Analyst** and a **System Analyst**.
-
-Their perspectives overlap, but their primary focus differs.
-
-### Business Analyst
-
-The Business Analyst primarily protects:
-
-- business goals;
-- stakeholder intent;
-- user problems;
-- product context;
-- business processes;
-- business rules;
-- acceptance of business outcomes.
-
-### System Analyst
-
-The System Analyst primarily protects:
-
-- system boundary consistency;
-- formalization of requirements;
-- product-to-system traceability;
-- non-functional expectations;
-- technical consequences of business decisions;
-- consistency between business knowledge and technical architecture.
-
-The business branch is therefore a **shared analytical boundary**, not an artifact owned exclusively by one profession.
-
-If a Business Analyst is not present, stewardship of the branch moves to the System Analyst.
-
-In that case, the System Analyst must still preserve the distinction between:
-
-```text
-Business decision
-        ≠
-Technical design decision
-```
-
-Missing business decisions should be validated with product owners, domain experts, or stakeholders rather than inferred solely from technical convenience.
-
----
-
-## Dependency-Driven Construction Strategy
-
-SSAD should not be built in arbitrary order.
-
-Documentation has dependencies just like software architecture.
-
-If downstream artifacts are finalized before their upstream assumptions are understood, the project repeatedly returns to already completed documents and rewrites them.
-
-The methodology therefore follows this principle:
-
-> **Build knowledge in dependency order and stabilize upstream decisions before detailing downstream implementation.**
-
-This does not eliminate iteration.
-
-The goal is to make iteration **local, visible, and intentional** rather than repeatedly rebuilding the entire repository.
-
-### Default Construction Direction
-
-A typical project should progress approximately as follows:
+A useful default direction is:
 
 ```text
 Existing evidence / product reality
         ↓
-Business Context
+Business context and scope
         ↓
-Scope
+Rules / requirements / processes
         ↓
-Business Rules / Requirements / Processes
-        ↓
-Initial component boundaries
+Initial responsibility boundaries
         ↓
 Data ownership and domain model
         ↓
-Interfaces and integration boundaries
+Interfaces and external constraints
         ↓
 Component architecture
         ↓
-Technology stack and implementation details
-        ↓
-Operations / security / release behavior
+Technology and implementation evidence
         ↓
 System-wide synthesis
         ↓
-Final traceability and consistency review
+Traceability / open questions / final consistency review
 ```
 
-The exact order may change when the system has strong external constraints, but the dependency principle remains.
+The exact order can change when an external constraint is upstream.
 
-For example, an externally mandated API contract may need to be analyzed before the internal backend design because the external contract is an upstream constraint.
+> **Build knowledge in dependency order and stabilize upstream decisions before detailing downstream implementation.**
 
 ---
 
-## Architecture Construction Principles
+## 15. Evidence-First Documentation
 
-### 1. Start from evidence, not from a desired diagram
-
-When analyzing an existing system, first establish what actually exists:
-
-- source code;
-- current product behavior;
-- database schemas;
-- external contracts;
-- deployment configuration;
-- stakeholder knowledge;
-- existing documentation.
-
-Documentation should model the real system unless the artifact explicitly describes a proposed target state.
-
-### 2. Define the product boundary before decomposing implementation
-
-Before documenting backend services, databases, integrations, or frontend modules, establish:
+When documenting an existing implementation, begin with evidence:
 
 ```text
-What is the system responsible for?
-What is outside its responsibility?
-Which behavior is required?
+source code
+schemas
+API contracts
+configuration
+native project files
+provider contracts
+current behavior
+tests
+existing documentation
+stakeholder decisions
 ```
 
-Without this boundary, technical decomposition tends to encode assumptions that later have to be removed.
-
-### 3. Establish ownership before detail
-
-Before describing implementation detail, determine which component owns the responsibility.
-
-Example:
+Separate what is:
 
 ```text
-Subscription access decision
-        ↓
-Who owns the decision?
-        ↓
-Only then describe API, data, integration, and stack.
+VERIFIED
+INFERRED
+OPEN
 ```
 
-This prevents the same responsibility from being independently documented in several layers.
-
-### 4. Model data ownership early
-
-Data ownership should be understood before finalizing many APIs and component interactions.
-
-The important early questions are:
-
-```text
-What data exists?
-Who owns it?
-Where is its canonical state?
-Who may change it?
-Who only consumes it?
-What is its lifecycle?
-```
-
-Physical storage details can follow later.
-
-### 5. Define canonical contracts before consumers
-
-An interface should have one owner.
-
-When a backend API is canonical, frontend documentation describes how it consumes that API rather than redefining it.
-
-When an external provider contract constrains the system, that contract should be documented before internal components that depend on it are finalized.
-
-### 6. Document technology after responsibility is understood
-
-A known technology may already exist in the implementation, but its documentation should still answer:
-
-```text
-What responsibility does it support?
-Why is it here?
-Where is it used?
-What depends on it?
-```
-
-Technology should not become the starting point for inventing system boundaries.
-
-### 7. Build component documentation before the final system view
-
-Component-level documentation is the source material for the final cross-system model.
-
-A preliminary component skeleton may exist early to guide navigation, but the final `system/` view should be synthesized after the major areas are documented.
-
-The system view should summarize established knowledge, not invent missing component behavior.
-
-### 8. Maintain traceability continuously
-
-Traceability should not be postponed until the project is finished.
-
-As each layer becomes stable, its important links should be added:
-
-```text
-Business
-    → Data
-    → Component
-    → Interface
-    → Technology
-    → Verification
-```
-
-The final traceability review then checks completeness instead of reconstructing relationships from memory.
+Do not convert an assumption into system truth because it makes the architecture look cleaner. A target-state proposal should be explicitly identified as target state.
 
 ---
 
-## Stabilization Before Expansion
-
-Documents should be treated as having different levels of maturity.
+## 16. Stabilization and Review
 
 A useful conceptual lifecycle is:
 
@@ -789,312 +443,171 @@ Baseline
 Stable
 ```
 
-### Draft
+- **Draft** — the system is still being discovered.
+- **Baseline** — stable enough to become upstream input for deeper work.
+- **Stable** — cross-checked against relevant implementation, contracts, or stakeholder decisions and suitable as canonical knowledge.
 
-The artifact is still being used to discover the system.
-
-Downstream documents should not rely on unstable details as final truth.
-
-### Baseline
-
-The artifact is sufficiently agreed and understood to become an input for deeper analysis.
-
-Small changes are still expected.
-
-### Stable
-
-The artifact has been cross-checked against the relevant implementation, contracts, or stakeholder decisions and can act as a canonical reference.
-
-The methodology does not require formal status metadata yet, but this distinction helps prevent premature detail.
-
-A downstream artifact may expose a problem in an upstream artifact.
-
-That is valid.
-
-The goal is not to forbid corrections; it is to avoid corrections caused only by analyzing the system in the wrong order.
+A downstream discovery may still reopen an upstream decision. The goal is not to avoid iteration; it is to avoid accidental rework caused by detailing downstream implementation before upstream ownership is understood.
 
 ---
 
-## System View Is a Synthesis Layer
+## 17. Tasks, Changes, and Optional Perspectives
 
-The `system/` branch represents knowledge that crosses component boundaries.
-
-It should normally be finalized **after** the relevant component areas have been documented.
-
-For example, the final system model may connect:
+A task is not inherently a business artifact. It belongs to the area of change it describes:
 
 ```text
-Business
-Database
-Backend
-Frontend
-Integrations
-Operations
+backend
+frontend
+database
+integration
+operations
+cross-system
 ```
 
-but the canonical details remain in those component areas.
+Task/change directories should appear only when real artifacts justify them.
 
-This leads to an ownership principle:
-
-> **A layer may reference another layer, but a model that describes several layers together belongs to their nearest common system-level owner.**
-
-Therefore a business document may reference backend or database consequences.
-
-A diagram that models business, backend, frontend, database, and integrations together belongs to `system/`, not to `business/`.
-
-
-## Documentation Should Support Real Implementation
-
-SSAD is intended to move beyond abstract analytical descriptions.
-
-Where appropriate, technical documentation should include or reference real artifacts:
-
-```text
-OpenAPI
-SQL
-DDL
-Prisma schema
-Drift tables
-JSON examples
-configuration examples
-Docker files
-migration scripts
-code fragments
-PlantUML
-```
-
-The goal is not to turn documentation into source code.
-
-The goal is to reduce the gap between analytical intent and the actual system.
+The same applies to optional perspectives such as `operations/`. Create one when the system has enough independent operational responsibility — deployment, observability, backups, incident recovery, release operations — to justify an owner.
 
 ---
 
-## Documentation Is for Multiple Roles
+## 18. Traceability Is Navigation Between Abstraction Levels
 
-The same repository should be useful to different readers.
-
-### Product or Business Reader
+Traceability should allow important decisions to be followed both forward and backward:
 
 ```text
-business/
+Business Need
+    ↓
+Business Rule / Requirement
+    ↓
+Component / Decision
+    ↓
+Interface / Data / Technology
+    ↓
+Acceptance
+    ↓
+Verification
 ```
 
-### System Analyst
+Not every trace requires every step. The important questions are:
 
 ```text
-business/
-system/
-database/
-backend/
-frontend/
-integrations/
+Why does this component or technology exist?
+How does this business rule survive implementation?
+How do we know the behavior is verified?
 ```
-
-### Backend Developer
-
-```text
-backend/
-database/
-integrations/
-```
-
-### Frontend Developer
-
-```text
-frontend/
-backend/api/
-database/local/
-```
-
-### DevOps / Operations
-
-```text
-operations/
-system/
-backend/deployment/
-```
-
-### QA
-
-```text
-business/requirements/
-business/traceability/
-operations/testing/
-technical component behavior
-```
-
-The methodology does not hide unrelated information from a role.
-
-It provides a clear entry point and lets the reader move deeper when necessary.
 
 ---
 
-## Human-Readable and Machine-Readable Knowledge
+## 19. Human-Readable and Machine-Analyzable Knowledge
 
-The repository is designed for both people and automated analysis.
+The primary repository is written for people, but its structure should also make automated review possible.
 
-Human-readable documentation explains meaning and context.
-
-Machine-readable metadata may later describe relationships.
-
-Example:
+Future metadata may describe relationships such as:
 
 ```yaml
-technology: redis
-layer: backend
-category: cache
-
+technology: drift
+owner: frontend
 used_by:
-  - sessions
-  - access
-
+  - local repositories
 supports:
-  - NFR-036
-
-criticality: medium
-replaceable: true
+  - local-first workspace
+criticality: high
+replaceability: medium
 ```
 
-This can eventually allow automated questions such as:
+This can support cross-project questions about repeated technologies, missing traceability, dependency risk, and architecture patterns.
 
-```text
-Where is Redis used?
-Which projects depend on Kafka?
-Which technologies repeatedly create operational complexity?
-Which requirements have no acceptance criteria?
-Which components have no documented failure scenarios?
-Which architectural decisions repeat across projects?
-```
-
-The methodology is intentionally designed so that AI tools can analyze repository structure without replacing human-readable documentation.
+AI can help discover contradictions, stale links, uncovered requirements, and dependency gaps. It does not replace responsibility ownership or human-readable explanation.
 
 ---
 
-## Multi-Project Analysis
+## 20. Bilingual Documentation
 
-One long-term goal is to make documentation comparable across projects.
-
-If several repositories use the same conceptual model, they can later be analyzed together.
-
-For example:
-
-```text
-Project A uses Kafka for logs and audit.
-Project B uses Kafka only for notifications.
-Project C uses no broker.
-
-Why?
-
-What requirements justified the choice?
-
-Was the operational cost worth it?
-```
-
-The methodology therefore treats architecture decisions, technology usage, ownership, criticality, and traceability as potentially analyzable information.
-
-This is not required for the first version of a project.
-
-It is a direction the structure should make possible.
-
----
-
-## Bilingual Documentation
-
-Human-readable project documentation is maintained in English and Russian.
-
-The goal is not two independent documentation sets.
-
-They represent the same knowledge in two languages.
-
-Machine-readable artifacts remain shared where translation would create meaningless duplication.
-
-Example:
+Human-readable project documentation may be maintained in paired languages:
 
 ```text
 README.md
 README.ru.md
-
-openapi.yaml       ← shared
-schema.sql         ← shared
-dependencies.yaml  ← shared
 ```
+
+Both versions represent the same knowledge, not independent documents.
+
+Machine-readable artifacts remain shared where translation creates meaningless duplication:
+
+```text
+openapi.yaml
+schema.sql
+PlantUML source
+JSON / YAML schemas
+```
+
+Implementation identifiers are not translated.
 
 ---
 
-## What SSAD Is Not
+## 21. What SSAD Is Not
 
-SSAD is not intended to replace:
-
-- UML;
-- BPMN;
-- C4;
-- OpenAPI;
-- ADR;
-- SQL documentation;
-- source code;
-- testing documentation;
-- operational runbooks;
-- product management.
+SSAD does not replace UML, BPMN, C4, ADRs, OpenAPI, SQL/schema documentation, source code, tests, product management, or operational runbooks.
 
 It is a way to **organize and connect those forms of knowledge around the system itself**.
 
-It also does not require every project to have identical directories.
+It also does not claim that its individual practices are novel. It combines established documentation practices around a system-oriented ownership model and tests that model against real projects.
 
-A Revit plugin, a mobile application, and a distributed banking platform should not have the same physical documentation tree if their architectures are different.
+---
+
+## 22. Aveli as the First Full Validation Case
+
+Aveli exposed several useful methodology corrections:
+
+- mandatory analytical questions are more important than mandatory folder names;
+- data ownership should be stabilized before physical schemas and many APIs;
+- technology ownership should follow responsibility, not whichever document first mentions a library;
+- an internal API is not automatically an external integration;
+- `system/` works best as a late synthesis layer;
+- failure scenarios and release readiness can become system-level review views without forcing a permanent `operations/` branch;
+- legacy artifact-oriented documentation should be removed only after an orphan-knowledge check.
+
+The resulting Aveli structure is:
+
+```text
+business/
+database/
+backend/
+frontend/
+integrations/
+system/
+```
+
+with supporting screenshots, rendered diagrams, methodology, and repository rules.
+
+This structure is a result of Aveli's architecture, not a template every project must copy.
 
 ---
 
 ## Working Definition
 
-The current working definition is:
+> **System-Structured Analysis Documentation is an evolving documentation methodology in which analytical and technical knowledge is organized around the actual responsibilities and boundaries of a system, while canonical ownership, contextual references, traceability, and system-level synthesis connect business intent to implementation and verification.**
 
-> **System-Structured Analysis Documentation is a documentation methodology in which analytical and technical knowledge is organized around the actual structure and responsibilities of a system, while cross-references connect business intent, architecture, technologies, implementation context, and verification into a navigable knowledge graph.**
-
-The methodology favors:
+In compact form:
 
 ```text
-system-oriented hierarchy
+system-shaped hierarchy
++
+canonical ownership
 +
 progressive depth
 +
-canonical knowledge
-+
 contextual usage
++
+evidence-first construction
 +
 explicit technology modeling
 +
 traceability
 +
-real technical artifacts
+system synthesis
 +
-human and machine readability
+human-readable knowledge graph
 ```
 
----
-
-## Evolution
-
-This methodology is intentionally not considered final.
-
-New projects may reveal:
-
-- missing abstraction levels;
-- weak boundaries;
-- unnecessary duplication;
-- better naming;
-- better metadata models;
-- new cross-project analytical possibilities.
-
-When that happens:
-
-```text
-Observation
-    ↓
-Methodology change
-    ↓
-Rule update if necessary
-    ↓
-Repository structure evolves
-```
-
-The methodology should grow from real project experience rather than from theoretical completeness.
+The methodology should continue to evolve from real project evidence rather than from theoretical completeness.
