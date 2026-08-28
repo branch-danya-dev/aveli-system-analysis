@@ -1,0 +1,175 @@
+@startuml
+title Aveli — Verified Logical Data Model
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam entity {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+}
+skinparam ArrowColor black
+
+package "Identity & Access" {
+entity Account {
+  * id
+  --
+  email
+  status
+}
+
+entity Session {
+  * id
+  --
+  accountId
+  validUntil
+  state
+  deviceContext
+}
+
+entity AccessSource {
+  * id
+  --
+  accountId
+  type
+  source
+  startsAt
+  expiresAt
+  revokedAt
+}
+
+entity SubscriptionState {
+  * id
+  --
+  accountId
+  product
+  entitlement
+  status
+  autoRenew
+  validUntil
+  lastVerifiedAt
+}
+
+entity SubscriptionEvent {
+  * id
+  --
+  subscriptionId
+  accountId
+  externalEventId
+  eventType
+  payload
+  receivedAt
+  processedAt
+  processingError
+}
+
+Account ||--o{ Session
+Account ||--o{ AccessSource
+Account ||--o{ SubscriptionState
+Account |o--o{ SubscriptionEvent
+SubscriptionState |o--o{ SubscriptionEvent
+}
+
+package "Professional Workspace" {
+entity Client {
+  * id
+  --
+  name
+  phone
+  social
+  deviceContactId
+  tags
+  archivedAt
+  createdAt
+}
+
+entity Service {
+  * id
+  --
+  name
+  duration
+  price
+  returnInterval
+}
+
+entity Appointment {
+  * id
+  --
+  clientId
+  serviceId
+  startsAt
+  endsAt
+  priceSnapshot
+  status
+  paymentStatus
+  createdAt
+  updatedAt
+}
+
+entity VisitNote {
+  * id
+  --
+  appointmentId
+  body
+  createdAt
+}
+
+entity VisitPhoto {
+  * id
+  --
+  appointmentId
+  clientId
+  mediaReference
+  type
+  createdAt
+}
+
+entity Payment {
+  * id
+  --
+  appointmentId
+  amount
+  amountPaid
+  status
+  method
+  createdAt
+  paidAt
+}
+
+entity WorkspaceSettings {
+  --
+  profile
+  currency
+  locale
+  appearance
+  workingSchedule
+  reminders
+  localPublicState
+  exchangeRateCache
+}
+
+Client ||--o{ Appointment
+Service ||--o{ Appointment
+Appointment ||--o{ VisitNote
+Appointment ||--o{ VisitPhoto
+Appointment ||--o| Payment
+Client ||--o{ VisitPhoto
+}
+
+note bottom of AccessSource
+Effective Access is derived from
+AccessSource + SubscriptionState.
+end note
+
+note bottom of Appointment
+Conceptual Visit remains a domain concept.
+Physical persistence is appointment-associated.
+end note
+
+note bottom of Payment
+0..1 is verified by the
+physical UNIQUE constraint.
+end note
+
+@enduml

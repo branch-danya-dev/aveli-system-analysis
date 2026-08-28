@@ -1,0 +1,95 @@
+@startuml
+title Aveli — Server PostgreSQL Physical Schema
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam entity {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+}
+skinparam ArrowColor black
+
+entity users {
+  * id : UUID
+  --
+  email : TEXT
+  email_normalized : TEXT <<UNIQUE>>
+  password_hash : TEXT
+  email_verified_at : TIMESTAMPTZ?
+  status : UserStatus
+  created_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ
+  last_login_at : TIMESTAMPTZ?
+}
+
+entity auth_sessions {
+  * id : UUID
+  --
+  user_id : UUID
+  refresh_token_hash : TEXT
+  device_id : TEXT?
+  device_name : TEXT?
+  platform : TEXT?
+  created_at : TIMESTAMPTZ
+  last_used_at : TIMESTAMPTZ
+  expires_at : TIMESTAMPTZ
+  revoked_at : TIMESTAMPTZ?
+}
+
+entity access_grants {
+  * id : UUID
+  --
+  user_id : UUID
+  type : AccessGrantType
+  source : AccessGrantSource
+  starts_at : TIMESTAMPTZ
+  ends_at : TIMESTAMPTZ?
+  revoked_at : TIMESTAMPTZ?
+  created_at : TIMESTAMPTZ
+  created_by : TEXT?
+  note : TEXT?
+}
+
+entity subscriptions {
+  * id : UUID
+  --
+  user_id : UUID
+  provider : SubscriptionProvider
+  entitlement_id : TEXT
+  product_id : TEXT
+  store : Store
+  status : SubscriptionStatus
+  auto_renew : BOOLEAN
+  purchased_at : TIMESTAMPTZ?
+  current_period_start : TIMESTAMPTZ?
+  current_period_end : TIMESTAMPTZ?
+  provider_customer_id : TEXT?
+  original_transaction_id : TEXT?
+  last_verified_at : TIMESTAMPTZ?
+  created_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ
+}
+
+entity subscription_events {
+  * id : UUID
+  --
+  subscription_id : UUID?
+  user_id : UUID?
+  provider : TEXT
+  external_event_id : TEXT <<UNIQUE>>
+  event_type : TEXT
+  payload : JSONB
+  received_at : TIMESTAMPTZ
+  processed_at : TIMESTAMPTZ?
+  processing_error : TEXT?
+}
+
+users ||--o{ auth_sessions : CASCADE
+users ||--o{ access_grants : CASCADE
+users ||--o{ subscriptions : CASCADE
+users |o--o{ subscription_events : SET NULL
+subscriptions |o--o{ subscription_events : SET NULL
+
+@enduml

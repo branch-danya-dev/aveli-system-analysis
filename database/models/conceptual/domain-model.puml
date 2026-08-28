@@ -1,0 +1,68 @@
+@startuml
+title Aveli — Conceptual Data Model
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam package {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+}
+skinparam rectangle {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  RoundCorner 8
+}
+skinparam ArrowColor black
+
+left to right direction
+
+package "Identity & Access" {
+  rectangle Account
+  rectangle Session
+  rectangle Subscription
+  rectangle Access
+
+  Account --> Session : authenticates through
+  Account --> Subscription : may have
+  Account --> Access : evaluated for
+  Subscription ..> Access : may contribute to
+}
+
+package "Professional Workspace" {
+  rectangle Client
+  rectangle Service
+  rectangle Appointment
+  rectangle Visit
+  rectangle "Visit Note" as VisitNote
+  rectangle "Visit Photo" as VisitPhoto
+  rectangle Payment
+  rectangle Schedule
+
+  Client --> Appointment : has
+  Service --> Appointment : referenced by
+  Schedule ..> Appointment : constrains planning
+  Appointment --> Visit : completed work
+  Visit --> VisitNote : may include
+  Visit --> VisitPhoto : may include
+  Visit --> Payment : may include
+}
+
+Access ..> Appointment : controls workspace availability
+Access ..> Client : controls workspace availability
+
+note bottom of Access
+Conceptual access decision.
+Physical access sources may be
+stored separately.
+end note
+
+note bottom of Visit
+Conceptual completed-work entity.
+It does not require a standalone
+physical table.
+end note
+
+@enduml

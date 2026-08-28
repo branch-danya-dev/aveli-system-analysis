@@ -1,0 +1,92 @@
+@startuml
+title Aveli — Local SQLite Physical Schema
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam entity {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+}
+skinparam ArrowColor black
+
+entity clients {
+  * id : TEXT
+  --
+  name : TEXT
+  phone : TEXT?
+  social : TEXT?
+  device_contact_id : TEXT?
+  tags : TEXT?
+  archived_at : DATETIME?
+  created_at : DATETIME
+}
+
+entity services {
+  * id : TEXT
+  --
+  name : TEXT
+  duration : INTEGER
+  price : INTEGER
+  return_interval : INTEGER?
+}
+
+entity appointments {
+  * id : TEXT
+  --
+  client_id : TEXT
+  service_id : TEXT
+  starts_at : DATETIME
+  ends_at : DATETIME
+  price : INTEGER
+  status : TEXT
+  payment_status : TEXT
+  created_at : DATETIME
+  updated_at : DATETIME
+}
+
+entity payments {
+  * id : TEXT
+  --
+  appointment_id : TEXT <<UNIQUE>>
+  amount : INTEGER
+  amount_paid : INTEGER
+  status : TEXT
+  method : TEXT?
+  created_at : DATETIME
+  paid_at : DATETIME?
+}
+
+entity visit_notes {
+  * id : TEXT
+  --
+  appointment_id : TEXT
+  body : TEXT
+  created_at : DATETIME
+}
+
+entity visit_photos {
+  * id : TEXT
+  --
+  appointment_id : TEXT
+  client_id : TEXT
+  local_path : TEXT
+  type : TEXT
+  created_at : DATETIME
+}
+
+entity app_settings {
+  * key : TEXT
+  --
+  value : TEXT
+}
+
+clients ||--o{ appointments : client_id
+services ||--o{ appointments : service_id
+appointments ||--o| payments : appointment_id
+appointments ||--o{ visit_notes : CASCADE
+appointments ||--o{ visit_photos : CASCADE
+clients ||--o{ visit_photos : client_id
+
+@enduml

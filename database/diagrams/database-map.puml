@@ -1,0 +1,60 @@
+@startuml
+title Aveli — Database Knowledge Map
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam rectangle {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  RoundCorner 8
+}
+skinparam ArrowColor black
+
+top to bottom direction
+
+rectangle "Data Architecture\nOwnership / Lifecycle" as Architecture
+rectangle "Conceptual Model\nSystem meaning" as Conceptual
+rectangle "Logical Model\nAttributes / Relations / Cardinality" as Logical
+
+rectangle "Local Persistence\nPer-user workspace" as Local
+rectangle "Server Persistence\nIdentity / Access / Billing" as Server
+
+rectangle "SQLite + Files\nPhysical local data" as LocalPhysical
+rectangle "PostgreSQL\nPhysical server data" as ServerPhysical
+
+rectangle "Drift\nLocal data-access layer" as Drift
+rectangle "Prisma\nServer data-access layer" as Prisma
+
+Architecture --> Conceptual
+Conceptual --> Logical
+
+Logical --> Local
+Logical --> Server
+
+Local --> LocalPhysical
+Server --> ServerPhysical
+
+LocalPhysical --> Drift : accessed through
+ServerPhysical --> Prisma : accessed through
+
+note bottom of Architecture
+Defines responsibility before storage detail.
+end note
+
+note bottom of Logical
+Technology-independent structure.
+end note
+
+note bottom of Local
+Professional workspace data
+is not synchronized to backend.
+end note
+
+note bottom of Server
+Backend owns account,
+access and subscription state.
+end note
+
+@enduml
