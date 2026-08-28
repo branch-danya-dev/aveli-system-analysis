@@ -1,9 +1,11 @@
-# Backend Security
+# Безопасность бэкенда
 
-> Implemented server-side security controls и trust boundaries.
+> Реализованные серверные меры безопасности и границы доверия.
 
-## Навигация
+Эта область описывает только безопасность бэкенда.
 
-- [`controls.ru.md`](controls.ru.md)
+Межуровневые отношения доверия находятся в [`../../system/trust/`](../../system/trust/), а внешние интеграционные границы — в [`../../integrations/`](../../integrations/).
 
-Cross-layer security позже может быть synthesized на system level; эта область владеет backend-specific controls.
+Подробности:
+
+[`controls.ru.md`](controls.ru.md)

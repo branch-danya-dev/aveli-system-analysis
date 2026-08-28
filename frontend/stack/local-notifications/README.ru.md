@@ -1,17 +1,17 @@
 # flutter_local_notifications
 
-> Device-local notification technology visit reminders.
+> Технология локальных уведомлений устройства для напоминаний о визитах.
 
-## Verified Version
+## Подтверждённая версия
 
 `flutter_local_notifications 22.3.0`
 
-## Role
+## Роль
 
-`LocalVisitReminderScheduler` использует package для appointment reminders, payload navigation и startup notification-launch handling.
+`LocalVisitReminderScheduler` использует пакет для напоминаний о записях, навигационной полезной нагрузки и обработки запуска приложения из уведомления.
 
-Timezone handling: `timezone` + `flutter_timezone`.
+Работа с часовыми поясами: `timezone` + `flutter_timezone`.
 
-## Replaceability
+## Заменяемость
 
-**Medium.** Scheduler abstraction ограничивает impact, но platform configuration, payload behavior и alarm semantics потребуют migration.
+**Средняя.** Абстракция планировщика ограничивает влияние замены, однако потребуется перенести платформенную конфигурацию, формат полезной нагрузки и семантику системных будильников.

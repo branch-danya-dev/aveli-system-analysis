@@ -1,82 +1,68 @@
-# RevenueCat Webhook Processing
+# Обработка вебхуков RevenueCat
 
-> Проверенная server-to-server processing model RevenueCat lifecycle events.
-
-## Endpoint
+## Эндпоинт
 
 ```text
 POST /v1/webhooks/revenuecat
 ```
 
-## Authentication
+## Аутентификация
 
-Incoming `Authorization` header должен точно равняться:
+Входящий заголовок `Authorization` должен точно совпадать с:
 
 ```text
 REVENUECAT_WEBHOOK_AUTH
 ```
 
-Shared-secret check отделен от JWT client authentication.
+Это проверка общего секрета, отдельная от аутентификации JWT клиента.
 
-## Processing
+## Последовательность обработки
 
-Verified flow:
+1. взять `event.id` как `external_event_id` или построить синтетический хэш;
+2. проверить, обрабатывалось ли событие ранее;
+3. если событие уже успешно обработано — пропустить повторную обработку;
+4. создать или обновить `subscription_events` с очищенной полезной нагрузкой;
+5. если `app_user_id` является действительным UUID Aveli — сверить состояние через `syncCustomer(userId)`;
+6. записать `processed_at` при успехе или `processing_error` при ошибке.
 
-1. извлечь `event.id` как `external_event_id` или создать synthetic hash;
-2. проверить idempotency;
-3. если existing event уже processed — skip;
-4. insert/update `subscription_events` с sanitized payload;
-5. если `app_user_id` — valid Aveli UUID, reconcile через `syncCustomer(userId)`;
-6. set `processed_at` при success или `processing_error` при failure.
+## Идемпотентность
 
-## Critical Rule
+Уникальность `subscription_events.external_event_id` обеспечивает идемпотентность обработки.
 
-Webhook **не** выдает и не отбирает workspace access напрямую по `event_type`.
+Повторная доставка одного и того же события не должна приводить к повторному изменению бизнес-состояния.
 
-Вместо этого:
+## Важная граница
+
+Тип события вебхука **не является непосредственным решением о доступе**.
 
 ```text
-Webhook Event
-      ↓
-Identify Aveli user
-      ↓
-RevenueCat REST reconciliation
-      ↓
-Normalized subscription snapshot
-      ↓
-Common access decision
+Вебхук
+   ↓
+определить пользователя
+   ↓
+REST API RevenueCat
+   ↓
+нормализованная подписка
+   ↓
+общее определение доступа
 ```
 
-## Idempotency
+## Полезная нагрузка
 
-Canonical persistence key:
+Исходная полезная нагрузка провайдера хранится в JSONB после очистки согласно текущей реализации.
 
-```text
-subscription_events.external_event_id
-```
+Её внутренняя структура не является стабильным клиентским контрактом.
 
-Database uniqueness поддерживает webhook idempotency.
+## Ошибка обработки
 
-См.:
+При ошибке обработки:
 
-[`../../database/server/entities/subscription_events.ru.md`](../../database/server/entities/subscription_events.ru.md)
+- записывается `processing_error`;
+- ошибка пробрасывается выше;
+- провайдер получает ответ не 2xx и может повторить доставку.
 
-## Payload
+Успешная обработка возвращает:
 
-Raw provider payload сохраняется как JSONB после sanitization согласно current implementation behavior.
-
-Его structure не является stable client contract.
-
-## Failure Persistence
-
-Processing failure может сохраняться в:
-
-```text
-processing_error
-```
-
-successful processing time:
-
-```text
-processed_at
+```json
+{ "ok": true }
 ```

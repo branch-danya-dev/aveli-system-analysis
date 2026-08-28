@@ -1,63 +1,23 @@
-# Health Contracts
+# Контракты проверки состояния
 
 ## `GET /health`
 
-Purpose:
+Проверка доступности процесса.
 
-Liveness check.
-
-External dependencies не проверяются.
-
-Success:
-
-```json
-{
-  "status": "ok"
-}
-```
-
-HTTP:
+Успех:
 
 ```text
-200
+200 OK
 ```
+
+Эндпоинт подтверждает, что приложение запущено и может отвечать на запросы HTTP.
 
 ## `GET /ready`
 
-Purpose:
+Проверка готовности сервиса.
 
-Readiness check.
+Успех означает, что обязательные зависимости, необходимые для обслуживания запросов, доступны.
 
-Backend проверяет PostgreSQL через:
+При неготовности возвращается HTTP 503.
 
-```sql
-SELECT 1
-```
-
-Success:
-
-```json
-{
-  "status": "ok"
-}
-```
-
-HTTP:
-
-```text
-200
-```
-
-Dependency failure:
-
-```json
-{
-  "status": "error"
-}
-```
-
-HTTP:
-
-```text
-503
-```
+Эти маршруты намеренно не используют префикс `/v1`.

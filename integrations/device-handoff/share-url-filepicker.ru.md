@@ -1,10 +1,10 @@
-# Share / URL / File Picker Boundaries
+# Границы системного обмена, URL и выбора файлов
 
-Эти integrations являются material system boundaries, но слишком малы для отдельных top-level provider directories.
+Эти интеграции являются значимыми системными границами, но не требуют отдельных корневых директорий для каждого провайдера.
 
-## SMS Composer
+## Редактор SMS
 
-Technology:
+Технология:
 
 ```text
 url_launcher 6.3.2
@@ -13,15 +13,15 @@ url_launcher 6.3.2
 Aveli передает:
 
 ```text
-phone
-message body
+телефон
+текст сообщения
 ```
 
-в user SMS application.
+в приложение SMS, выбранное пользователем.
 
-Aveli сам SMS не отправляет.
+Aveli самостоятельно SMS не отправляет.
 
-## Subscription Management URLs
+## URL управления подпиской
 
 `url_launcher` открывает:
 
@@ -37,50 +37,50 @@ Google Play:
 https://play.google.com/store/account/subscriptions?package=com.aveli.aveli
 ```
 
-с optional `sku`.
+с необязательным `sku`.
 
-Store UI остается authoritative для subscription-management actions внутри store.
+Интерфейс магазина остаётся источником управления действиями с подпиской внутри магазина.
 
-## Share Sheet
+## Системное меню «Поделиться»
 
-Technology:
+Технология:
 
 ```text
 share_plus 13.3.0
 ```
 
-Profile export:
+Экспорт профиля:
 
 ```text
-generate JSON
+сформировать JSON
   ↓
-write temporary file
+записать временный файл
   ↓
-open OS share sheet
+открыть системное меню «Поделиться»
   ↓
-best-effort delete temp file
+по возможности удалить временный файл
 ```
 
-Target application выбирает user.
+Целевое приложение выбирает пользователь.
 
-## File Picker
+## Системный выбор файла
 
-Technology:
+Технология:
 
 ```text
 file_picker 12.0.0
 ```
 
-Profile import:
+Импорт профиля:
 
 ```text
-user selects JSON file
+пользователь выбирает файл JSON
   ↓
-Aveli reads UTF-8 content
+Aveli читает содержимое в UTF-8
 ```
 
-Cancel дает отсутствие input, а не technical failure.
+Отмена означает отсутствие входного файла, а не технический сбой.
 
-## Boundary Principle
+## Принцип границы
 
-Aveli initiates handoff, но target OS application/service владеет interaction после передачи control.
+Aveli инициирует передачу управления, но после неё взаимодействием управляет целевое приложение или сервис операционной системы.

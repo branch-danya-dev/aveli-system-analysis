@@ -1,6 +1,6 @@
-# System Architecture
+# Архитектура системы
 
-> Cross-component context, responsibilities, boundaries и relationships.
+> Межкомпонентный контекст, зоны ответственности, границы и связи системы.
 
 ## Навигация
 
@@ -9,6 +9,6 @@
 - [`boundaries.ru.md`](boundaries.ru.md)
 - [`system-map.puml`](system-map.puml)
 
-Area владеет только cross-layer models.
+Раздел содержит только модели, пересекающие несколько уровней системы.
 
-Detailed component architecture остается в соответствующих lower-level directories.
+Подробная архитектура компонентов остаётся в соответствующих разделах компонентов.

@@ -1,6 +1,6 @@
-# Integration Architecture
+# Архитектура интеграций
 
-> System-level topology, ownership, trust и failure boundaries Aveli external integrations.
+> Системная топология внешних интеграций Aveli, владение данными, границы доверия и поведение при отказах.
 
 ## Навигация
 

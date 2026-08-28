@@ -1,25 +1,25 @@
 # `auth_sessions`
 
-> Persisted records refresh sessions.
+> Сохранённые записи сессий обновления токена.
 
-| Field | Type | Meaning |
+| Поле | Тип | Назначение |
 |---|---|---|
-| `id` | UUID PK | Идентификатор session. |
-| `user_id` | UUID FK | Owning user; → `users`, ON DELETE CASCADE. |
-| `refresh_token_hash` | TEXT | Hash refresh token; plaintext token не хранится. |
-| `device_id` | TEXT nullable | Идентификатор устройства, если известен. |
-| `device_name` | TEXT nullable | Отображаемое имя устройства. |
-| `platform` | TEXT nullable | Platform: android / ios / other. |
-| `created_at` | TIMESTAMPTZ | Время создания session. |
-| `last_used_at` | TIMESTAMPTZ | Последнее использование session. |
+| `id` | UUID PK | Идентификатор сессии. |
+| `user_id` | UUID FK | Пользователь-владелец; → `users`, ON DELETE CASCADE. |
+| `refresh_token_hash` | TEXT | Хеш токена обновления; сам токен в открытом виде не хранится. |
+| `device_id` | TEXT, допускает NULL | Идентификатор устройства, если известен. |
+| `device_name` | TEXT, допускает NULL | Отображаемое имя устройства. |
+| `platform` | TEXT, допускает NULL | Платформа: `android`, `ios` или другое значение. |
+| `created_at` | TIMESTAMPTZ | Время создания сессии. |
+| `last_used_at` | TIMESTAMPTZ | Последнее использование сессии. |
 | `expires_at` | TIMESTAMPTZ | Граница срока действия. |
-| `revoked_at` | TIMESTAMPTZ nullable | Время revoke при logout / rotation. |
+| `revoked_at` | TIMESTAMPTZ, допускает NULL | Время отзыва при выходе или ротации. |
 
-## Constraints / Indexes
+## Ограничения и индексы
 
 - CHECK: `expires_at > created_at`
-- index: `user_id`
-- index: `expires_at`
+- индекс: `user_id`
+- индекс: `expires_at`
 
 ## Связанная документация
 

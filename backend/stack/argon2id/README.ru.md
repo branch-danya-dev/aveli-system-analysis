@@ -1,35 +1,43 @@
 # Argon2id
 
-> Password-hashing technology Aveli account authentication.
+> Технология хэширования паролей для аутентификации аккаунтов Aveli.
 
-## Role
+## Роль
 
-Argon2id защищает stored passwords: вместо plaintext credentials сохраняется one-way hash.
+Argon2id защищает сохранённые пароли: вместо пароля в открытом виде сохраняется односторонний хэш.
 
 ## Почему подходит
 
-Passwords — long-lived authentication secrets, поэтому им нужен deliberately expensive password-hashing function, а не быстрый general-purpose digest. Argon2id разработан для password hashing и использует memory-hard behavior.
+Пароль — долгоживущий секрет аутентификации. Для него нужна намеренно ресурсоёмкая функция хэширования, а не быстрая хэш-функция общего назначения.
 
-## Contextual Usage
+Argon2id предназначен именно для паролей и существенно использует память при вычислении.
 
-Registration/login behavior: [`../../auth/authentication.ru.md`](../../auth/authentication.ru.md)
+## Использование в Aveli
 
-Physical storage: [`../../../database/server/entities/users.ru.md`](../../../database/server/entities/users.ru.md)
+Регистрация и вход: [`../../auth/authentication.ru.md`](../../auth/authentication.ru.md)
 
-Dummy-hash behavior для missing users относится к authentication/security usage, а не к canonical technology definition.
+Физическое хранение: [`../../../database/server/entities/users.ru.md`](../../../database/server/entities/users.ru.md)
 
-## Dependencies
+Использование фиктивного хэша при входе несуществующего пользователя относится к логике аутентификации и безопасности, а не к определению самой технологии.
 
-Current runtime package: `argon2` 0.45.
+## Зависимости
 
-## Limitations
+Текущий пакет: `argon2` 0.45.
 
-Hash cost влияет на CPU/memory, параметры могут требовать tuning, а их изменение требует upgrade/rehash policy. Exact Argon2 parameters отсутствуют в supplied implementation description и здесь не придумываются.
+## Ограничения
 
-## Replaceability
+Стоимость вычисления хэша влияет на CPU и память. Параметры могут потребовать настройки в будущем, а их изменение — политики постепенного обновления хэшей.
 
-**Medium.** Замена требует compatibility с existing hashes, изменений verification, возможно opportunistic rehash и regression testing, но не public API change.
+Точные параметры Argon2 отсутствуют в предоставленном описании реализации и намеренно не придумываются.
 
-## Alternatives
+## Заменяемость
 
-Релевантные alternatives: bcrypt, scrypt и PBKDF2 где требуется. Historical ADR с formal comparison отсутствует.
+**Средняя.**
+
+Потребуется совместимость с существующими хэшами, изменение проверки, возможно постепенное перехэширование и регрессионные тесты. Публичный API при этом менять не требуется.
+
+## Альтернативы
+
+В зависимости от требований могут использоваться bcrypt, scrypt или PBKDF2.
+
+Исторического ADR с формальным сравнением альтернатив нет.

@@ -1,14 +1,14 @@
-# Frontend
+# Фронтенд
 
-> Canonical documentation Aveli Flutter client и local-first professional workspace runtime.
+> Каноническая документация мобильного клиента Aveli на Flutter и его локального профессионального рабочего пространства.
 
 ## Статус
 
-**Baseline: Stable**
+**Базовая версия: стабильна**
 
-Frontend baseline reconciled с Flutter `0.2.2+4`, `lib/`, package evidence, navigation/state/data flows и final ownership review.
+Базовая версия фронтенда сверена с клиентом Flutter `0.2.2+4`, его структурой `lib/`, составом зависимостей, сценариями навигации, состояния и данных, а также итоговой проверкой владения между компонентами.
 
-## Verified Source Shape
+## Подтверждённая структура исходного кода
 
 ```text
 lib/
@@ -30,10 +30,32 @@ lib/
     └── today/
 ```
 
-Client may temporary trust verified snapshot offline, но backend entitlement precedence не пересчитывает.
+## Граница ответственности
 
-Verification: [`implementation-verification.ru.md`](implementation-verification.ru.md)
+```text
+Профессиональное рабочее пространство
+        ↓
+Фронтенд
+        ↓
+Drift / SQLite + локальные файлы + службы устройства
 
-## Documentation Rules
+Идентичность + авторитетное решение о доступе при работе в сети
+        ↓
+Бэкенд
+```
+
+Клиент может временно доверять ранее проверенному снимку состояния доступа при работе без сети, но не воспроизводит серверный порядок приоритетов источников доступа самостоятельно.
+
+## Каноническое межуровневое владение
+
+- физическая модель данных → [`../database/`](../database/)
+- контракты HTTP API бэкенда → [`../backend/api/`](../backend/api/)
+- полномочия бэкенда в аутентификации и доступе → [`../backend/`](../backend/)
+- внешние провайдеры → [`../integrations/`](../integrations/)
+- продуктовое поведение → [`../business/`](../business/)
+
+Проверка реализации: [`implementation-verification.ru.md`](implementation-verification.ru.md)
+
+## Правила документации
 
 [`../rules.ru.md`](../rules.ru.md)

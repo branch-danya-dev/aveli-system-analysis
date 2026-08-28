@@ -1,84 +1,84 @@
-# Aveli — Trust Model
+# Aveli — модель доверия
 
-## Principle
+## Принцип
 
-Aveli использует **разные authorities для разных facts**.
+В Aveli **разные факты имеют разные источники полномочий**.
 
-Ни один component не trusted для всех system decisions.
+Ни один компонент не считается доверенным источником для всех системных решений одновременно.
 
-## Authority Matrix
+## Матрица полномочий
 
-| Question | Authority |
+| Вопрос | Полномочный источник |
 |---|---|
-| Who is authenticated account? | Aveli Backend |
-| Is refresh session valid? | Aveli Backend |
-| Does Aveli trial/grant exist? | Aveli Backend |
-| What subscription state does RevenueCat recognize? | RevenueCat / store evidence |
-| May workspace be opened online? | Aveli Backend |
-| May verified state temporarily be trusted offline? | Frontend policy using backend snapshot |
-| What clients/appointments/payments exist? | Local professional workspace |
-| What visit-photo file exists locally? | Local workspace filesystem |
-| What device contacts exist? | Device OS contact provider |
-| Was local reminder scheduled? | Frontend + OS notification scheduler |
+| Какой аккаунт аутентифицирован? | Бэкенд Aveli |
+| Действительна ли сессия обновления? | Бэкенд Aveli |
+| Существует ли пробный период или ручное право доступа Aveli? | Бэкенд Aveli |
+| Какое состояние подписки признаёт провайдер? | RevenueCat и данные магазина |
+| Можно ли открыть рабочее пространство при наличии сети? | Бэкенд Aveli |
+| Можно ли временно доверять ранее проверенному состоянию без сети? | Политика фронтенда на основе снимка, полученного от бэкенда |
+| Какие клиенты, записи и оплаты существуют? | Локальное профессиональное рабочее пространство |
+| Какие фотографии визитов существуют локально? | Локальное файловое хранилище рабочего пространства |
+| Какие контакты существуют на устройстве? | Системный провайдер контактов устройства |
+| Было ли запланировано локальное напоминание? | Фронтенд и системный планировщик уведомлений |
 
-## Client Trust
+## Доверие к клиенту
 
-Mobile client trusted чтобы:
+Мобильному клиенту доверяется:
 
 ```text
-store local professional data
-select correct per-user workspace
-protect credentials/snapshot using secure storage
-apply access verification policy
+хранить локальные профессиональные данные
+выбирать правильное рабочее пространство пользователя
+защищать учётные данные и снимок через защищённое хранилище
+применять политику проверки доступа
 ```
 
-Он не trusted для invent server entitlement.
+При этом клиент не имеет права самостоятельно создавать серверное право доступа.
 
-## Backend Trust
+## Доверие к бэкенду
 
-Backend trusted чтобы:
+Бэкенду доверяется:
 
 ```text
-validate identity/session
-own trial/grants
-normalize RevenueCat state
-resolve access
+проверять идентичность и сессию
+управлять пробным периодом и правами доступа
+нормализовать состояние RevenueCat
+определять итоговый доступ
 ```
 
-Но не source of truth daily workspace records.
+При этом бэкенд не является источником истины для ежедневных данных профессионального рабочего пространства.
 
-## RevenueCat Trust
+## Доверие к RevenueCat
 
-RevenueCat trusted как provider subscription evidence.
+RevenueCat считается доверенным источником сведений о состоянии подписки у провайдера.
 
-Но не единственный Aveli access source: lifetime/manual/trial тоже существуют.
+Однако RevenueCat не является единственным источником доступа Aveli: кроме подписки существуют бессрочный доступ, ручной доступ и пробный период.
 
-## Offline Trust
+## Доверие в автономном режиме
 
-Offline access — bounded trust:
+Автономный доступ строится как ограниченное во времени доверие:
 
 ```text
-previously verified server state
+ранее проверенное серверное состояние
 +
-verification deadline
-→ temporary client authorization
+срок действия проверки
+→ временное разрешение на стороне клиента
 ```
 
-Это не permanent client-side entitlement.
+Такое доверие не является постоянным правом доступа, создаваемым на стороне клиента.
 
-## Failure Semantics
+## Поведение при сбоях
 
-Trust failures должны fail в affected boundary:
+Сбой должен оставаться внутри той границы, к которой относится:
 
 ```text
-RevenueCat unavailable
-→ billing verification fails
+RevenueCat недоступен
+→ проверка биллинга завершается ошибкой
 
-backend unavailable
-→ access may rely on valid cached trust
+бэкенд недоступен
+→ доступ может временно опираться на действующий доверенный кэш
 
-contacts permission denied
-→ contact import unavailable
+нет разрешения на контакты
+→ импорт контактов недоступен
 ```
 
-Unrelated local workspace data остаются intact.
+Не связанные со сбоем локальные данные рабочего пространства должны оставаться сохранными.

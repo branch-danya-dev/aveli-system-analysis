@@ -1,44 +1,44 @@
-# Local Persistence
+# Локальное хранение
 
-> Проверенная persistence model профессионального workspace Aveli на устройстве пользователя.
+> Проверенная модель хранения профессионального рабочего пространства Aveli на устройстве пользователя.
 
 ## Назначение
 
-`local/` описывает physical persistence, принадлежащий device-side workspace.
+`local/` описывает физическое хранение, принадлежащее рабочему пространству на устройстве.
 
-Текущая проверенная модель:
+Текущая модель:
 
 ```text
-Per-user SQLite database
+Отдельная SQLite-база пользователя
 +
-Visit-photo files
+Файлы фотографий визитов
 +
-Secure client-side access/session state
+Защищённое клиентское состояние доступа и сессии
 ```
 
 ## Основная граница
 
-Для каждого authenticated user открывается отдельная SQLite database:
+Для каждого аутентифицированного пользователя открывается отдельная база данных SQLite:
 
 ```text
 documents/aveli_<userId>.sqlite
 ```
 
-Server user UUID используется для выбора файла БД и пути к фото, но local business entities **не имеют** foreign keys на server table `users`.
+UUID серверного пользователя используется для выбора файла БД и пути к фотографиям, но локальные бизнес-сущности **не имеют** внешних ключей на серверную таблицу `users`.
 
-Professional workspace data не синхронизируются с backend.
+Данные профессионального рабочего пространства не синхронизируются с бэкендом.
 
 ## Навигация
 
 | Область | Ответственность |
 |---|---|
-| `schema/` | Текущая SQLite schema и physical relationships. |
-| `entities/` | Table-level physical documentation. |
-| `migrations/` | История Drift schema. |
-| `files/` | Persistence файлов visit photos. |
-| `secure-storage/` | Persistence boundary для access snapshot и auth tokens вне SQLite. |
+| `schema/` | Текущая схема SQLite и физические связи. |
+| `entities/` | Физическое описание таблиц. |
+| `migrations/` | История миграций Drift. |
+| `files/` | Хранение файлов фотографий визитов. |
+| `secure-storage/` | Граница хранения снимка состояния доступа и токенов аутентификации вне SQLite. |
 
-## Проверенные implementation sources
+## Проверенные источники реализации
 
 - `lib/core/database/app_database.dart`
 - `lib/core/database/tables/*.dart`

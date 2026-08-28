@@ -1,36 +1,36 @@
-# Frontend Testing
+# Тестирование фронтенда
 
-> Verified automated-test coverage Flutter client.
+> Подтверждённое покрытие мобильного клиента Flutter автоматизированными тестами.
 
-## Current Evidence
+## Текущие подтверждения
 
-Под `test/` находится примерно 135 test files.
+В `test/` находится примерно 135 файлов тестов.
 
-## Coverage Areas
+## Области покрытия
 
-| Area | Verified examples |
+| Область | Подтверждённые примеры |
 |---|---|
-| Database / repositories | CRUD, constraints, migrations, payments, visit flow. |
-| Auth lifecycle | Logout snapshot/reminder/session behavior. |
-| Access | Gate decision, snapshot persistence, repository behavior. |
-| Router | Paths и date-query routing. |
-| Bootstrap | Bootstrap destinations и QA matrix. |
-| Purchase / RevenueCat | Purchase service и flow-result behavior. |
-| Reminders | Launch details и reminder service. |
-| Release gate | Ship-safe API configuration. |
-| Widgets | Screen/shell/calendar/today smoke behavior. |
+| База данных / репозитории | CRUD, ограничения, миграции, оплаты и сценарии визитов. |
+| Жизненный цикл аутентификации | Поведение при выходе: снимок доступа, напоминания и сессия. |
+| Доступ | Решение шлюза доступа, хранение снимка и поведение репозитория. |
+| Маршрутизатор | Пути и маршрутизация по параметру даты. |
+| Начальная инициализация | Конечные состояния запуска и матрица проверок. |
+| Покупки / RevenueCat | Сервис покупок и обработка результатов сценария. |
+| Напоминания | Запуск из уведомления и сервис напоминаний. |
+| Проверка релизной конфигурации | Безопасная для выпуска конфигурация API. |
+| Виджеты | Базовые проверки экранов, оболочки, календаря и экрана «Сегодня». |
 
-In-memory Drift tests:
+Тесты Drift в памяти:
 
 ```text
 NativeDatabase.memory()
 ```
 
-## Open Verification
+## Неподтверждённые проверки
 
-Evidence document не устанавливает:
+Документ с подтверждениями не устанавливает:
 
-- fresh overall `flutter test` pass rate;
-- real-store end-to-end purchase tests.
+- результат свежего полного прогона `flutter test`;
+- наличие сквозных тестов покупок через реальные магазины приложений.
 
-Их нельзя описывать как verified green.
+Их нельзя считать подтверждённо проходящими.

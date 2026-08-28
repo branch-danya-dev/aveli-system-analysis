@@ -1,6 +1,6 @@
-# Frontend Storage Usage
+# Использование хранилищ фронтендом
 
-> Как Flutter client использует device persistence без переопределения database-owned schemas.
+> Как клиент Flutter использует хранилища устройства, не переопределяя каноническую схему данных.
 
 ## Навигация
 

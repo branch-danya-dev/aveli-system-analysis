@@ -1,46 +1,46 @@
-# open.er-api.com Integration
+# Интеграция с open.er-api.com
 
-## Client
+## Клиент
 
 ```text
 OpenErExchangeRateRepository
 ```
 
-## Request
+## Запрос
 
-Base URL:
+Базовый URL:
 
 ```text
 https://open.er-api.com/v6/latest
 ```
 
-Request:
+Запрос:
 
 ```http
 GET /v6/latest/{FROM}
 ```
 
-`FROM` — uppercase ISO currency code.
+`FROM` — код валюты ISO в верхнем регистре.
 
-## Response Usage
+## Использование ответа
 
-Client читает:
+Клиент читает:
 
 ```text
 result
 rates[TO]
 ```
 
-## Timeout / Retry
+## Тайм-аут и повторные попытки
 
 ```text
-timeout: 12 seconds
-automatic retry: none
+тайм-аут: 12 секунд
+автоматический повтор: отсутствует
 ```
 
-## Cache
+## Кэш
 
-Persistence:
+Хранение:
 
 ```text
 app_settings.exchangeRateCacheV1
@@ -52,15 +52,15 @@ JSON:
 { from, to, rate, fetchedAt }
 ```
 
-TTL:
+Срок жизни:
 
 ```text
-24 hours
+24 часа
 ```
 
-## Failure Semantics
+## Поведение при сбое
 
-Typed failures:
+Типизированные ошибки:
 
 ```text
 manualHint
@@ -70,18 +70,18 @@ pairMissing
 pairManual
 ```
 
-UI может предложить manual path, если provider conversion нельзя trusted.
+Интерфейс может предложить ручной сценарий, если результат конвертации провайдера нельзя считать надёжным.
 
-Provider failure не меняет unrelated professional workspace data.
+Сбой провайдера не изменяет несвязанные данные профессионального рабочего пространства.
 
-## Credentials
+## Учётные данные
 
-Current integration не использует API key.
+Текущая интеграция не использует ключ API.
 
-## Consumer
+## Потребитель
 
-Service используется при local profile currency change для conversion stored amounts.
+Сервис используется при смене валюты локального профиля для пересчёта сохранённых сумм.
 
-Frontend implementation:
+Реализация во фронтенде:
 
 [`../../frontend/workspace/device-integrations.ru.md`](../../frontend/workspace/device-integrations.ru.md)

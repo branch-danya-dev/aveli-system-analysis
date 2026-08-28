@@ -1,25 +1,25 @@
 # `subscription_events`
 
-> Persisted records обработки subscription webhook/events.
+> Сохранённые записи обработки событий подписки и вебхуков.
 
-| Field | Type | Meaning |
+| Поле | Тип | Назначение |
 |---|---|---|
-| `id` | UUID PK | Идентификатор event row. |
-| `subscription_id` | UUID FK nullable | Связанная `subscriptions` row; ON DELETE SET NULL. |
-| `user_id` | UUID FK nullable | Связанный `users` record; ON DELETE SET NULL. |
-| `provider` | TEXT | Provider события; обычно `revenuecat`. |
-| `external_event_id` | TEXT UNIQUE | Внешний idempotency key webhook event. |
-| `event_type` | TEXT | Тип provider event. |
-| `payload` | JSONB | Raw provider payload. |
-| `received_at` | TIMESTAMPTZ | Время получения event. |
-| `processed_at` | TIMESTAMPTZ nullable | Время успешного/завершенного processing. |
-| `processing_error` | TEXT nullable | Ошибка processing, если возникла. |
+| `id` | UUID PK | Идентификатор записи события. |
+| `subscription_id` | UUID FK, допускает NULL | Связанная строка `subscriptions`; ON DELETE SET NULL. |
+| `user_id` | UUID FK, допускает NULL | Связанная запись `users`; ON DELETE SET NULL. |
+| `provider` | TEXT | Провайдер события; обычно `revenuecat`. |
+| `external_event_id` | TEXT UNIQUE | Внешний ключ идемпотентности события вебхука. |
+| `event_type` | TEXT | Тип события провайдера. |
+| `payload` | JSONB | Исходная полезная нагрузка провайдера. |
+| `received_at` | TIMESTAMPTZ | Время получения события. |
+| `processed_at` | TIMESTAMPTZ, допускает NULL | Время завершения обработки. |
+| `processing_error` | TEXT, допускает NULL | Ошибка обработки, если возникла. |
 
-## Invariant
+## Инвариант
 
-`external_event_id` имеет UNIQUE и является persistence-level основой webhook idempotency.
+`external_event_id` имеет ограничение UNIQUE и служит основой идемпотентности вебхуков на уровне хранения.
 
-Nullable FKs с `SET NULL` позволяют сохранять event history после удаления связанного user или subscription.
+Внешние ключи, допускающие NULL, с `SET NULL` позволяют сохранить историю событий после удаления связанного пользователя или подписки.
 
 ## Связанная документация
 

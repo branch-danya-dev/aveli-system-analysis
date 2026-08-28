@@ -1,12 +1,12 @@
 # flutter_secure_storage
 
-> Secure device persistence account/session credentials и cached access state.
+> Защищённое хранение на устройстве данных учётной записи, сессии и кэшированного состояния доступа.
 
-## Verified Version
+## Подтверждённая версия
 
 `flutter_secure_storage 11.0.0`
 
-## Stored State
+## Сохраняемое состояние
 
 - `aveli_user_id`
 - `aveli_access_token`
@@ -15,10 +15,10 @@
 
 На iOS используется `KeychainAccessibility.first_unlock_this_device`.
 
-## Boundary
+## Граница
 
-Tokens/access snapshot намеренно отделены от SQLite professional workspace.
+Токены и снимок состояния доступа намеренно отделены от профессионального рабочего пространства SQLite.
 
-## Replaceability
+## Заменяемость
 
-**Medium.** Replacement должен сохранить secure-storage semantics, key migration, logout/delete cleanup и snapshot compatibility.
+**Средняя.** Замена технологии должна сохранить семантику защищённого хранилища, миграцию ключей, очистку при выходе и удалении профиля, а также совместимость снимков состояния.

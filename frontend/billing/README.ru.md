@@ -1,6 +1,6 @@
-# Frontend Billing
+# Биллинг во фронтенде
 
-> RevenueCat mobile purchase/restore flow и backend reconciliation.
+> Сценарий покупки и восстановления через RevenueCat на мобильном клиенте и последующая сверка состояния с бэкендом.
 
 ## Навигация
 

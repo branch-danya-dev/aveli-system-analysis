@@ -1,25 +1,25 @@
-# Google Play — Native Evidence
+# Google Play — подтверждения нативной конфигурации
 
-## Verified Native Identity
+## Подтверждённая нативная идентификация
 
 ```text
-application id: com.aveli.aveli
+идентификатор приложения: com.aveli.aveli
 compileSdk: 37
 minSdk: flutter.minSdkVersion
 targetSdk: flutter.targetSdkVersion
 ```
 
-Exact numeric min/target values evidence document не установил.
+Точные числовые значения минимальной и целевой версий документация с подтверждениями не установила.
 
 ## RevenueCat
 
-Android billing идет через:
+Биллинг Android реализован через:
 
 ```text
 purchases_flutter
 ```
 
-## Store Management
+## Управление через магазин
 
 Aveli использует:
 
@@ -27,27 +27,27 @@ Aveli использует:
 https://play.google.com/store/account/subscriptions?package=com.aveli.aveli
 ```
 
-с optional `sku`.
+с необязательным `sku`.
 
-## Product / Base Plan Evidence
+## Подтверждения продукта и базового плана
 
-Production Play product ids, base plans, offers и RevenueCat-to-Play linking — **OPEN**, потому что Play Console evidence отсутствует.
+Производственные идентификаторы продуктов Google Play, базовые планы, предложения и связывание RevenueCat с Play остаются **неподтверждёнными**, поскольку подтверждения из консоли Google Play отсутствуют.
 
-Названия только из test fixtures не считаются verified production ids.
+Названия, встречающиеся только в тестовых фикстурах, не считаются подтверждёнными производственными идентификаторами.
 
-## Android Manifest / Build Evidence
+## Подтверждения манифеста Android и сборки
 
-Verified:
+Подтверждено:
 
-- notification boot receiver;
-- scheduled notification receiver;
-- core library desugaring для notifications.
+- приёмник загрузки для уведомлений;
+- приёмник запланированных уведомлений;
+- преобразование базовых библиотек для совместимости уведомлений.
 
-Explicit billing permission в inspected manifest не declared.
+Явное разрешение для биллинга в проверенном манифесте не объявлено.
 
-Billing-specific `proguard-rules.pro` в repository не найден.
+Специализированный для биллинга `proguard-rules.pro` в репозитории не найден.
 
-## Canonical Related Docs
+## Связанная каноническая документация
 
 - [`../revenuecat/mobile-sdk.ru.md`](../revenuecat/mobile-sdk.ru.md)
 - [`../../frontend/billing/`](../../frontend/billing/)

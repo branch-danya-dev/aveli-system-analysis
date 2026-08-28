@@ -1,28 +1,28 @@
-# Device Media → Aveli Visit Photo
+# Медиа устройства → фотография визита Aveli
 
-## Technology
+## Технология
 
 ```text
 image_picker 1.1.2
 ```
 
-Entry:
+Точка входа:
 
 ```text
 addVisitPhoto
 visit_photo_picker.dart
 ```
 
-## Sources
+## Источники
 
-Supported:
+Поддерживается:
 
 ```text
-camera
-gallery
+камера
+галерея
 ```
 
-## Native Permission Evidence
+## Подтверждение системных разрешений
 
 Android:
 
@@ -37,51 +37,51 @@ NSCameraUsageDescription
 NSPhotoLibraryUsageDescription
 ```
 
-## Media Processing
+## Обработка медиа
 
-Picker constraints:
+Ограничения выбора изображения:
 
 ```text
-max edge: 1920 px
-quality: 85
+максимальная сторона: 1920 px
+качество: 85
 ```
 
-Selected `XFile` path — temporary external input.
+Путь выбранного `XFile` — временный внешний вход.
 
-Aveli копирует файл в собственную workspace persistence:
+Aveli копирует файл в собственное локальное хранилище рабочего пространства:
 
 ```text
 visit_photos/<userId>/<appointmentId>/<uuid>.<ext>
 ```
 
-Drift сохраняет metadata + local path.
+Drift сохраняет метаданные и локальный путь.
 
-## Ownership Transition
+## Переход владения
 
 ```text
-Device media
-→ external/temporary source
+Медиафайл устройства
+→ внешний / временный источник
 
-Copied Aveli visit photo
-→ Aveli-owned local professional data
+Скопированная фотография визита Aveli
+→ локальные профессиональные данные под управлением Aveli
 ```
 
-## Cleanup
+## Очистка
 
-- appointment deletion: DB cascade + file cleanup;
-- profile deletion: delete user photo tree;
-- logout: photos preserved.
+- удаление записи: каскад в БД и очистка файла;
+- удаление профиля: удаление дерева фотографий пользователя;
+- выход: фотографии сохраняются.
 
-## Permission Failure
+## Ошибка разрешений
 
-Permission/access errors:
+Ошибки разрешений или доступа:
 
 ```text
 PhotoAccessDenied
 ```
 
-с user-facing recovery messaging.
+с сообщением пользователю и доступным сценарием восстановления.
 
-Frontend usage:
+Использование во фронтенде:
 
 [`../../frontend/storage/files.ru.md`](../../frontend/storage/files.ru.md)

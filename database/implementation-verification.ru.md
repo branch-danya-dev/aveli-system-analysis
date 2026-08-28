@@ -1,36 +1,36 @@
-# Database Implementation Verification
+# Проверка реализации базы данных
 
-> Audit record между logical data architecture и verified persistence evidence.
+> Результат сверки логической архитектуры данных с подтверждённой реализацией хранения.
 
 ## Статус
 
-**Applied — Database baseline Stable**
+**Применено — базовая версия базы данных стабильна**
 
-## Final Classification
+## Итоговая классификация
 
-| Concept | Classification |
+| Понятие | Классификация |
 |---|---|
-| `confirmed` appointment status | Implementation-supported state; не отдельное product rule. |
-| Service `returnInterval` | Optional supported metadata; не core scheduling invariant. |
-| Public slug/listing | Legacy/future-facing local capability; не current public-booking contract. |
-| Local phone/email verification flags | Local/future support state; real verification не implemented end-to-end. |
-| Local account-lifecycle setting | Client-local support state; backend authority unchanged. |
-| Exchange-rate cache | Implementation support state. |
-| Backend `disabled` / `deleted` | Backend lifecycle/security state. |
-| Provider lifecycle states | Integration/backend normalization support. |
+| Состояние записи `confirmed` | Состояние поддерживается реализацией, но не является отдельным продуктовым правилом. |
+| Услуга `returnInterval` | Поддерживаемые необязательные метаданные, не являющиеся основным инвариантом расписания. |
+| публичный идентификатор (`slug`) / признак публикации | Локальная возможность из наследуемой или будущей функциональности; не относится к текущему контракту публичной записи. |
+| локальные признаки проверки телефона и электронной почты | Локальное вспомогательное состояние для текущей или будущей функциональности; полноценная проверка не реализована сквозным процессом. |
+| локальная настройка жизненного цикла аккаунта | Вспомогательное локальное состояние клиента; полномочия бэкенда не меняются. |
+| кэш курса валют | Вспомогательное состояние реализации. |
+| Бэкенд `disabled` / `deleted` | Состояние жизненного цикла и безопасности бэкенда. |
+| состояния жизненного цикла провайдера | Вспомогательные состояния нормализации интеграции и бэкенда. |
 
-Unclassified blockers отсутствуют.
+Неклассифицированные блокирующие вопросы отсутствуют.
 
-## Known Naming Evidence Gap
+## Известное расхождение в именовании
 
 ```text
 ER overview:      duration_minutes / return_interval_minutes
 Detailed table:   duration / return_interval
 ```
 
-Physical docs следуют detailed definition. Это accepted naming-evidence limitation, не data-meaning ambiguity.
+Физическая документация следуют детальному описанию. Это принятое ограничение по подтверждению точного именования, не неоднозначность смысла данных.
 
-## Canonical Results
+## Канонические результаты
 
 - [`models/logical/data-model.ru.md`](models/logical/data-model.ru.md)
 - [`local/`](local/)

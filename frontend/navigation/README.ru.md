@@ -1,6 +1,6 @@
-# Frontend Navigation
+# Навигация фронтенда
 
-> go_router routes, shell, redirects, deep links и notification navigation.
+> Маршруты go_router, оболочка, перенаправления, глубокие ссылки и навигация из уведомлений.
 
 ## Навигация
 

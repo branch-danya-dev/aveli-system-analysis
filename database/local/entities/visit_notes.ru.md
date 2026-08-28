@@ -1,10 +1,10 @@
 # `visit_notes`
 
-> Physical visit-note records.
+> Физические записи заметок визита.
 
-| Column | Type | NULL | Meaning |
+| Столбец | Тип | NULL | Назначение |
 |---|---|---|---|
-| `id` | TEXT | NO | PK; UUID. |
-| `appointment_id` | TEXT | NO | FK → `appointments.id`; ON DELETE CASCADE. |
+| `id` | TEXT | NO | Первичный ключ; UUID. |
+| `appointment_id` | TEXT | NO | Внешний ключ → `appointments.id`; `ON DELETE CASCADE`. |
 | `body` | TEXT | NO | Текст заметки. |
-| `created_at` | DATETIME | NO | Создание. |
+| `created_at` | DATETIME | NO | Время создания. |

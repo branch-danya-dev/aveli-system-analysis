@@ -1,40 +1,40 @@
-# Data Ownership and Movement
+# Владение данными и их перемещение
 
-## Ownership Matrix
+## Матрица владения
 
-| Information | Canonical Owner | Main Persistence |
+| Информация | Канонический владелец | Основное хранилище |
 |---|---|---|
-| Clients | Professional workspace | SQLite |
-| Services | Professional workspace | SQLite |
-| Appointments | Professional workspace | SQLite |
-| Payments | Professional workspace | SQLite |
-| Visit notes | Professional workspace | SQLite |
-| Visit photos | Professional workspace | Local files + SQLite metadata |
-| Workspace settings | Professional workspace/client | SQLite |
-| Account identity | Backend | PostgreSQL |
-| Refresh sessions | Backend | PostgreSQL |
-| Trial / grants | Backend | PostgreSQL |
-| Subscription snapshot | Backend | PostgreSQL |
-| Subscription webhook events | Backend | PostgreSQL |
-| Client access snapshot | Frontend cached trust | Secure storage |
-| Access/refresh credentials | Frontend client state | Secure storage |
+| Клиенты | Профессиональное рабочее пространство | SQLite |
+| Услуги | Профессиональное рабочее пространство | SQLite |
+| Записи | Профессиональное рабочее пространство | SQLite |
+| Оплаты | Профессиональное рабочее пространство | SQLite |
+| Заметки визитов | Профессиональное рабочее пространство | SQLite |
+| Фотографии визитов | Профессиональное рабочее пространство | Локальные файлы + метаданные SQLite |
+| Настройки рабочего пространства | Профессиональное рабочее пространство / клиент | SQLite |
+| Идентификатор и состояние учётной записи | Бэкенд | PostgreSQL |
+| Сессии обновления токена | Бэкенд | PostgreSQL |
+| Пробный период и выданные права доступа | Бэкенд | PostgreSQL |
+| Снимок состояния подписки | Бэкенд | PostgreSQL |
+| События вебхуков подписки | Бэкенд | PostgreSQL |
+| Клиентский снимок состояния доступа | Кэшированное доверенное состояние фронтенда | Защищённое хранилище |
+| Учётные данные доступа и обновления сессии | Клиентское состояние фронтенда | Защищённое хранилище |
 
-Canonical:
+Каноническое описание владения данными:
 
 [`../../database/architecture/data-ownership.ru.md`](../../database/architecture/data-ownership.ru.md)
 
-## Data That Crosses Boundaries
+## Данные, пересекающие границы
 
-### Account / Access
+### Учётная запись и доступ
 
 ```text
-Backend
-→ auth tokens
-→ Flutter secure storage
+Бэкенд
+→ токены аутентификации
+→ защищённое хранилище Flutter
 
-Backend
+Бэкенд
 → AccessStatusView
-→ Flutter secure snapshot
+→ защищённый снимок состояния во Flutter
 ```
 
 ### RevenueCat
@@ -43,57 +43,59 @@ Backend
 Aveli users.id
 → RevenueCat App User ID
 
-RevenueCat subscription evidence
-→ backend subscriptions
+подтверждение подписки RevenueCat
+→ серверное состояние подписок
 
-RevenueCat webhook
+вебхук RevenueCat
 → subscription_events
 ```
 
-### Device Contact Import
+### Импорт контакта устройства
 
 ```text
-Device contact
-→ name / phone / contact id
-→ new/enriched local Client
+Контакт устройства
+→ имя / телефон / идентификатор контакта
+→ новый или дополненный локальный клиент
 ```
 
-Imported Aveli client дальше owned professional workspace.
+После импорта клиент Aveli принадлежит профессиональному рабочему пространству, а не исходной адресной книге устройства.
 
-### Visit Photos
+### Фотографии визитов
 
 ```text
-Camera / Gallery source
-→ copied file
-→ Aveli local visit-photo tree
-→ Drift metadata
+Камера / галерея
+→ скопированный файл
+→ локальное дерево фотографий визитов Aveli
+→ метаданные Drift
 ```
 
-## Deliberate Non-Movement
+После копирования файл становится частью локального пространства данных Aveli.
 
-Current architecture намеренно **не** перемещает:
+## Намеренно отсутствующее перемещение данных
+
+Текущая архитектура намеренно **не перемещает**:
 
 ```text
-clients
-appointments
-payments
-visit notes
-visit photos
+клиенты
+записи
+оплаты
+заметки визитов
+фотографии визитов
 ```
 
-в Aveli backend как synchronized workspace data.
+на бэкенд Aveli как синхронизируемые данные рабочего пространства.
 
-Это important negative boundary.
+Это важная отрицательная граница системы: отсутствие такого потока является архитектурным решением, а не пробелом документации.
 
-## Identity Does Not Merge Ownership
+## Общий идентификатор не объединяет владение
 
 Один `users.id` может использоваться для:
 
 ```text
-local workspace filename
-secure snapshot
-RevenueCat customer
-backend account
+имя файла локального рабочего пространства
+защищённый снимок состояния
+пользователь RevenueCat
+аккаунт бэкенда
 ```
 
-но это не превращает данные в один persistence aggregate.
+но это не превращает перечисленные данные в единый агрегат хранения и не меняет их владельцев.

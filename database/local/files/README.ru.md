@@ -1,27 +1,27 @@
-# Local File Persistence
+# Локальное файловое хранение
 
-> Binary и file-based persistence, принадлежащий local professional workspace.
+> Двоичные и файловые данные, принадлежащие локальному профессиональному рабочему пространству.
 
 ## Назначение
 
-`files/` описывает persistent workspace data, которые находятся вне SQLite, но остаются частью той же local ownership boundary.
+`files/` описывает сохраняемые данные рабочего пространства, которые находятся вне SQLite, но остаются частью той же границы владения.
 
 ## Ответственность
 
 Область документирует:
 
-- file-location strategy;
-- связь database metadata с binary files;
-- per-user isolation;
-- deletion и cleanup behavior;
-- file-lifecycle constraints.
+- стратегию расположения файлов;
+- связь метаданных базы данных с двоичными файлами;
+- изоляцию по пользователям;
+- поведение удаления и очистки;
+- ограничения жизненного цикла файлов.
 
 ## Навигация
 
 - [`visit-photos.ru.md`](visit-photos.ru.md)
 
-Связанная SQLite metadata:
+Связанные метаданные SQLite:
 
 [`../entities/visit_photos.ru.md`](../entities/visit_photos.ru.md)
 
-Frontend-specific filesystem implementation позже должен ссылаться на эту canonical persistence boundary, а не переопределять ее.
+Реализация файловой системы во фронтенде должна ссылаться на эту каноническую границу хранения, а не переопределять её.

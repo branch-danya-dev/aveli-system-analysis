@@ -1,21 +1,13 @@
-# Backend Errors
+# Ошибки бэкенда
 
-> Canonical backend error-code taxonomy и ownership.
+> Канонические смысловые коды ошибок бэкенда.
 
-## Назначение
+`errors/` владеет идентификаторами ошибок и их смыслом.
 
-`errors/` владеет semantic backend error identifiers.
-
-Wire serialization принадлежит:
+Формат ответа HTTP и сопоставление со статусами описаны в:
 
 [`../api/error-model.ru.md`](../api/error-model.ru.md)
 
-## Навигация
+Коды:
 
-- [`error-codes.ru.md`](error-codes.ru.md)
-
-Implementation source:
-
-```text
-backend/src/common/errors/error-codes.ts
-```
+[`error-codes.ru.md`](error-codes.ru.md)

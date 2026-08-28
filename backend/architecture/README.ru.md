@@ -1,20 +1,20 @@
-# Backend Architecture
+# Архитектура бэкенда
 
-> Responsibility, trust и internal capability boundaries Aveli backend.
+> Ответственность, доверие и внутренние границы возможностей бэкенда Aveli.
 
 ## Назначение
 
-`architecture/` определяет **за что отвечает backend до детализации отдельных services, endpoints или implementation technologies**.
+`architecture/` определяет **за что отвечает бэкенд до детализации отдельных сервисов, эндпоинтов и технологий реализации**.
 
-Это backend-local architectural view.
+Это архитектурное представление локально для бэкенда.
 
-Cross-system architecture должна принадлежать ближайшему общему system-level owner, а не дублироваться здесь.
+Общесистемная архитектура принадлежит ближайшему общему системному уровню и не дублируется здесь.
 
 ## Навигация
 
 - [`responsibility-boundary.ru.md`](responsibility-boundary.ru.md)
 - [`backend-map.puml`](backend-map.puml)
 
-Связанное system data ownership:
+Связанное владение системными данными:
 
 [`../../database/architecture/data-ownership.ru.md`](../../database/architecture/data-ownership.ru.md)

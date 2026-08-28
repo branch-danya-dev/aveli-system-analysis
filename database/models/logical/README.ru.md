@@ -1,53 +1,53 @@
-# Logical Data Model
+# Логическая модель данных
 
-> Technology-independent структурная модель данных Aveli.
+> Технологически независимая структурная модель данных Aveli.
 
 ## Назначение
 
-Директория `logical/` описывает **какие attributes, identifiers, relationships и cardinalities нужны системе**, не привязывая их к SQLite, PostgreSQL, Drift, Prisma или конкретному SQL dialect.
+Директория `logical/` описывает, **какие атрибуты, идентификаторы, связи и кардинальности нужны системе**, не привязывая их к SQLite, PostgreSQL, Drift, Prisma или конкретному диалекту SQL.
 
-Logical model является мостом между conceptual domain model и проверенной physical persistence.
+Логическая модель служит мостом между концептуальным доменом и подтверждённой физической моделью хранения.
 
 ## Ответственность
 
-Область владеет:
+Область описывает:
 
-- logical entities;
-- logical identifiers;
-- необходимыми business attributes;
-- relationships между entities;
-- cardinality;
-- optionality там, где она известна;
-- различиями, которые должна сохранить physical persistence.
+- логические сущности;
+- логические идентификаторы;
+- необходимые бизнес-атрибуты;
+- связи между сущностями;
+- кардинальности;
+- обязательность и необязательность атрибутов, где это известно;
+- различия, которые должна сохранить физическая реализация.
 
 ## Границы
 
 Здесь не определяются:
 
-- SQL data types;
-- implementation table или column names;
-- indexes;
-- ORM annotations;
-- migration syntax;
-- storage paths;
-- framework-specific persistence behavior.
+- типы данных SQL;
+- физические имена таблиц и столбцов;
+- индексы;
+- аннотации ORM;
+- синтаксис миграций;
+- пути хранения;
+- поведение хранения, специфичное для фреймворка.
 
-Эти детали canonical в:
+Эти детали канонически описываются в:
 
 - [`../../local/`](../../local/)
 - [`../../server/`](../../server/)
 
-Текущая logical model уже сверена с проверенным persistence description.
+Текущая логическая модель уже сверена с подтверждённым описанием физического хранения.
 
 ## Навигация
 
 - [`data-model.ru.md`](data-model.ru.md)
 - [`data-model.puml`](data-model.puml)
 
-Conceptual source:
+Концептуальный источник:
 
 [`../conceptual/domain-model.ru.md`](../conceptual/domain-model.ru.md)
 
-Verification record:
+Проверка реализации:
 
 [`../../implementation-verification.ru.md`](../../implementation-verification.ru.md)

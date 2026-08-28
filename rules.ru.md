@@ -1,44 +1,46 @@
-# Aveli System Analysis Repository Rules
+# Правила репозитория системного анализа Aveli
 
 > **Методология:** System-Structured Analysis Documentation (SSAD)  
-> **Статус:** Repository governance baseline  
-> **Scope:** Нормативные правила структуры, написания, связывания и review документации в этом репозитории.
+> **Статус:** базовый набор правил репозитория  
+> **Область действия:** нормативные правила структуры, написания, связывания и проверки документации.
 
-[English version](rules.md) · [Методология](methodology.ru.md)
+[Английская версия](rules.md) · [Методология](methodology.ru.md)
 
 ---
 
-## 1. Primary Rule
+## 1. Основное правило
 
 > **Документация отражает систему.**
 
-Repository structure ДОЛЖНА прежде всего следовать реальным responsibilities, boundaries и ownership, а не категориям аналитических artifacts.
+Структура репозитория ДОЛЖНА в первую очередь следовать реальным зонам ответственности, границам и владению знаниями, а не категориям аналитических артефактов.
 
-Не создавай directories только потому, что generic methodology example их содержит. Area появляется, когда системе действительно нужен owner соответствующего knowledge.
+Не следует создавать директории только потому, что они присутствуют в универсальном примере методологии.
+
+Отдельная область появляется тогда, когда в системе действительно существует самостоятельное знание, которому нужен владелец.
 
 ---
 
-## 2. Required Analytical Perspectives
+## 2. Обязательные аналитические представления
 
-Каждая анализируемая система ДОЛЖНА явно отвечать:
+Для любой анализируемой системы ДОЛЖНО быть возможно явно ответить на вопросы:
 
 ```text
-Какой product/problem существует?
-Что входит и не входит в scope?
-Какое behavior требуется?
-Какие data существуют и кто ими владеет?
-Какие runtime components владеют responsibilities?
-Как components взаимодействуют?
-Что пересекает external system boundary?
-Какие technologies поддерживают responsibilities?
-Какие trust/failure/security constraints существуют?
-Как принимается или проверяется важное behavior?
-Как components образуют одну систему?
+Какую проблему решает продукт или система?
+Что входит и не входит в границы решения?
+Какое поведение требуется?
+Какие данные существуют и кто ими владеет?
+Какие компоненты отвечают за выполнение функций?
+Как компоненты взаимодействуют?
+Что пересекает внешнюю границу системы?
+Какие технологии поддерживают конкретные обязанности?
+Какие ограничения связаны с доверием, отказами и безопасностью?
+Как принимается или проверяется важное поведение?
+Как отдельные компоненты образуют единую систему?
 ```
 
-Это обязательные **perspectives**, а не обязательные названия папок.
+Это обязательные **аналитические представления**, а не обязательные названия директорий.
 
-Current Aveli:
+В Aveli текущая верхнеуровневая структура выглядит так:
 
 ```text
 business/
@@ -49,172 +51,190 @@ integrations/
 system/
 ```
 
-`operations/`, `worker/`, `plugin/`, `gateway/` и другие top-level areas добавляются только когда их оправдывает реальная архитектура.
+`operations/`, `worker/`, `plugin/`, `gateway/` и другие верхнеуровневые области добавляются только тогда, когда их оправдывает реальная архитектура.
 
 ---
 
-## 3. Significant Directories Are Entry Points
+## 3. Значимая директория — точка входа
 
-Каждая meaningful human-readable documentation directory ДОЛЖНА по возможности иметь:
+Каждая содержательная директория с человекочитаемой документацией ПО ВОЗМОЖНОСТИ должна содержать:
 
 ```text
 README.md
 README.ru.md
 ```
 
-README ДОЛЖЕН объяснять purpose, responsibility, boundary, important contents и куда идти дальше.
+README должен кратко объяснять:
 
-README — navigation/context, а не duplicate всех child documents.
+1. назначение области;
+2. её ответственность;
+3. границы;
+4. основные материалы;
+5. куда читать дальше.
+
+README служит навигацией и введением, а не копией всех вложенных документов.
 
 ---
 
-## 4. Language Rules
+## 4. Правила локализации
 
-Human-readable project documentation поддерживается equivalent EN/RU pairs там, где area участвует в bilingual repository:
+Человекочитаемая документация в двуязычных областях ДОЛЖНА поддерживаться парами:
 
 ```text
 document.md
 document.ru.md
 ```
 
-Directory entry points:
+Для точек входа:
 
 ```text
 README.md
 README.ru.md
 ```
 
-Обе версии ДОЛЖНЫ описывать одно behavior и decisions.
+Русская и английская версии ДОЛЖНЫ описывать одни и те же решения и поведение.
 
-Machine-readable/language-neutral artifacts обычно существуют один раз:
+Русская версия ДОЛЖНА быть написана естественным русским языком. Английские слова допустимы в обычной прозе только тогда, когда это:
+
+- официальное название технологии или продукта;
+- идентификатор реализации;
+- имя класса, метода, поля, enum или конфигурационного ключа;
+- путь, маршрут API или имя файла;
+- общепринятое собственное имя, которое не следует переводить.
+
+Не следует оставлять в русской прозе обычные английские существительные и глаголы вроде `ownership`, `boundary`, `behavior`, `current baseline`, `evidence`, `flow` или `provider`, если они не являются точными идентификаторами. Такие формулировки выглядят как незавершённый машинный перевод и ухудшают читаемость.
+
+Машиночитаемые или языково-нейтральные артефакты обычно существуют в одном экземпляре:
 
 ```text
 OpenAPI
 SQL / DDL
-JSON / YAML schemas
-PlantUML / Mermaid with neutral labels
-configuration examples
-source identifiers
+схемы JSON / YAML
+PlantUML / Mermaid
+примеры конфигурации
+идентификаторы исходного кода
 ```
 
-API paths, class names, database fields, configuration keys и другие implementation identifiers НЕ переводятся.
+маршруты API, имена классов, полей базы данных, конфигурационные ключи и другие идентификаторы реализации НЕ переводятся.
 
 ---
 
-## 5. Business Boundary
+## 5. Граница бизнес-документации
 
-`business/` владеет product intent:
+`business/` владеет смыслом продукта:
 
 ```text
-context
-scope
-requirements
-business rules
-processes
-acceptance
-traceability
+контекст
+границы
+требования
+бизнес-правила
+процессы
+приёмка
+трассируемость
 ```
 
-Business docs ДОЛЖНЫ предпочитать product meaning implementation detail.
+Бизнес-документация ДОЛЖНА описывать в первую очередь смысл для продукта и пользователя, а не способ реализации.
 
 Предпочтительно:
 
 ```text
-Account state is server-managed.
-Professional workspace data is not synchronized between devices.
-Access is controlled at workspace level.
+Состояние аккаунта управляется сервером.
+Данные профессионального рабочего пространства не синхронизируются между устройствами.
+Доступ управляется на уровне всего рабочего пространства.
 ```
 
-Не добавляй technology names, если они не меняют materially product behavior, scope, external contract, regulation или user-visible capability.
+Не следует добавлять названия технологий, если они сами не меняют поведение продукта, его границы, внешний контракт, регуляторное требование или видимую пользователю возможность.
 
-Technical consequences должны ссылаться на owning technical area.
+Технические последствия должны ссылаться на соответствующую техническую область.
 
 ---
 
-## 6. Canonical Ownership
+## 6. Каноническое владение знаниями
 
-У каждого важного concept должен быть один canonical owner.
+У каждого существенного понятия должен быть один канонический владелец.
 
-До детализации определи:
+До детализации необходимо определить:
 
 ```text
-Кто решает?
-Кто хранит canonical state?
-Кто может менять?
-Кто потребляет?
-Кто проверяет?
+Кто принимает решение?
+Кто хранит достоверное состояние?
+Кто может его изменить?
+Кто использует результат?
+Кто проверяет корректность?
 ```
 
-Другие docs МОГУТ повторять небольшой context для readability, но должны ссылаться на canonical source, если факт существенный.
+Другие документы МОГУТ повторять небольшой объём контекста для удобства чтения, но должны ссылаться на канонический источник, если факт существенен.
 
-> **Do not duplicate knowledge. Duplicate context when necessary.**
+> **Не дублируй знание. При необходимости дублируй только контекст.**
 
-Если два документа могут независимо прийти к разным определениям одного факта, ownership недостаточно ясен.
+Если два документа могут независимо прийти к разным определениям одного факта, владение знанием определено недостаточно ясно.
 
 ---
 
-## 7. Data Documentation
+## 7. Документация данных
 
-`database/` владеет system data architecture и physical persistence knowledge.
+`database/` владеет общесистемной архитектурой данных и описанием физического хранения.
 
-Data modeling ДОЛЖЕН идти:
+Моделирование данных СЛЕДУЕТ вести в порядке:
 
 ```text
-ownership
-→ conceptual model
-→ logical model
-→ physical model
-→ constraints / migrations / lifecycle
+владение
+→ концептуальная модель
+→ логическая модель
+→ физическая модель
+→ ограничения / миграции / жизненный цикл
 ```
 
-System-wide conceptual/logical views НЕ должны стирать реальные storage boundaries.
+Общесистемные концептуальные и логические модели НЕ должны скрывать реальные границы хранения.
 
-Physical model принадлежит persistence owner.
+Физическая модель принадлежит хранилищу, которое действительно сохраняет эти данные.
 
 Для Aveli:
 
 ```text
 database/local/
-→ SQLite workspace + files + persistence lifecycle
+→ локальная база SQLite, файлы и жизненный цикл локального хранения
 
 database/server/
-→ PostgreSQL identity/access persistence
+→ серверное хранение идентификации и доступа в PostgreSQL
 ```
 
-Frontend/backend описывают usage persistence, но НЕ переопределяют canonical schemas.
+Фронтенд и бэкенд описывают, как используют хранилища, но НЕ переопределяют канонические схемы.
 
 ---
 
-## 8. Runtime Component Documentation
+## 8. Документация компонентов времени выполнения
 
-Component area вроде `backend/` или `frontend/` владеет behavior этого runtime component.
+Область компонента, например `backend/` или `frontend/`, владеет поведением соответствующего компонента.
 
-Применимые concerns:
+В зависимости от реализации она может содержать:
 
 ```text
-responsibility boundary
-architecture
-state / behavior
-interfaces
-data usage
-errors / failures
-security
-configuration
-testing
-technology stack
+границу ответственности
+архитектуру
+состояния и поведение
+интерфейсы
+использование данных
+ошибки и отказы
+безопасность
+конфигурацию
+тестирование
+технологический стек
 ```
 
-Создаются только applicable subdirectories. Не создавай empty capability folders заранее.
+Создаются только действительно применимые подразделы.
+
+Не следует заранее создавать пустые папки «на будущее».
 
 ---
 
-## 9. Technology Ownership and Stack
+## 9. Владение технологиями и стек
 
-Technology является first-class analytical object, если materially влияет на architecture.
+Технология является самостоятельным объектом анализа, если существенно влияет на архитектуру.
 
-Canonical technology ownership ДОЛЖЕН следовать responsibility, которую technology primarily реализует.
+Каноническое описание технологии ДОЛЖНО принадлежать той ответственности системы, которую технология в первую очередь реализует.
 
-Aveli target ownership:
+Для Aveli:
 
 ```text
 SQLite
@@ -225,148 +245,152 @@ Drift
 Flutter
 Riverpod
 go_router
-client HTTP
-secure storage
-mobile SDKs
+HTTP-клиент
+защищённое хранилище
+мобильные SDK
 → frontend/stack/
 
 NestJS
 Prisma
-REST style
+REST
 JWT
 Argon2id
 → backend/stack/
 
-RevenueCat provider boundary
+граница RevenueCat
 → integrations/revenuecat/
 ```
 
-Contextual usage МОЖЕТ описываться в других perspectives, но canonical technology knowledge НЕ дублируется.
+Контекстное использование МОЖЕТ описываться в других областях, но каноническое описание одной технологии НЕ должно дублироваться.
 
-Significant technology document SHOULD содержать, где известно:
+Значимый документ о технологии ПО ВОЗМОЖНОСТИ должен отвечать:
 
-- role;
-- why used;
-- where used;
-- consumers/dependencies;
-- limitations;
-- criticality;
-- replaceability;
-- alternatives;
-- links to contextual usage.
+- какую роль технология выполняет;
+- почему используется;
+- где используется;
+- какие компоненты от неё зависят;
+- какие ограничения создаёт;
+- насколько она критична;
+- насколько сложно её заменить;
+- какие альтернативы имеют смысл;
+- где описано её конкретное использование.
 
 ---
 
-## 10. API and Internal Interfaces
+## 10. API и внутренние интерфейсы
 
-Concrete contract принадлежит component, который owns interface.
+Конкретный контракт принадлежит компоненту, который управляет соответствующим интерфейсом.
 
 Для Aveli:
 
 ```text
 backend/api/
-→ canonical backend HTTP contracts
+→ канонические HTTP-контракты бэкенда
 ```
 
-`backend/stack/rest-api/` может описывать REST как style/technology, но НЕ дублирует endpoint contracts.
+`backend/stack/rest-api/` может описывать REST как архитектурный стиль, но НЕ должен дублировать контракты конкретных эндпоинтов.
 
-Frontend MUST reference backend API и описывать только client-specific consumption/retry/state/UI behavior.
+Фронтенд должен ссылаться на серверные контракты API и описывать только клиентскую часть: использование, повторные попытки, состояние и реакцию интерфейса.
 
-Boundary:
+Граница:
 
 ```text
-Frontend ↔ Backend
+Фронтенд ↔ Бэкенд
 ```
 
-НЕ является external integration.
+НЕ является внешней интеграцией.
 
 ---
 
-## 11. External Integrations
+## 11. Внешние интеграции
 
-`integrations/` владеет boundaries, которые выходят за analyzed system.
+`integrations/` владеет границами, выходящими за пределы анализируемой системы.
 
-Integration заслуживает canonical area, если имеет meaningful:
+Отдельная интеграция заслуживает канонической области, если у неё есть содержательные:
 
 ```text
-external responsibility
-contract / SDK
-identity mapping
-data crossing boundary
-authentication / trust
-configuration
-failure semantics
-retry / idempotency / reconciliation
-platform constraints
+ответственность внешней стороны
+контракт или SDK
+сопоставление идентичностей
+данные, пересекающие границу
+аутентификация и доверие
+конфигурация
+поведение при отказах
+повторные попытки / идемпотентность / сверка
+ограничения платформы
 ```
 
-Small OS/package usage может остаться contextual, если standalone integration owner не нужен.
+Небольшое использование возможностей ОС или пакета может оставаться в контексте компонента, если отдельный владелец интеграции ничего не добавит.
 
-Provider state НЕ должен автоматически становиться Aveli product authority, если Aveli владеет отдельным решением.
+Состояние внешнего провайдера НЕ должно автоматически становиться продуктовым решением Aveli, если система сама владеет соответствующим решением.
 
 ---
 
-## 12. System Synthesis
+## 12. Системный синтез
 
-`system/` владеет cross-component knowledge.
+`system/` владеет знанием, которое описывает несколько компонентов одновременно.
 
-Он может содержать:
+Там могут находиться:
 
 ```text
-system context
-component model
-cross-layer boundaries
-end-to-end flows
-data movement
-trust / authority model
-system invariants
-boundary-changing evolution
-cross-system failure scenarios
-release readiness
-open questions
+контекст системы
+модель компонентов
+межуровневые границы
+сквозные сценарии
+перемещение данных
+модель доверия и полномочий
+общесистемные инварианты
+изменения границ системы
+межсистемные сценарии отказов
+готовность к релизу
+реестр открытых и закрытых вопросов
 ```
 
-Он НЕ должен полностью переописывать каждый component.
+`system/` НЕ должен полностью переописывать каждый компонент.
 
-> **Слой может ссылаться на другой слой, но модель, описывающая сразу несколько слоёв, принадлежит их ближайшему общему системному уровню.**
+> **Уровень может ссылаться на другой уровень, но модель, описывающая сразу несколько уровней, принадлежит их ближайшему общему системному уровню.**
 
-Final system view SHOULD синтезироваться после достаточной стабилизации component views.
+Итоговое системное представление СЛЕДУЕТ синтезировать после достаточной стабилизации документации компонентов.
 
 ---
 
-## 13. Tasks, Changes and Optional Areas
+## 13. Задачи, изменения и необязательные области
 
-Task принадлежит области изменения. Он НЕ является inherently business artifact.
+Задача относится к той области системы, которую она меняет.
 
-Не создавай `business/tasks/` или task dirs в каждом component по умолчанию.
+Она НЕ является по своей природе бизнес-артефактом.
 
-Optional top-level areas вроде `operations/` также не создаются без реальных artifacts.
+Не следует создавать `business/tasks/` или папки задач в каждом компоненте по умолчанию.
 
-Если deployment, observability, backups, incident recovery или release operations становятся substantial, `operations/` МОЖЕТ появиться.
+Необязательные верхнеуровневые области, например `operations/`, также не создаются без реального содержания.
+
+Если развёртывание, наблюдаемость, резервное копирование, восстановление после сбоев или управление релизами становятся самостоятельной зоной ответственности, `operations/` МОЖЕТ быть добавлен.
 
 ---
 
-## 14. Traceability
+## 14. Трассируемость
 
-High-impact behavior SHOULD быть traceable across abstraction levels.
+Существенное продуктовое поведение СЛЕДУЕТ связывать между уровнями абстракции.
+
+Полезная цепочка:
 
 ```text
-Business Need
+Бизнес-потребность
     ↓
-Business Rule / Requirement
+Бизнес-правило / требование
     ↓
-Component / Decision
+Компонент / решение
     ↓
-Interface / Data / Technology
+Интерфейс / данные / технология
     ↓
-Acceptance
+Критерий приёмки
     ↓
-Verification
+Проверка
 ```
 
-Не каждая trace требует каждого шага.
+Не каждая связь обязана содержать все звенья.
 
-Traceability должна позволять ответить:
+Трассируемость должна позволять ответить:
 
 ```text
 Почему это реализовано?
@@ -375,32 +399,32 @@ Traceability должна позволять ответить:
 и:
 
 ```text
-Как requirement сохраняет смысл в implementation?
+Как требование сохраняет смысл при переходе к реализации?
 ```
 
-Для Aveli canonical business traceability находится в `business/traceability/`.
+В Aveli каноническая бизнес-трассируемость находится в `business/traceability/`.
 
 ---
 
-## 15. Evidence and Truth Status
+## 15. Подтверждения и степень уверенности
 
-Documentation existing system ДОЛЖНА предпочитать current evidence архитектурному желанию.
+При описании существующей системы текущие подтверждения ДОЛЖНЫ иметь приоритет над желаемой архитектурой.
 
-Evidence:
+Подтверждениями могут быть:
 
 ```text
-source code
-schemas
-API contracts
-configuration
-native project files
-provider contracts
-tests
-runtime behavior
-stakeholder decisions
+исходный код
+схемы
+API-контракты
+конфигурация
+нативные файлы проектов
+контракты провайдеров
+тесты
+фактическое поведение
+подтверждённые решения заинтересованных сторон
 ```
 
-При существенной uncertainty различай:
+Если уверенность в факте различается, следует явно использовать состояния:
 
 ```text
 VERIFIED
@@ -408,75 +432,87 @@ INFERRED
 OPEN
 ```
 
-Proposal ДОЛЖЕН быть помечен как target/proposed state.
+Предложение ДОЛЖНО быть отмечено как целевое или предлагаемое состояние, а не смешано с текущим поведением.
 
-Open questions остаются явными и не закрываются silently assumption.
+Открытый вопрос должен оставаться явным и не закрываться молчаливым предположением.
 
 ---
 
-## 16. Maturity
+## 16. Зрелость документа
 
-Docs МОГУТ использовать conceptual lifecycle:
+Документы МОГУТ использовать жизненный цикл:
 
 ```text
-Draft
-→ Baseline
-→ Stable
+Черновик
+→ Базовая версия
+→ Стабильная версия
 ```
 
-`Stable` означает cross-check с relevant implementation, contract или stakeholder decision.
+«Стабильная версия» означает, что документ сверён с соответствующей реализацией, контрактом или подтверждённым решением.
 
-Detailed документ не становится Stable только из-за объёма.
-
----
-
-## 17. Diagrams
-
-Diagram поддерживает text, а не заменяет его.
-
-Используй diagrams для system context, component relationships, sequences, state transitions, data models, integration boundaries и dependencies.
-
-Machine-maintainable source SHOULD сохраняться.
-
-Diagram НЕ должен противоречить canonical prose/contracts.
-
-Rendered assets могут храниться отдельно.
+Большой объём текста сам по себе не делает документ стабильным.
 
 ---
 
-## 18. Real Technical Artifacts
+## 17. Диаграммы
 
-При наличии technical docs SHOULD reference реальные artifacts:
+Диаграмма поддерживает текст, а не заменяет его.
+
+Диаграммы полезны для:
+
+```text
+контекста системы
+связей компонентов
+последовательностей
+переходов состояний
+моделей данных
+границ интеграций
+зависимостей
+```
+
+По возможности следует хранить исходник диаграммы, пригодный для повторной генерации.
+
+Диаграмма НЕ должна противоречить каноническому тексту или контракту.
+
+Отрендеренные изображения могут храниться отдельно для быстрого просмотра.
+
+---
+
+## 18. Реальные технические артефакты
+
+Когда это полезно, техническая документация СЛЕДУЕТ ссылаться на реальные артефакты:
 
 ```text
 OpenAPI
 SQL / DDL
-Prisma schema
-Drift tables
-JSON examples
-configuration
-migrations
-code fragments
+схема Prisma
+таблицы Drift
+примеры JSON
+конфигурация
+миграции
+фрагменты кода
 PlantUML
 ```
 
-Example должен быть обозначен как:
+Пример должен быть явно обозначен как:
 
 ```text
-real implementation
-simplified implementation
-illustrative example
+реальная реализация
+упрощённая реализация
+иллюстративный пример
 ```
 
-Illustrative code нельзя выдавать за verified source.
+Иллюстративный код нельзя выдавать за проверенный исходный код.
 
 ---
 
-## 19. Failure, Security and Release Views
+## 19. Отказы, безопасность и готовность к релизу
 
-Failure/security/release knowledge принадлежит ближайшему полезному owner.
+Знание об отказах, безопасности и релизе принадлежит ближайшему подходящему владельцу.
 
-Component-local behavior остаётся у component. Cross-system behavior может синтезироваться в `system/`.
+Поведение внутри одного компонента остаётся в документации этого компонента.
+
+Общесистемное поведение может синтезироваться в `system/`.
 
 Для Aveli:
 
@@ -489,65 +525,68 @@ system/review/failure-scenarios.*
 system/review/release-readiness.*
 ```
 
-Standalone `operations/` пока не требуется.
+Отдельная область `operations/` пока не требуется.
 
 ---
 
-## 20. Legacy Migration and Refactoring
+## 20. Миграция и реорганизация документации
 
-Перед удалением или restructuring старых docs:
+Перед удалением или перестройкой старой документации необходимо:
 
-1. определи новый canonical owner;
-2. проверь old files на unique/orphan knowledge;
-3. перенеси unique knowledge;
-4. исправь cross-references;
-5. удали duplicates;
-6. повтори consistency review.
+1. определить нового канонического владельца;
+2. проверить старые файлы на уникальное знание;
+3. перенести уникальное знание;
+4. исправить перекрёстные ссылки;
+5. удалить дубли;
+6. повторно проверить согласованность.
 
-Нельзя удалять legacy branch только потому, что уже существует новая директория. Сначала нужно подтвердить отсутствие orphan knowledge.
+Нельзя удалять старую ветку документации только потому, что уже создана новая директория.
 
----
-
-## 21. AI / Automated Review
-
-Automated review SHOULD проверять:
-
-### Structure
-
-- Tree отражает actual system?
-- Important perspectives explicit?
-- Optional dirs justified?
-
-### Ownership
-
-- У каждого important fact один canonical owner?
-- Technologies принадлежат responsibility, которую primarily реализуют?
-- Internal interfaces отделены от external integrations?
-
-### Consistency
-
-- EN/RU согласованы?
-- Links resolve?
-- Diagrams совпадают с prose?
-- Examples совпадают с current contracts/schemas?
-- Есть duplicate canonical knowledge?
-
-### Traceability
-
-- High-impact requirements ведут в implementation?
-- Significant technologies связаны с concrete usage?
-- OPEN questions visible?
-
-### Readability
-
-- Area понятна из README?
-- Document объясняет meaning, а не просто перечисляет facts?
-
-AI МОЖЕТ помогать review, но НЕ превращает unsupported inference в canonical truth.
+Сначала нужно убедиться, что уникальное знание не потеряется.
 
 ---
 
-## 22. Current Aveli Baseline
+## 21. Автоматизированная проверка и ИИ
+
+Автоматизированная проверка СЛЕДУЕТ оценивать несколько аспектов.
+
+### Структура
+
+- отражает ли дерево реальную систему;
+- явно ли представлены важные аналитические области;
+- оправданы ли необязательные директории.
+
+### Владение
+
+- есть ли у каждого существенного факта один канонический владелец;
+- принадлежат ли технологии той ответственности, которую в первую очередь реализуют;
+- отделены ли внутренние интерфейсы от внешних интеграций.
+
+### Согласованность
+
+- согласованы ли русская и английская версии;
+- работают ли ссылки;
+- совпадают ли диаграммы с текстом;
+- соответствуют ли примеры текущим контрактам и схемам;
+- нет ли нескольких канонических описаний одного знания.
+
+### Трассируемость
+
+- можно ли проследить существенное требование до реализации;
+- связаны ли значимые технологии с конкретным использованием;
+- видны ли открытые вопросы.
+
+### Читаемость
+
+- понятна ли область из README;
+- объясняет ли документ смысл, а не только перечисляет факты;
+- написана ли русская версия естественным русским языком без ненужной смеси языков.
+
+ИИ МОЖЕТ помогать в проверке, но НЕ должен превращать неподтверждённый вывод в канонический факт.
+
+---
+
+## 22. Текущая структура Aveli
 
 Aveli сейчас использует:
 
@@ -560,7 +599,7 @@ integrations/
 system/
 ```
 
-Supporting content:
+Дополнительные материалы:
 
 ```text
 screenshots/
@@ -573,69 +612,70 @@ rules.md
 rules.ru.md
 ```
 
-Standalone `operations/` и `result/` analytical perspectives сейчас отсутствуют, потому что available knowledge не оправдывает отдельных top-level owners.
+Отдельных аналитических областей `operations/` и `result/` сейчас нет, потому что существующие знания не требуют самостоятельных верхнеуровневых владельцев.
 
-Если architecture изменится, structure тоже МОЖЕТ измениться.
+Если архитектура изменится, структура документации тоже МОЖЕТ измениться.
 
 ---
 
-## 23. Repository Quality Gate
+## 23. Контроль качества репозитория
 
-Mature repository SHOULD позволять новому technical reader с минимальным поиском ответить:
+Зрелый репозиторий СЛЕДУЕТ позволять новому техническому читателю без долгого поиска ответить:
 
 ```text
-Что делает system?
-Что in/out of scope?
-Какие main components?
-Какие data существуют?
-Кто владеет data?
-Как components communicate?
-Какие external systems участвуют?
-Какие technologies используются и почему?
-Где они используются?
-Кто authoritative для важных decisions?
-Что происходит при failure dependencies?
-Как verified важное behavior?
-Какие вопросы остаются open?
-Где canonical source каждого ответа?
+Что делает система?
+Что входит и не входит в её границы?
+Какие основные компоненты существуют?
+Какие данные существуют?
+Кто владеет этими данными?
+Как взаимодействуют компоненты?
+Какие внешние системы участвуют?
+Какие технологии используются и зачем?
+Где используются эти технологии?
+Кто принимает окончательные решения по важным состояниям?
+Что происходит при отказе зависимостей?
+Как проверяется важное поведение?
+Какие вопросы ещё не закрыты?
+Где находится канонический источник каждого ответа?
 ```
 
-Если ответы требуют чтения unrelated directories или противоречат друг другу, polish ещё не завершён.
+Если для ответов приходится читать несвязанные директории или разные документы дают противоречивые ответы, финальная вычитка ещё не завершена.
 
 ---
 
-## Core Summary
+## Краткое резюме
 
 ```text
-Documentation mirrors the system.
+Документация отражает систему.
 
-Perspectives are required.
-Folder templates are not.
+Обязательны аналитические представления,
+а не фиксированные названия папок.
 
-Ownership comes before detail.
+Сначала определяется ответственность,
+затем описываются детали.
 
-Business explains what and why.
-Technical areas explain how.
+Бизнес объясняет что и зачем.
+Технические области объясняют как.
 
-Data progresses from ownership to persistence.
+Данные описываются от владения к физическому хранению.
 
-Technology ownership follows responsibility.
-Usage is contextual.
+Технология принадлежит основной ответственности,
+а конкретное использование описывается в контексте.
 
-Internal interfaces are not external integrations.
+Внутренний интерфейс не равен внешней интеграции.
 
-Canonical knowledge has one source of truth.
-Related knowledge is connected by references.
+У канонического знания один источник.
+Связанные знания соединяются ссылками.
 
-Storage is hierarchical.
-Knowledge is graph-based.
+Хранение иерархично.
+Знание связано графом.
 
-System is a synthesis layer.
+system/ — уровень синтеза.
 
-Evidence beats architectural preference.
+Подтверждение важнее архитектурного желания.
 
-Open questions stay visible.
+Открытые вопросы остаются явными.
 
-Human-readable documentation stays bilingual.
-Machine-readable artifacts stay shared.
+Человекочитаемая документация локализуется естественно.
+Машиночитаемые артефакты остаются общими.
 ```

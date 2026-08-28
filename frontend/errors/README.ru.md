@@ -1,6 +1,6 @@
-# Frontend Error Handling
+# Обработка ошибок во фронтенде
 
-> Error transport, typed domain failures, localization mapping и user presentation.
+> Передача ошибок, типизированные доменные сбои, локализация и представление сообщений пользователю.
 
 ## Навигация
 

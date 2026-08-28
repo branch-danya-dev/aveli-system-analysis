@@ -1,6 +1,6 @@
-# Local Visit Reminder Boundary
+# Граница локальных напоминаний о визитах
 
-## Technology
+## Технология
 
 ```text
 flutter_local_notifications 22.3.0
@@ -8,100 +8,100 @@ timezone
 flutter_timezone
 ```
 
-Scheduler:
+Планировщик:
 
 ```text
 LocalVisitReminderScheduler
 ```
 
-## Initialization
+## Инициализация
 
-Notification initialization lazy.
+Инициализация уведомлений выполняется лениво.
 
-Timezone initialization использует device timezone с client fallback behavior.
+Инициализация часового пояса использует часовой пояс устройства и клиентский запасной сценарий.
 
 ## Android
 
-Verified:
+Подтверждено:
 
 ```text
-channel id: aveli_visit_reminders_sakura
-schedule mode: inexactAllowWhileIdle
-POST_NOTIFICATIONS permission
+идентификатор канала: aveli_visit_reminders_sakura
+режим планирования: inexactAllowWhileIdle
+разрешение POST_NOTIFICATIONS
 ScheduledNotificationBootReceiver
 ScheduledNotificationReceiver
 ```
 
-Exact-alarm permission не declared.
+Разрешение на точные будильники не объявлено.
 
 ## iOS
 
-Client запрашивает:
+Клиент запрашивает:
 
 ```text
-alert
-badge
-sound
+уведомление
+значок
+звук
 ```
 
-permissions при enable reminders.
+разрешения при включении напоминаний.
 
-## Reminder Contract
+## Контракт напоминаний
 
-Default lead:
+Интервал по умолчанию:
 
 ```text
-1 hour before appointment startsAt
+за 1 час до appointment.startsAt
 ```
 
-Payload:
+Полезная нагрузка:
 
 ```text
 appointmentId
 ```
 
-Notification id derived из appointment id через FNV-1a-style hash.
+Идентификатор уведомления вычисляется из идентификатора записи через хеш в стиле FNV-1a.
 
-## Lifecycle
+## Жизненный цикл
 
 ```text
-create/reschedule
-→ schedule reminder
+создание / перенос
+→ запланировать напоминание
 
-complete/cancel/delete
-→ cancel reminder
+завершение / отмена / удаление
+→ отменить напоминание
 
-logout
-→ cancel all
+выход
+→ отменить все напоминания
 
-app start/resume
-→ rebuild upcoming reminders
+запуск / возврат приложения
+→ перестроить будущие напоминания
 ```
 
-## Tap Flow
+## Сценарий нажатия
 
 ```text
-OS notification tap
+нажатие на уведомление ОС
   ↓
-appointmentId payload
+appointmentId в полезной нагрузке
   ↓
 pendingReminderAppointmentIdProvider
   ↓
 /appointments/:id
 ```
 
-## Reboot Behavior
+## Поведение после перезагрузки устройства
 
-Android boot receiver registration VERIFIED.
+Регистрация приёмника загрузки Android подтверждена.
 
-Но guaranteed reminder restoration после OEM/device reboot без открытия/resume Aveli остается **OPEN**.
+Но гарантированное восстановление напоминаний после перезагрузки устройства без открытия или возврата Aveli на передний план остаётся **неподтверждённым**.
 
-App выполняет full DB-driven rebuild на resume.
+При возвращении на передний план приложение полностью перестраивает напоминания на основе данных БД.
 
-## No Server Push
+## Серверные пуш-уведомления отсутствуют
 
-Ordinary workspace reminders не используют FCM/APNs.
+Обычные напоминания рабочего пространства не используют FCM/APNs.
 
-Frontend implementation:
+Реализация во фронтенде:
 
 [`../../frontend/notifications/`](../../frontend/notifications/)

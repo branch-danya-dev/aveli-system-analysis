@@ -1,8 +1,8 @@
-# Aveli Startup Flow
+# Сценарий запуска Aveli
 
-## Pre-UI Bootstrap
+## Инициализация до построения интерфейса
 
-Verified order:
+Подтверждённый порядок:
 
 ```text
 main()
@@ -11,22 +11,22 @@ WidgetsFlutterBinding.ensureInitialized()
  ↓
 ReleaseConfigGate.assertForCurrentBuild()
  ↓
-edge-to-edge system UI
+настроить системный интерфейс в режиме edge-to-edge
  ↓
-initialize ru/en date formatting
+инициализировать форматирование дат ru/en
  ↓
 ProviderContainer()
  ↓
-hydrate guest locale
+восстановить локаль гостевого режима
  ↓
 runApp(UncontrolledProviderScope → AveliApp)
 ```
 
 Drift здесь **не** открывается.
 
-RevenueCat configuration и notifications initialization lazy.
+Настройка RevenueCat и инициализация уведомлений выполняются лениво.
 
-## Initial Route
+## Начальный маршрут
 
 `GoRouter.initialLocation`:
 
@@ -34,33 +34,33 @@ RevenueCat configuration и notifications initialization lazy.
 /bootstrap
 ```
 
-Далее `AppBootstrapController` resolves application state.
+Далее `AppBootstrapController` определяет состояние приложения.
 
-## Signed-In Initialization
+## Инициализация после входа
 
 ```text
-restore session via refresh token
+восстановить сессию по токену обновления
         ↓
-open aveli_<userId>.sqlite
+открыть aveli_<userId>.sqlite
         ↓
 RevenueCat logIn(userId)
         ↓
-restore theme from Drift
+восстановить тему из Drift
         ↓
-standalone mode?
+автономный режим?
    /               \
- yes                no
+ да                 нет
   ↓                  ↓
-ready        refresh /v1/access
+готово       обновить /v1/access
                      ↓
-              optional debug seed
+             необязательное тестовое заполнение
                      ↓
-               wait access state
+              дождаться состояния доступа
                      ↓
-            resolve Access Gate
+             определить результат проверки доступа
 ```
 
-## Bootstrap Outcomes
+## Результаты начальной инициализации
 
 - `BootstrapNeedsWelcome`
 - `BootstrapReady`
@@ -68,14 +68,14 @@ ready        refresh /v1/access
 - `BootstrapNeedsVerification`
 - `BootstrapFailure`
 
-Bootstrap screen переводит result в router navigation.
+Экран начальной инициализации преобразует результат в переход маршрутизатора.
 
-## Lazy Services
+## Ленивая инициализация сервисов
 
-- `Purchases.configure` → lazy в `RevenueCatPurchaseService.ensureConfigured()`
-- notifications init → lazy в `LocalVisitReminderScheduler.ensureInitialized()`
-- database → открывается при authenticated workspace activation, не pre-runApp
+- `Purchases.configure` → вызывается лениво в `RevenueCatPurchaseService.ensureConfigured()`
+- инициализация уведомлений → выполняется лениво в `LocalVisitReminderScheduler.ensureInitialized()`
+- база данных → открывается после аутентификации при активации рабочего пространства, а не до `runApp`
 
-## Verification Note
+## Примечание о проверке
 
-Maximum initialization timeout задается `BootstrapTiming.maxInitialization`.
+Максимальное время ожидания инициализации задаётся `BootstrapTiming.maxInitialization`.

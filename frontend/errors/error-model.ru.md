@@ -1,8 +1,8 @@
-# Frontend Error Model
+# Модель ошибок фронтенда
 
-## Backend Errors
+## Ошибки бэкенда
 
-Auth/access data sources сохраняют backend error code из:
+Источники данных аутентификации и доступа сохраняют код ошибки бэкенда из:
 
 ```json
 {
@@ -17,9 +17,9 @@ Auth/access data sources сохраняют backend error code из:
 AuthException.code
 ```
 
-## Domain Errors
+## Доменные ошибки
 
-Client также использует typed domain exceptions:
+Клиент также использует типизированные доменные исключения:
 
 ```text
 ScheduleConflict
@@ -28,40 +28,40 @@ ExchangeRateException
 PhotoAccessDenied
 ```
 
-## UI Mapping
+## Сопоставление с интерфейсом
 
-User-facing mapping:
+Преобразование в сообщения для пользователя:
 
 ```text
 userMessageForError
 authErrorMessage
 ```
 
-с localized strings.
+с локализованными строками.
 
-Presentation helpers:
+Вспомогательные функции слоя представления:
 
 ```text
 showAveliSnackBar
 showAveliError
 ```
 
-## Logging
+## Журналирование
 
-Current logging:
+Текущее журналирование:
 
 ```text
 logError(operation, error, stackTrace)
 → debugPrint
 ```
 
-Verified auth path намеренно не логирует tokens.
+Подтверждённый сценарий аутентификации намеренно не записывает токены в журнал.
 
-## Retry Behavior
+## Повторные попытки
 
-Centralized retry middleware отсутствует.
+Централизованный промежуточный слой повторных попыток отсутствует.
 
-Verified special case в access HTTP handling:
+Подтверждённый особый случай обработки запросов HTTP доступа:
 
 ```text
 401
@@ -71,4 +71,4 @@ AuthRepository.refresh()
 retry once
 ```
 
-Остальной recovery feature-specific.
+Остальное восстановление зависит от конкретной возможности приложения.

@@ -1,11 +1,11 @@
-# Billing API
+# API биллинга
 
-> Canonical HTTP contracts RevenueCat synchronization и webhook ingress.
+> Канонические контракты HTTP сверки RevenueCat и приёма вебхуков.
 
-## Навигация
+Контракты:
 
-- [`contracts.ru.md`](contracts.ru.md)
+[`contracts.ru.md`](contracts.ru.md)
 
-Internal billing behavior:
+Внутренняя логика биллинга:
 
 [`../../billing/`](../../billing/)

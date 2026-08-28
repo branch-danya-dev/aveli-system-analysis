@@ -1,5 +1,5 @@
-# Database Diagrams
+# Диаграммы базы данных
 
-Визуальные карты database documentation.
+Визуальные карты документации базы данных.
 
-- [`database-map.puml`](database-map.puml) — путь от data architecture и logical models к local/server physical persistence и stack usage.
+- [`database-map.puml`](database-map.puml) — путь от архитектуры данных и логических моделей к локальному и серверному физическому хранению и используемому стеку.

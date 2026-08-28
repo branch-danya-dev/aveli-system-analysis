@@ -1,6 +1,6 @@
-# System Evolution
+# Развитие системы
 
-> Features, которые materially меняют current Aveli architecture и ownership.
+> Возможности, которые существенно меняют текущую архитектуру Aveli, владение данными или границы системы.
 
 ## Навигация
 

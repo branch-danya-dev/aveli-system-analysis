@@ -1,9 +1,9 @@
-# Apple App Store Integration
+# Интеграция с Apple App Store
 
-> iOS store boundary Aveli через RevenueCat.
+> Граница взаимодействия Aveli с магазином iOS через RevenueCat.
 
 ## Навигация
 
 - [`native-evidence.ru.md`](native-evidence.ru.md)
 
-Store dashboard configuration, отсутствующая в repository, остается OPEN.
+Конфигурация панели магазина, отсутствующая в репозитории, остаётся неподтверждённой.

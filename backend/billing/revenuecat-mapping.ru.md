@@ -1,45 +1,43 @@
-# RevenueCat → Subscription Snapshot Mapping
+# Сопоставление состояний RevenueCat
 
-> Canonical backend normalization RevenueCat signals в `SubscriptionStatus`.
+> Каноническая серверная нормализация сигналов RevenueCat в `SubscriptionStatus`.
 
-## Entitlement
+## Назначение
 
-```text
-support
-```
+RevenueCat возвращает состояние подписки в модели провайдера.
 
-## Mapping
+Бэкенд преобразует его в ограниченный набор серверных состояний Aveli.
 
-| RevenueCat signal | Persisted `SubscriptionStatus` |
+| Сигнал RevenueCat | Сохраняемый `SubscriptionStatus` |
 |---|---|
-| No entitlement | `expired` |
-| `refunded_at` | `revoked` |
-| Active grace period | `grace_period` |
-| `period_type=trial` | `trialing` |
-| `billing_issues_detected_at` | `past_due` |
-| `unsubscribe_detected_at` | `cancelled`, `autoRenew=false` |
-| Expiration is in the future | `active` |
-| Otherwise | `expired` |
+| действующее право доступа | `active` |
+| пробный период провайдера | `trialing` |
+| активный льготный период | `grace_period` |
+| просрочка при ещё действующем периоде | `past_due` |
+| отменена, но `current_period_end` ещё в будущем | `cancelled` |
+| срок действия истёк | `expired` |
+| состояние отозвано | `revoked` |
 
-## Separation from Access
+## Разделение с моделью доступа
 
-Mapping subscription state не равен access decision.
+Нормализованный статус подписки ещё не является окончательным решением о доступе.
 
 Например:
 
 ```text
 status = cancelled
+AND
 current_period_end > now
 ```
 
-все еще участвует как entitled subscription согласно access predicate.
+по-прежнему даёт доступ по подписке до конца оплаченного периода.
 
-Canonical access logic:
+Каноническая логика доступа:
 
 [`../access/access-resolution.ru.md`](../access/access-resolution.ru.md)
 
-## Contract Stability
+## Стабильность контракта
 
-Mapper heuristics — backend-internal behavior.
+Правила сопоставления — внутренняя логика бэкенда.
 
-Они могут меняться без Flutter breaking change, если public `AccessStatusView` contract и product behavior остаются compatible.
+Они могут меняться без несовместимого изменения клиента на Flutter, пока сохраняются публичный контракт `AccessStatusView` и продуктовое поведение.

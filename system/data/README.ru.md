@@ -1,9 +1,7 @@
-# System Data View
+# Системное представление данных
 
-> Cross-component ownership и data-movement synthesis.
+> Сводное межкомпонентное представление владения данными и их перемещения.
 
-## Навигация
+- [`ownership-and-movement.ru.md`](ownership-and-movement.ru.md) — кто владеет данными, где они хранятся и какие границы пересекают.
 
-- [`ownership-and-movement.ru.md`](ownership-and-movement.ru.md)
-
-Canonical schemas остаются в [`../../database/`](../../database/).
+Детальная каноническая архитектура данных находится в [`../../database/`](../../database/).

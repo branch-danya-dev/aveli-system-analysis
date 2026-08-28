@@ -1,14 +1,14 @@
-# Access State
+# Состояние доступа
 
-## Model
+## Модель
 
-Canonical client entity:
+Каноническая клиентская сущность:
 
 ```text
 AccessState
 ```
 
-Fields:
+Поля:
 
 ```text
 hasAccess
@@ -22,29 +22,29 @@ verifiedAt
 nextVerificationRequiredAt
 ```
 
-Это mirror backend `AccessStatusView`.
+Это клиентское отражение серверного `AccessStatusView`.
 
-## API Sources
+## Источники API
 
 ```text
 GET  /v1/access
 POST /v1/billing/sync
 ```
 
-## Controller
+## Контроллер
 
 `AccessController`:
 
-- hydrates secure snapshot on build;
-- fetches server access;
-- пишет successful server state в snapshot;
-- может сохранить allowed cached state при network failure, если policy разрешает;
-- syncs billing после purchase/restore;
-- refreshes customer/access state on app resume.
+- восстанавливает защищённый снимок состояния при создании;
+- получает состояние доступа с сервера;
+- записывает успешно полученное серверное состояние в снимок;
+- может сохранить разрешённое кэшированное состояние при сетевом сбое, если это допускает политика;
+- синхронизирует биллинг после покупки или восстановления;
+- обновляет состояние пользователя и доступа при возвращении приложения на передний план.
 
-## Authority Boundary
+## Граница полномочий
 
-Frontend не рассчитывает backend priority между lifetime/manual/subscription/trial.
+Фронтенд не рассчитывает серверный приоритет между `lifetime`, `manual`, `subscription` и `trial`.
 
 Он доверяет:
 
@@ -52,4 +52,4 @@ Frontend не рассчитывает backend priority между lifetime/manu
 AccessState.hasAccess
 ```
 
-из server или previously verified secure snapshot.
+с сервера или из ранее проверенного защищённого снимка состояния.

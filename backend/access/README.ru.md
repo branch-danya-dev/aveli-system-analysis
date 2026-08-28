@@ -1,48 +1,37 @@
-# Backend Access Resolution
+# Определение доступа на бэкенде
 
-> Server-side resolution того, может ли authenticated account открыть Aveli workspace.
+> Серверное решение о том, может ли аутентифицированный аккаунт открыть рабочее пространство Aveli.
 
-## Назначение
+`access/` владеет однозначным алгоритмом определения доступа.
 
-`access/` владеет deterministic access decision.
+Аутентификация устанавливает идентичность пользователя. Модуль доступа оценивает действующие права и возвращает одно итоговое состояние.
 
-Authentication устанавливает identity.
-
-Access resolution оценивает entitlement state.
-
-## Canonical Priority
+Канонический приоритет:
 
 ```text
-Lifetime
-   ↓
-Manual Grant
-   ↓
-Active Subscription
-   ↓
-Active Trial
-   ↓
-None
+lifetime
+↓
+manual
+↓
+subscription
+↓
+trial
+↓
+none
 ```
 
-Первый valid source становится effective access source.
+Первый действующий источник становится итоговым источником доступа.
 
-## Ответственность
+Область отвечает за:
 
-Область владеет:
+- чтение действующих источников доступа;
+- проверку их действительности;
+- порядок приоритетов;
+- решение «доступ разрешён / запрещён»;
+- поведение при окончании пробного периода и других прав доступа.
 
-- чтением valid access sources;
-- evaluation source validity;
-- deterministic source priority;
-- resolution granted/denied workspace access;
-- trial/access expiration behavior на уровне backend decision.
+Она не владеет локальными профессиональными данными и не удаляет их.
 
-Она не владеет local workspace data и не удаляет их.
+Подробная логика: [`access-resolution.ru.md`](access-resolution.ru.md)
 
-## Навигация
-
-- [`access-resolution.ru.md`](access-resolution.ru.md)
-- [`access-resolution.puml`](access-resolution.puml)
-
-Physical access persistence:
-
-[`../../database/server/`](../../database/server/)
+Физическое хранение данных доступа: [`../../database/server/`](../../database/server/)

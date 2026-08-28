@@ -1,21 +1,21 @@
-# Server Database Invariants
+# Инварианты серверной базы данных
 
-> Product-significant invariants, enforced PostgreSQL.
+> Значимые для продукта инварианты, обеспечиваемые PostgreSQL.
 
-| Invariant | Enforcement |
+| Инвариант | Способ обеспечения |
 |---|---|
-| Один registration trial на user | Partial UNIQUE index на `access_grants(user_id)` для registration-trial rows. |
-| Одна subscription snapshot на entitlement на user | UNIQUE `(user_id, entitlement_id)`. |
-| Webhook/event idempotency | UNIQUE `subscription_events.external_event_id`. |
-| Valid session time window | CHECK `auth_sessions.expires_at > created_at`. |
-| Valid access-grant time window | CHECK для `starts_at` / `ends_at`. |
-| Lifetime не имеет end date | CHECK по access-grant type и `ends_at`. |
+| Один регистрационный пробный период на пользователя | Частичный уникальный индекс на `access_grants(user_id)` для строк регистрационного пробного периода. |
+| Один снимок подписки на право доступа для пользователя | UNIQUE `(user_id, entitlement_id)`. |
+| Идемпотентность вебхуков и событий | UNIQUE `subscription_events.external_event_id`. |
+| Корректный срок действия сессии | CHECK `auth_sessions.expires_at > created_at`. |
+| Корректный срок действия права доступа | CHECK для `starts_at` / `ends_at`. |
+| Пожизненный доступ не имеет даты окончания | CHECK по типу права доступа и `ends_at`. |
 
-## Enforcement Boundary
+## Граница ответственности
 
-Документ содержит **server PostgreSQL-enforced** invariants.
+Документ содержит инварианты, **обеспечиваемые серверной PostgreSQL**.
 
-Application-layer validation и local SQLite constraints принадлежат своим owning documents и не должны смешиваться с server constraint set.
+Проверки на уровне приложения и ограничения локальной SQLite принадлежат своим каноническим документам и не должны смешиваться с набором серверных ограничений.
 
 ## Связанная документация
 

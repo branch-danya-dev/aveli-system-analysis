@@ -1,11 +1,11 @@
-# Authenticated User → Local Workspace
+# Аутентифицированный пользователь → локальное рабочее пространство
 
-## Mapping
+## Сопоставление
 
 `AuthController._activateLocalWorkspace(userId)`:
 
 ```text
-server users.id
+серверный users.id
    ↓
 LocalDatabaseManager.openForUser(userId)
    ↓
@@ -18,17 +18,17 @@ PurchaseService.logIn(userId)
 RevenueCat App User ID
 ```
 
-Server UUID связывает local workspace selection и RevenueCat customer identity.
+Серверный UUID связывает выбор локального рабочего пространства и идентификатор пользователя RevenueCat.
 
-## Isolation Rule
+## Правило изоляции
 
-Поддерживается одна active session/workspace одновременно.
+Одновременно поддерживается одна активная сессия и одно рабочее пространство.
 
-Новый login открывает DB соответствующего user id.
+Новый вход открывает БД соответствующего пользователя.
 
-Current UI не имеет multi-account switcher.
+Текущий интерфейс не поддерживает переключатель нескольких учётных записей.
 
-## Legacy Database Caveat
+## Ограничение устаревшей базы данных
 
 `LocalDatabaseManager` поддерживает:
 
@@ -36,6 +36,6 @@ Current UI не имеет multi-account switcher.
 claimLegacyIfPresent: true
 ```
 
-но current Flutter UI/source нигде это не вызывает.
+но текущий интерфейс и исходный код Flutter нигде не вызывают этот механизм.
 
-Поэтому automatic claim legacy `aveli.db` **не** является verified production behavior.
+Поэтому автоматическое присвоение устаревшего `aveli.db` **не является подтверждённым производственным поведением**.

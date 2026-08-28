@@ -1,118 +1,118 @@
-# Aveli — Non-Functional Requirements
+# Aveli — Нефункциональные требования
 
-<p align="center"><a href="non-functional-requirements.md">English</a> · <a href="non-functional-requirements.ru.md"><b>Русский</b></a></p>
+<p align="center"><a href="non-functional-requirements.md">Английский</a> · <a href="non-functional-requirements.ru.md"><b>Русский</b></a></p>
 
-> Product-level quality expectations и constraints.
+> Продуктовые требования к качеству и ограничения системы.
 
 ## Статус
 
-**Baseline: Stable**
+**Стабильный базовый уровень**
 
-## Availability and Offline
-
-| ID | Требование |
-|---|---|
-| NFR-001 | Core workspace operations остаются usable без continuous network connectivity. |
-| NFR-002 | Previously available workspace data доступны в supported offline use. |
-| NFR-003 | Temporary account/access-service unavailability не блокирует user, пока previously verified access trusted. |
-| NFR-004 | Offline workspace availability ограничена current access-verification policy. |
-| NFR-005 | Operations для current account/access/subscription state явно требуют connectivity. |
-
-## Privacy
+## Доступность и офлайн-режим
 
 | ID | Требование |
 |---|---|
-| NFR-006 | Professional workspace information остаётся under personal workspace ownership. |
-| NFR-007 | Normal use не требует sync professional workspace в remote workspace service. |
-| NFR-008 | Workspace information isolated между authenticated users. |
-| NFR-009 | User-specific visit media isolated между workspaces. |
-| NFR-010 | Logout/access expiry не удаляет workspace information. |
+| NFR-001 | Основные операции рабочего пространства остаются доступными без постоянного подключения к сети. |
+| NFR-002 | Ранее сохранённые данные рабочего пространства остаются доступными в поддерживаемом офлайн-режиме. |
+| NFR-003 | Временная недоступность сервиса аккаунта или доступа не блокирует пользователя немедленно, пока ранее проверенному доступу ещё можно доверять. |
+| NFR-004 | Офлайн-доступ к рабочему пространству ограничен текущей политикой повторной проверки. |
+| NFR-005 | Операции, которым необходимо актуальное состояние аккаунта, доступа или подписки, явно требуют подключения к сети. |
 
-## Security Expectations
-
-| ID | Требование |
-|---|---|
-| NFR-011 | Authentication/access handling предотвращает unauthorized workspace access. |
-| NFR-012 | Sensitive session/access state не exposed через workspace data/UI. |
-| NFR-013 | System поддерживает secure session renewal без credential re-entry каждый раз. |
-| NFR-014 | Stale/invalid session state не trusted indefinitely. |
-| NFR-015 | User passwords не recoverable из stored auth data. |
-| NFR-016 | Privileged backend/external secrets не exposed end user. |
-| NFR-017 | Privileged integration credentials остаются вне client-visible config. |
-| NFR-018 | Production account/access communication защищена in transit. |
-
-## Access Consistency
+## Конфиденциальность
 
 | ID | Требование |
 |---|---|
-| NFR-019 | Workspace availability использует один consistent access decision model. |
-| NFR-020 | Different screens не produce contradictory access decisions. |
-| NFR-021 | Access state consistent across startup/resume/purchase/restore/refresh. |
-| NFR-022 | Reinstall/local reset не создаёт новый trial. |
+| NFR-006 | Профессиональные данные остаются собственностью личного рабочего пространства пользователя. |
+| NFR-007 | Обычная работа не требует синхронизации профессиональных данных с удалённым сервисом рабочего пространства. |
+| NFR-008 | Данные профессионального рабочего пространства изолированы между аутентифицированными пользователями. |
+| NFR-009 | Пользовательские материалы визитов изолированы между рабочими пространствами. |
+| NFR-010 | Выход из аккаунта и окончание доступа не удаляют данные рабочего пространства. |
 
-## Data Integrity
-
-| ID | Требование |
-|---|---|
-| NFR-023 | Workspace changes сохраняют consistent professional data state. |
-| NFR-024 | Supported data-model updates preserve existing user data. |
-| NFR-025 | Invalid appointment states rejected до active workspace state. |
-| NFR-026 | Payment actions не создают contradictory payment states для appointment. |
-| NFR-027 | Data одного user не появляются в active workspace другого. |
-
-## Reliability and Recovery
+## Требования безопасности
 
 | ID | Требование |
 |---|---|
-| NFR-028 | Startup handles invalid account state без corruption workspace. |
-| NFR-029 | Failed access verification не corrupt/delete workspace. |
-| NFR-030 | Failed subscription reconciliation оставляет recoverable state. |
-| NFR-031 | Unexpected termination не intentionally reset/recreate workspace. |
-| NFR-032 | Account switching не attach reminders/workspace context wrong user. |
+| NFR-011 | Механизмы аутентификации и доступа предотвращают несанкционированное открытие рабочего пространства. |
+| NFR-012 | Чувствительные данные сессии и доступа не раскрываются через обычные данные или интерфейс рабочего пространства. |
+| NFR-013 | Система поддерживает безопасное продление сессии без повторного ввода пароля при каждом продолжении работы. |
+| NFR-014 | Устаревшее или недействительное состояние сессии не считается доверенным бесконечно. |
+| NFR-015 | Пароль пользователя нельзя восстановить из обычных сохранённых данных аутентификации. |
+| NFR-016 | Секреты, разрешающие привилегированные серверные или внешние операции, не раскрываются конечному пользователю. |
+| NFR-017 | Привилегированные учётные данные интеграций не попадают в видимую клиенту конфигурацию. |
+| NFR-018 | Обмен данными аккаунта и доступа в продакшен-среде защищён при передаче. |
 
-## Performance
-
-| ID | Требование |
-|---|---|
-| NFR-033 | Main workspace views избегают unnecessary remote latency dependency. |
-| NFR-034 | Calendar/daily interactions дают immediate feedback. |
-| NFR-035 | Client browse/search responsive для expected individual-specialist volume. |
-| NFR-036 | Access verification не unnecessarily delays startup при trusted cache. |
-
-## Usability
+## Согласованность доступа
 
 | ID | Требование |
 |---|---|
-| NFR-037 | Primary workflows понятны без unnecessary complexity. |
-| NFR-038 | Recurring subscription clearly presented. |
-| NFR-039 | Trial/access messaging accurately reflects state. |
-| NFR-040 | UI поддерживает Russian/English localization. |
-| NFR-041 | Visual effects/motion не block workflows. |
-| NFR-042 | Product respects reduced-motion preferences where supported. |
+| NFR-019 | Доступность рабочего пространства определяется одной согласованной моделью доступа. |
+| NFR-020 | Разные экраны не принимают независимые и противоречащие друг другу решения о доступе. |
+| NFR-021 | Состояние доступа остаётся согласованным при запуске, возвращении приложения на экран, покупке, восстановлении покупки и обновлении. |
+| NFR-022 | Переустановка приложения или сброс локального рабочего пространства не создают новый пробный период. |
 
-## Maintainability
+## Целостность данных
 
 | ID | Требование |
 |---|---|
-| NFR-043 | Major responsibilities остаются separable для independent evolution. |
-| NFR-044 | Feature responsibilities independently understandable/maintainable. |
-| NFR-045 | Account/access conceptually separate от workspace. |
-| NFR-046 | External-system behavior behind explicit integration boundaries. |
-| NFR-047 | Important business rules testable независимо от presentation. |
+| NFR-023 | Изменения рабочего пространства сохраняют согласованное состояние профессиональных данных. |
+| NFR-024 | Поддерживаемые изменения модели данных сохраняют существующую пользовательскую информацию. |
+| NFR-025 | Недопустимые состояния записи отклоняются до того, как попадут в активное рабочее пространство. |
+| NFR-026 | Операции оплаты не создают противоречащие друг другу состояния оплаты одной записи. |
+| NFR-027 | Данные одного пользователя никогда не появляются в активном рабочем пространстве другого. |
 
-## Testability and Verification
+## Надёжность и восстановление
 
 | ID | Требование |
 |---|---|
-| NFR-048 | Access decisions verifiable repeatable tests. |
-| NFR-049 | Authentication/session lifecycle verifiable. |
-| NFR-050 | Workspace migrations verifiable against existing user data. |
-| NFR-051 | Core appointment/payment rules have repeatable verification. |
-| NFR-052 | Production-readiness constraints verifiable before release. |
+| NFR-028 | Запуск приложения обрабатывает отсутствующее, недействительное или истёкшее состояние аккаунта без повреждения данных рабочего пространства. |
+| NFR-029 | Ошибка проверки доступа не повреждает и не удаляет данные рабочего пространства. |
+| NFR-030 | Ошибка сверки подписки оставляет систему в состоянии, из которого можно восстановиться. |
+| NFR-031 | Неожиданное завершение приложения не должно намеренно сбрасывать или пересоздавать рабочее пространство. |
+| NFR-032 | Смена аккаунта не привязывает напоминания или контекст рабочего пространства к неправильному пользователю. |
 
-## Verification Ownership
+## Производительность
 
-Technical verification принадлежит existing owners:
+| ID | Требование |
+|---|---|
+| NFR-033 | Основные экраны рабочего пространства не должны без необходимости зависеть от задержки удалённых сервисов. |
+| NFR-034 | Операции в календаре и представлении дня должны давать быстрый отклик при обычном персональном использовании. |
+| NFR-035 | Просмотр и поиск клиентов должны оставаться отзывчивыми для ожидаемого объёма данных одного специалиста. |
+| NFR-036 | Проверка доступа не должна без необходимости задерживать запуск, пока кэшированному подтверждению ещё можно доверять. |
+
+## Удобство использования
+
+| ID | Требование |
+|---|---|
+| NFR-037 | Основные пользовательские сценарии должны быть понятны без лишней сложности, связанной с биллингом, аккаунтом или техническими деталями. |
+| NFR-038 | Возобновляемая подписка должна быть явно представлена как возобновляемая. |
+| NFR-039 | Сообщения о пробном периоде и доступе должны точно отражать текущее состояние. |
+| NFR-040 | Интерфейс поддерживает русскую и английскую локализацию. |
+| NFR-041 | Визуальные эффекты и анимации не блокируют основные сценарии. |
+| NFR-042 | Продукт учитывает системную настройку уменьшения движения там, где это поддерживается. |
+
+## Сопровождаемость
+
+| ID | Требование |
+|---|---|
+| NFR-043 | Основные зоны ответственности должны быть достаточно разделены, чтобы по возможности развиваться независимо. |
+| NFR-044 | Ответственность отдельных функций должна оставаться понятной и сопровождаемой независимо там, где это практично. |
+| NFR-045 | Поведение аккаунта и доступа концептуально отделено от поведения профессионального рабочего пространства. |
+| NFR-046 | Поведение внешних систем скрыто за явными границами интеграций. |
+| NFR-047 | Существенные бизнес-правила можно проверять независимо от визуального представления. |
+
+## Тестируемость и проверка
+
+| ID | Требование |
+|---|---|
+| NFR-048 | Решения о доступе можно проверять автоматизированными или воспроизводимыми тестами. |
+| NFR-049 | Жизненный цикл аутентификации и сессии поддаётся проверке. |
+| NFR-050 | Поддерживаемые миграции рабочего пространства можно проверять на существующих пользовательских данных. |
+| NFR-051 | Основные правила записей и оплат имеют воспроизводимую проверку. |
+| NFR-052 | Ограничения готовности к продакшен-релизу можно проверить до выпуска версии. |
+
+## Владение технической проверкой
+
+Проверка технических свойств распределена между существующими владельцами:
 
 ```text
 frontend/testing/
@@ -124,15 +124,23 @@ system/review/failure-scenarios.ru.md
 system/review/release-readiness.ru.md
 ```
 
-Standalone `operations/` perspective в current Aveli baseline отсутствует.
+Отдельной области `operations/` в текущей базовой версии Aveli нет.
 
-## Future Measurable Calibration
+## Будущие измеримые показатели
 
-Baseline не invent numeric targets. Future calibration может определить supported devices, expected data volume, startup/calendar/search latency, backup expectations и per-release test evidence.
+Архитектурная база считается стабильной без выдуманных числовых нормативов, которых нет в текущих подтверждениях.
 
-См. [`../../system/review/open-questions.ru.md`](../../system/review/open-questions.ru.md).
+При необходимости для конкретного релиза или продуктовой версии отдельно определяются:
 
-## Related Documentation
+- минимально поддерживаемые устройства;
+- ожидаемый объём локальных данных;
+- целевые задержки запуска, календаря и поиска;
+- требования к резервному копированию на платформах;
+- результаты тестов конкретного релиза.
+
+Эти пункты классифицированы в [`../../system/review/open-questions.ru.md`](../../system/review/open-questions.ru.md), а не скрыты внутри требований.
+
+## Связанные документы
 
 - [`functional-requirements.ru.md`](functional-requirements.ru.md)
 - [`acceptance-criteria.ru.md`](acceptance-criteria.ru.md)

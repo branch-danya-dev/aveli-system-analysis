@@ -1,19 +1,19 @@
 # go_router
 
-> Navigation и route-guard technology Aveli client.
+> Технология навигации и маршрутных ограничений мобильного клиента Aveli.
 
-## Verified Version
+## Подтверждённая версия
 
 `go_router 14.8.1`
 
-## Role
+## Роль
 
-Router владеет `/bootstrap` startup navigation, `StatefulShellRoute` с четырьмя workspace tabs, global auth/access redirects, date query deep links и root-navigator appointment details.
+Маршрутизатор отвечает за начальный переход из `/bootstrap`, `StatefulShellRoute` с четырьмя вкладками рабочего пространства, общие перенаправления по состоянию аутентификации и доступа, глубокие ссылки на даты и открытие деталей записи через корневой навигатор.
 
 ## Почему подходит текущей структуре
 
-Auth/access policy централизована в одном redirect callback, а не дублируется по screens.
+Политика аутентификации и доступа централизована в одном обработчике перенаправления и не дублируется по экранам.
 
-## Replaceability
+## Заменяемость
 
-**Medium.** Navigation centralized, но routes, shell semantics, deep links и redirect tests потребуют coordinated migration.
+**Средняя.** Навигация централизована, но маршруты, семантика оболочки, глубокие ссылки и тесты перенаправлений потребуют согласованной миграции.

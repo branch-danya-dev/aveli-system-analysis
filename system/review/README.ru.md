@@ -1,12 +1,14 @@
-# System Review
+# Системная проверка
 
-> Final whole-system consistency и closure views.
+> Итоговые представления согласованности системы и реестр закрытия вопросов.
 
 ## Статус
 
-**Final polish applied**
+**Финальная доработка применена**
 
-- [`synthesis-review.ru.md`](synthesis-review.ru.md)
-- [`failure-scenarios.ru.md`](failure-scenarios.ru.md)
-- [`release-readiness.ru.md`](release-readiness.ru.md)
-- [`open-questions.ru.md`](open-questions.ru.md)
+## Навигация
+
+- [`synthesis-review.ru.md`](synthesis-review.ru.md) — итоговая проверка архитектуры и документации.
+- [`failure-scenarios.ru.md`](failure-scenarios.ru.md) — межсистемные сценарии отказов и изоляция сбоев.
+- [`release-readiness.ru.md`](release-readiness.ru.md) — межсистемные ограничения и чек-лист готовности к релизу.
+- [`open-questions.ru.md`](open-questions.ru.md) — реестр закрытия: решения, принятые ограничения, внешние подтверждения, будущие продуктовые решения и причины открыть новую архитектурную ветку.

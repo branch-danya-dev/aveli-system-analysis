@@ -1,24 +1,24 @@
-# Database Stack
+# Стек базы данных
 
-> Canonical storage-engine technologies Aveli.
+> Канонические технологии хранения данных Aveli.
 
-## Current Stack
+## Текущий стек
 
-| Technology | Responsibility |
+| Технология | Ответственность |
 |---|---|
-| [`sqlite/`](sqlite/) | Device-local relational storage engine professional workspace. |
-| [`postgresql/`](postgresql/) | Server relational storage engine identity/access/sessions/billing/webhook events. |
+| [`sqlite/`](sqlite/) | Реляционное хранение профессионального рабочего пространства на устройстве. |
+| [`postgresql/`](postgresql/) | Серверное реляционное хранение идентификации, доступа, сессий, биллинга и событий вебхуков. |
 
-## Boundary
+## Граница
 
-`database/stack/` владеет storage-engine knowledge.
+`database/stack/` содержит канонические сведения о технологиях физического хранения.
 
-Runtime data-access technologies canonical у owning components:
+Технологии доступа к данным во время выполнения документируются у компонентов, которые непосредственно ими пользуются:
 
 - Drift → [`../../frontend/stack/drift/`](../../frontend/stack/drift/)
 - Prisma → [`../../backend/stack/prisma/`](../../backend/stack/prisma/)
 
-Physical schemas:
+Физические схемы:
 
 - [`../local/`](../local/)
 - [`../server/`](../server/)

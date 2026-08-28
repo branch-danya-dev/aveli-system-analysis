@@ -1,18 +1,20 @@
-# Business
+# Бизнес
 
-> Canonical business-level documentation Aveli: product context, scope, requirements, processes, acceptance и traceability.
+> Каноническая бизнес-документация Aveli: контекст продукта, границы, требования, процессы, критерии приёмки и трассируемость.
 
 ## Статус
 
-**Baseline: Stable**
+**Стабильный базовый уровень**
 
-Business baseline согласована с current product boundary и implementation-backed system model. Future product choices явно классифицированы в [`../system/review/open-questions.ru.md`](../system/review/open-questions.ru.md).
+Бизнес-описание согласовано с текущими границами продукта и проверенной системной моделью. Решения, которые относятся к будущему развитию продукта, явно классифицированы в [`../system/review/open-questions.ru.md`](../system/review/open-questions.ru.md).
 
 ## Назначение
 
-`business/` объясняет **что такое Aveli, зачем продукт существует, какое behavior система должна предоставлять и какие product rules/boundaries должны сохраняться**.
+`business/` объясняет **что такое Aveli, зачем существует продукт, какое поведение должна обеспечивать система и какие продуктовые правила и границы должны сохраняться**.
 
-Business documentation владеет intent и observable behavior. Technical implementation canonical в:
+Эта область владеет смыслом и наблюдаемым поведением продукта.
+
+Техническая реализация описывается в:
 
 ```text
 database/
@@ -22,50 +24,70 @@ integrations/
 system/
 ```
 
-## Responsibility
+## Ответственность
 
-Area владеет product context/goals, scope, business rules, FR/NFR, acceptance criteria, processes и traceability от business intent к technical ownership/verification.
+Здесь находятся:
 
-## Boundary
+- контекст продукта и его цели;
+- границы системы и продукта;
+- бизнес-правила;
+- функциональные и нефункциональные требования;
+- критерии приёмки;
+- пользовательские и продуктовые процессы;
+- трассируемость от бизнес-замысла к техническому владельцу и проверке.
 
-Business documentation отвечает:
+## Граница
+
+Бизнес-документация отвечает:
 
 ```text
-Почему product существует?
-Кто его использует?
-Что in / out of scope?
-Какое behavior требуется?
-Какие rules должны оставаться true?
-Какой результат acceptable?
+Почему существует продукт?
+Кто им пользуется?
+Что входит и не входит в границы?
+Какое поведение требуется?
+Какие правила должны сохраняться?
+Какой результат считается приемлемым?
 ```
 
-Она не владеет конкретными DB schemas, framework choices, API payload internals или deployment configuration, если technical constraint сам не меняет product behavior или external contract.
+Она не владеет конкретными схемами баз данных, выбором фреймворков, внутренней структурой API или конфигурацией развёртывания, если техническое ограничение само по себе не меняет поведение продукта или внешний контракт.
 
 ## Структура
 
-| Area | Responsibility |
+| Область | Ответственность |
 |---|---|
-| `context/` | Product background, users, goals, positioning. |
-| `scope/` | Product/system boundary и exclusions. |
-| `requirements/` | Rules, FR, NFR, acceptance criteria. |
-| `processes/` | User/product workflows. |
-| `traceability/` | Business → verification → technical ownership. |
-| `diagrams/` | Business knowledge maps. |
+| `context/` | Предпосылки продукта, пользователи, цели и позиционирование. |
+| `scope/` | Границы продукта и системы, а также исключения. |
+| `requirements/` | Бизнес-правила, FR, NFR и критерии приёмки. |
+| `processes/` | Пользовательские и продуктовые сценарии. |
+| `traceability/` | Связи «бизнес → проверка → технический владелец». |
+| `diagrams/` | Диаграммы бизнес-уровня. |
 
-Business map: [`diagrams/business-map.puml`](diagrams/business-map.puml)
+Карта бизнес-знаний:
+
+[`diagrams/business-map.puml`](diagrams/business-map.puml)
 
 ## Путь чтения
 
 ```text
 context/
-→ scope/
-→ requirements/
-→ processes/
-→ traceability/
+  ↓
+scope/
+  ↓
+requirements/
+  ↓
+processes/
+  ↓
+traceability/
 ```
 
-Implementation: [`../database/`](../database/), [`../backend/`](../backend/), [`../frontend/`](../frontend/), [`../integrations/`](../integrations/), [`../system/`](../system/).
+Для перехода к реализации:
 
-## Documentation Rules
+- [`../database/`](../database/)
+- [`../backend/`](../backend/)
+- [`../frontend/`](../frontend/)
+- [`../integrations/`](../integrations/)
+- [`../system/`](../system/)
+
+## Правила документации
 
 [`../rules.ru.md`](../rules.ru.md)

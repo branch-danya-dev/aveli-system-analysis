@@ -1,24 +1,24 @@
 # `GET /v1/access`
 
-> Canonical client entitlement endpoint.
+> Канонический клиентский эндпоинт состояния доступа.
 
-## Request
+## Запрос
 
-Auth:
+Аутентификация:
 
 ```http
 Authorization: Bearer <accessToken>
 ```
 
-Body: none.
+Тело запроса отсутствует.
 
-Success:
+Успешный ответ:
 
 ```text
 200 OK
 ```
 
-## Response — `AccessStatusView`
+## Ответ — `AccessStatusView`
 
 ```json
 {
@@ -39,25 +39,25 @@ Success:
 }
 ```
 
-## Field Contract
+## Поля контракта
 
-| Field | Type | Meaning |
+| Поле | Тип | Значение |
 |---|---|---|
-| `hasAccess` | boolean | Effective workspace access decision. |
-| `source` | enum | `lifetime`, `manual`, `subscription`, `trial`, `none`. |
-| `trialEndsAt` | ISO 8601 UTC or null | Конец registration trial. |
-| `accessEndsAt` | ISO 8601 UTC or null | Конец manual/subscription/trial window; null для lifetime. |
-| `subscription` | object or null | Normalized current subscription view. |
-| `subscription.plan` | string | `productId ?? entitlementId`. |
-| `subscription.status` | string | Backend `SubscriptionStatus`. |
-| `subscription.autoRenew` | boolean or null | Provider-backed auto-renew state. |
-| `subscription.expiresAt` | ISO 8601 UTC or null | Current subscription period end. |
-| `reason` | string or null | Denial reason при отсутствии access. |
-| `requiresOnlineVerification` | boolean | Нужна ли periodic online verification. |
-| `verifiedAt` | ISO 8601 UTC | Время расчета server. |
-| `nextVerificationRequiredAt` | ISO 8601 UTC | Server-provided deadline следующей verification. |
+| `hasAccess` | boolean | Итоговое решение о доступе к рабочему пространству. |
+| `source` | перечисление | `lifetime`, `manual`, `subscription`, `trial`, `none`. |
+| `trialEndsAt` | ISO 8601 UTC или null | Окончание регистрационного пробного периода, если применимо. |
+| `accessEndsAt` | ISO 8601 UTC или null | Окончание ручного доступа, подписки или пробного периода; для бессрочного доступа — null. |
+| `subscription` | объект или null | Нормализованное представление текущей подписки. |
+| `subscription.plan` | строка | `productId ?? entitlementId`. |
+| `subscription.status` | строка | Серверный `SubscriptionStatus`. |
+| `subscription.autoRenew` | логическое значение или null | Состояние автопродления по данным провайдера. |
+| `subscription.expiresAt` | ISO 8601 UTC или null | Окончание текущего периода подписки. |
+| `reason` | строка или null | Причина отказа, если доступа нет. |
+| `requiresOnlineVerification` | boolean | Требует ли источник доступа периодической онлайн-проверки. |
+| `verifiedAt` | ISO 8601 UTC | Время, когда сервер рассчитал состояние. |
+| `nextVerificationRequiredAt` | ISO 8601 UTC | Срок следующей проверки, переданный сервером. |
 
-## Denial Reasons
+## Причины отказа
 
 ```text
 trial_expired
@@ -65,17 +65,17 @@ subscription_expired
 access_required
 ```
 
-## Product Denial
+## Отказ как продуктовое состояние
 
-No entitlement — valid HTTP 200 product state.
+Отсутствие права доступа — допустимое продуктовое состояние с HTTP 200.
 
-Это не 403.
+Оно не представляется кодом 403.
 
-## Flutter Mirror
+## Отражение во Flutter
 
 ```text
 lib/features/subscription/domain/entities/access_state.dart
 AccessState.fromJson
 ```
 
-Изменение JSON shape является client-breaking contract change.
+Изменение структуры этого JSON ломает совместимость с текущим клиентом.

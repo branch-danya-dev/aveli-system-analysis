@@ -1,23 +1,23 @@
-# Database
+# База данных
 
-> Canonical documentation Aveli по data ownership, logical models, physical persistence и storage-engine technologies.
+> Каноническая документация Aveli по владению данными, логическим моделям, физическому хранению и технологиям хранения.
 
 ## Статус
 
-**Baseline: Stable**
+**Базовая версия: стабильна**
 
-Database baseline reconciled с verified local/server persistence evidence. Один non-blocking source naming discrepancy Service duration fields остаётся явно documented.
+Базовая версия раздела базы данных сверена с подтверждённой реализацией локального и серверного хранения. Одно некритичное расхождение в именовании полей длительности услуги остаётся явно зафиксированным.
 
 ## Назначение
 
 `database/` отвечает:
 
 ```text
-Какие data существуют?
+Какие данные существуют?
 Кто ими владеет?
-Как они logically связаны?
-Где physical persistence?
-Как persistence evolves?
+Как они логически связаны?
+Где и как они физически хранятся?
+Как развивается структура хранения?
 ```
 
 ## Структура
@@ -34,16 +34,16 @@ database/
 └── diagrams/
 ```
 
-| Area | Responsibility |
+| Область | Ответственность |
 |---|---|
-| `architecture/` | Ownership, source-of-truth, isolation, lifecycle. |
-| `models/` | Conceptual/logical data models. |
-| `stack/` | Storage engines: SQLite и PostgreSQL. |
-| `local/` | Device-side physical persistence/files. |
-| `server/` | PostgreSQL physical persistence. |
-| `diagrams/` | Database knowledge maps. |
+| `architecture/` | Владение, источники истины, изоляция и жизненный цикл. |
+| `models/` | Концептуальные и логические модели данных. |
+| `stack/` | Системы хранения: SQLite и PostgreSQL. |
+| `local/` | Физическое хранение и файлы на устройстве. |
+| `server/` | Физическое хранение в PostgreSQL. |
+| `diagrams/` | Карты знаний о данных. |
 
-## Technology Boundary
+## Граница технологий
 
 ```text
 SQLite      → database/stack/sqlite/
@@ -55,21 +55,21 @@ Prisma      → ../backend/stack/prisma/
 ## Путь чтения
 
 ```text
-Data ownership
+Владение данными
    ↓
-Conceptual model
+Концептуальная модель
    ↓
-Logical model
+Логическая модель
    ↓
-Storage engines
+Системы хранения
    ↓
-Local / server physical models
+Локальная и серверная физические модели
 ```
 
 Начать: [`architecture/data-ownership.ru.md`](architecture/data-ownership.ru.md)
 
-Verification: [`implementation-verification.ru.md`](implementation-verification.ru.md)
+Проверка: [`implementation-verification.ru.md`](implementation-verification.ru.md)
 
-## Documentation Rules
+## Правила документации
 
 [`../rules.ru.md`](../rules.ru.md)

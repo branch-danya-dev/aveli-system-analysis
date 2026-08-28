@@ -1,101 +1,101 @@
-# Aveli — System Boundaries
+# Aveli — границы системы
 
-## 1. Product Boundary
+## 1. Граница продукта
 
-Aveli — personal workspace одного independent specialist.
+Aveli — персональное рабочее пространство одного независимого специалиста.
 
-Feature, вводящий shared professional-data ownership, меняет system boundary.
+Возможность, вводящая совместное владение профессиональными данными, меняет границу системы.
 
-## 2. Data Ownership Boundary
+## 2. Граница владения данными
 
 ```text
-Professional Workspace
-→ device-local owner
+Профессиональное рабочее пространство
+→ принадлежит локальному устройству
 
-Identity / Access
-→ backend owner
+Идентификация / доступ
+→ принадлежат бэкенду
 ```
 
-Canonical:
+Каноническое описание:
 
 [`../../database/architecture/data-ownership.ru.md`](../../database/architecture/data-ownership.ru.md)
 
-## 3. Trust Boundary
+## 3. Граница доверия
 
-Mobile client не authoritative для:
-
-```text
-session validity
-trial creation
-access-grant precedence
-subscription normalization
-online access decision
-```
-
-Backend не authoritative для:
+Мобильный клиент не является источником окончательного решения для:
 
 ```text
-clients
-appointments
-payments
-visit notes
-visit photos
-local professional history
+действительность сессии
+создание пробного периода
+приоритет прав доступа
+нормализация подписки
+решение о доступе при работе в сети
 ```
 
-## 4. Internal Interface Boundary
+Бэкенд не является владельцем решения для:
+
+```text
+клиенты
+записи
+оплаты
+заметки визитов
+фотографии визитов
+локальная профессиональная история
+```
+
+## 4. Граница внутреннего интерфейса
 
 ```text
 Flutter
 ↕
-Aveli Backend
+Бэкенд Aveli
 ```
 
-— internal system interface, не external integration.
+— внутренний интерфейс системы, а не внешняя интеграция.
 
-Canonical HTTP contracts:
+Канонические контракты HTTP:
 
 [`../../backend/api/`](../../backend/api/)
 
-## 5. External Integration Boundary
+## 5. Граница внешних интеграций
 
 ```text
 Aveli
 ↕
-RevenueCat / Stores / OS Services / Third-Party APIs
+RevenueCat / магазины приложений / службы ОС / сторонние API
 ```
 
-Canonical:
+Каноническое описание:
 
 [`../../integrations/`](../../integrations/)
 
-## 6. Access Boundary
+## 6. Граница доступа
 
-Access решает, можно ли открыть workspace сейчас.
+Состояние доступа определяет, можно ли открыть рабочее пространство сейчас.
 
-Access **не** владеет workspace data.
+Доступ **не** владеет данными рабочего пространства.
 
 ```text
 hasAccess = false
-→ workspace unavailable
-→ professional data unchanged
+→ рабочее пространство недоступно
+→ профессиональные данные не изменяются
 ```
 
-## 7. Local Identity Boundary
+## 7. Граница локальной идентификации
 
-Authenticated backend `users.id` выбирает:
+Идентификатор `users.id` аутентифицированного пользователя бэкенда выбирает:
 
 ```text
 aveli_<userId>.sqlite
 visit_photos/<userId>/...
-access snapshot <userId>
+снимок доступа <userId>
 RevenueCat App User ID
 ```
 
-User id связывает несколько components, но data ownership остается разным.
+Идентификатор пользователя связывает несколько компонентов, но владение данными у них остаётся разным.
 
-## 8. Failure Boundary
+## 8. Граница отказов
 
-External/backend failure не должен silently corrupt/delete unrelated local workspace information.
+Сбой внешнего сервиса или бэкенда не должен незаметно повреждать или удалять несвязанные данные локального рабочего пространства.
 
-Это system-level resilience principle.
+Это системный принцип устойчивости к отказам.

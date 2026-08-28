@@ -1,6 +1,6 @@
-# Local Visit Notifications
+# Локальные уведомления о визитах
 
-> Appointment reminder scheduling, cancellation, rebuild и navigation payload handling.
+> Планирование, отмена и восстановление напоминаний о записях, а также обработка навигационной полезной нагрузки.
 
 ## Навигация
 

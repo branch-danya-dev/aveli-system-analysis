@@ -1,4 +1,4 @@
-# Aveli — Server PostgreSQL Physical Schema
+# Aveli — физическая схема серверной PostgreSQL
 
 ## Таблицы
 
@@ -10,7 +10,7 @@ subscriptions
 subscription_events
 ```
 
-## Relationships
+## Связи
 
 ```text
 users 1 → 0..* auth_sessions          ON DELETE CASCADE
@@ -20,22 +20,22 @@ users 1 → 0..* subscription_events    ON DELETE SET NULL
 subscriptions 1 → 0..* subscription_events ON DELETE SET NULL
 ```
 
-## Product-Critical Persistence Rules
+## Критичные для продукта правила хранения
 
-- один registration trial на user обеспечивается partial UNIQUE index;
-- одна subscription row на `(user_id, entitlement_id)` обеспечивается UNIQUE;
-- webhook idempotency поддерживается UNIQUE `subscription_events.external_event_id`;
-- session expiry должна удовлетворять `expires_at > created_at`;
-- access-grant time windows ограничены CHECK;
-- registration trial и subscription state физически разделены.
+- один регистрационный пробный период на пользователя обеспечивается частичным уникальным индексом;
+- одна строка подписки на `(user_id, entitlement_id)` обеспечивается ограничением UNIQUE;
+- идемпотентность вебхуков поддерживается ограничением уникальности `subscription_events.external_event_id`;
+- срок действия сессии должен удовлетворять `expires_at > created_at`;
+- временные границы права доступа ограничены проверочными ограничениями;
+- регистрационный пробный период и состояние подписки физически разделены.
 
-## Access Persistence Mapping
+## Сопоставление источников доступа с хранением
 
-| Access source | Physical source |
+| Источник доступа | Физический источник |
 |---|---|
 | Lifetime | `access_grants`, `type=lifetime` |
 | Manual | `access_grants`, `type=manual_temporary` |
-| Subscription | `subscriptions` |
-| Registration Trial | `access_grants`, `type=trial`, `source=registration` |
+| Подписка | `subscriptions` |
+| Регистрационный пробный период | `access_grants`, `type=trial`, `source=registration` |
 
-Access decision algorithm относится к backend/access; этот документ владеет только persistence facts, используемыми алгоритмом.
+Алгоритм определения доступа относится к `backend/access`; этот документ содержит только факты хранения, которыми пользуется алгоритм.

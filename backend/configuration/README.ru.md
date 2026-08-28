@@ -1,15 +1,9 @@
-# Backend Configuration
+# Конфигурация бэкенда
 
-> Runtime configuration inputs, materially affecting backend behavior.
+> Параметры среды выполнения, которые влияют на поведение бэкенда.
 
-## Навигация
+Канонический перечень и назначение переменных:
 
-- [`environment.ru.md`](environment.ru.md)
+[`environment.ru.md`](environment.ru.md)
 
-Implementation references:
-
-```text
-backend/.env.example
-backend/DEPLOY.md
-backend/src/main.ts
-```
+Значения секретов в документации не фиксируются.

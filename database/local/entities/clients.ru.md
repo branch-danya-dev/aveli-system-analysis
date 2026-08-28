@@ -1,22 +1,22 @@
 # `clients`
 
-> Physical client records в local workspace.
+> Физические записи клиентов в локальном рабочем пространстве.
 
-| Column | Type | NULL | Meaning |
+| Столбец | Тип | NULL | Назначение |
 |---|---|---|---|
-| `id` | TEXT | NO | PK; UUID v4. |
+| `id` | TEXT | NO | Первичный ключ; UUID v4. |
 | `name` | TEXT | NO | Отображаемое имя. |
 | `phone` | TEXT | YES | Телефон. |
-| `social` | TEXT | YES | Соцсеть / мессенджер. |
-| `device_contact_id` | TEXT | YES | Stable device-contact identifier; v10. |
-| `tags` | TEXT | YES | JSON array строк; v11. |
-| `archived_at` | DATETIME | YES | Timestamp архивации; v11. |
-| `created_at` | DATETIME | NO | Timestamp создания. |
+| `social` | TEXT | YES | Социальная сеть / мессенджер. |
+| `device_contact_id` | TEXT | YES | Стабильный идентификатор контакта устройства; добавлен в v10. |
+| `tags` | TEXT | YES | массив JSON строк; добавлен в v11. |
+| `archived_at` | DATETIME | YES | Время архивации; добавлено в v11. |
+| `created_at` | DATETIME | NO | Время создания. |
 
-## Constraints и Lifecycle
+## Ограничения и жизненный цикл
 
-Документирован только PK index.
+Кроме первичного ключа отдельные индексы в текущем описании не зафиксированы.
 
-Application delete блокируется, если у client есть appointments. Предпочтительный lifecycle path — archive через `archived_at`.
+Удаление клиента блокируется приложением, если на него ссылаются записи. Предпочтительный сценарий — архивация через `archived_at`.
 
-Physical behavior должно оставаться traceable к финальным client lifecycle rules.
+Физическое поведение должно оставаться прослеживаемым до актуальных бизнес-правил жизненного цикла клиента.

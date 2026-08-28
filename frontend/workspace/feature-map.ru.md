@@ -1,71 +1,71 @@
-# Workspace Feature Map
+# Карта возможностей рабочего пространства
 
-## Clients
+## Клиенты
 
 ```text
-Presentation
-→ ClientsScreen / ClientDetailsScreen / editor / contact import
-State
+Представление
+→ ClientsScreen / ClientDetailsScreen / редактор / импорт контактов
+Состояние
 → clients_providers.dart
-Domain
-→ ClientRepository + create/update/delete/archive/import use cases
-Data
+Домен
+→ ClientRepository + сценарии создания / обновления / удаления / архивации / импорта
+Доступ к данным
 → client_repository_impl.dart / client_directory_repository_impl.dart
-Persistence
-→ Drift clients
+Хранение
+→ таблица clients через Drift
 ```
 
-## Services
+## Услуги
 
 ```text
-Presentation → ServicesScreen / editor
-State        → services_providers.dart
-Domain       → ServiceRepository / SaveService / DeleteService
-Data         → service_repository_impl.dart
-Persistence  → Drift services
+Представление → ServicesScreen / редактор
+Состояние     → services_providers.dart
+Домен         → ServiceRepository / SaveService / DeleteService
+Доступ к данным → service_repository_impl.dart
+Хранение      → таблица services через Drift
 ```
 
-## Appointments / Visits
+## Записи / визиты
 
 ```text
-Presentation → create/details/complete/cancel flows
-State        → appointments_providers.dart
-Domain       → appointment + visit use cases
-Data         → appointment_repository_impl / visit_repository_impl
-Persistence  → appointments + visit_notes + visit_photos
-Cross        → reminders + payments + clients + services
+Представление → создание / детали / завершение / отмена
+Состояние     → appointments_providers.dart
+Домен         → сценарии записей и визитов
+Доступ к данным → appointment_repository_impl / visit_repository_impl
+Хранение      → appointments + visit_notes + visit_photos
+Связи         → напоминания + оплаты + клиенты + услуги
 ```
 
-## Today / Calendar
+## Сегодня / календарь
 
-Reactive projections используют Drift table updates.
+Реактивные представления используют обновления таблиц Drift.
 
 ```text
 TodayScreen / CalendarScreen / DayBoard
-→ providers
-→ repositories
-→ ScheduleDayProjection / Drift joins
+→ провайдеры состояния
+→ репозитории
+→ ScheduleDayProjection / объединения Drift
 ```
 
-## Payments / Debts
+## Оплаты / задолженности
 
 ```text
 OutstandingPaymentsScreen
 PeriodFinanceScreen
 AcceptPaymentSheet
-→ payments providers/use cases
-→ payment repositories
+→ провайдеры и сценарии оплат
+→ репозитории оплат
 → payments + appointments.payment_status
 ```
 
-## Settings / Profile
+## Настройки / профиль
 
-Profile/settings — local application data, не mirror backend `users`.
+Профиль и настройки — локальные данные приложения, а не зеркало серверной сущности `users`.
 
-Persistence: `app_settings`.
+Хранение: `app_settings`.
 
-Client behavior включает appearance, local profile, public-listing flags, import/export и currency conversion.
+Поведение клиента включает оформление, локальный профиль, признаки публичного размещения, импорт и экспорт, а также конвертацию валют.
 
-## Schedule
+## Расписание
 
-`ScheduleConfig` хранит working start/end minutes для appointment creation, slot validation и day-board layout.
+`ScheduleConfig` хранит минуты начала и окончания рабочего времени для создания записей, проверки временных слотов и построения дневного расписания.

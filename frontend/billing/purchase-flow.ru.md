@@ -1,16 +1,16 @@
-# Mobile Purchase / Restore Flow
+# Сценарий покупки и восстановления на мобильном клиенте
 
-## RevenueCat Service
+## Сервис RevenueCat
 
 ```text
 RevenueCatPurchaseService
 ```
 
-`NoopPurchaseService` используется, если mobile RevenueCat keys пусты.
+`NoopPurchaseService` используется, если мобильные ключи RevenueCat не заданы.
 
-## Configuration
+## Конфигурация
 
-Dart defines:
+Параметры `dart-define`:
 
 ```text
 REVENUECAT_IOS_API_KEY
@@ -18,69 +18,69 @@ REVENUECAT_ANDROID_API_KEY
 REVENUECAT_ENTITLEMENT_ID
 ```
 
-Default entitlement:
+Право доступа по умолчанию:
 
 ```text
 support
 ```
 
-Product ids не hardcoded во Flutter; загружаются из RevenueCat/store offerings.
+Идентификаторы продуктов не зашиты во Flutter; они загружаются из предложений RevenueCat и магазина приложений.
 
-## Customer Identity
+## Идентификация пользователя
 
-После authenticated workspace activation:
+После аутентификации и активации рабочего пространства:
 
 ```text
 Purchases.logIn(userId)
 ```
 
-где `userId` — server UUID.
+где `userId` — серверный UUID.
 
-## Purchase
+## Покупка
 
 ```text
-Paywall
+Экран подписки
   ↓
 Purchases.purchase
   ↓
-purchase result
+результат покупки
   ↓
 AccessController.syncBilling
   ↓
 POST /v1/billing/sync
   ↓
-server AccessStatusView
+серверный AccessStatusView
   ↓
-AccessState + secure snapshot
+AccessState + защищённый снимок
 ```
 
-## Restore
+## Восстановление покупки
 
 ```text
 Purchases.restorePurchases
   ↓
 syncBilling
   ↓
-server access state
+серверное состояние доступа
 ```
 
-## Authority Boundary
+## Граница полномочий
 
-Client может читать `CustomerInfo.entitlements[support].isActive` как часть purchase outcome, но это не direct workspace unlock.
+Клиент может читать `CustomerInfo.entitlements[support].isActive` как часть результата покупки, но это не открывает рабочее пространство напрямую.
 
-Workspace unlock идет через backend reconciliation.
+Рабочее пространство открывается только после сверки состояния на бэкенде.
 
-## Listener Model
+## Модель отслеживания изменений
 
-Global `addCustomerInfoUpdateListener` отсутствует.
+Глобальный `addCustomerInfoUpdateListener` не используется.
 
-На app resume client один раз получает current customer info и refreshes/syncs access.
+При возвращении приложения на передний план клиент один раз получает актуальный `CustomerInfo` и обновляет либо синхронизирует состояние доступа.
 
-## Purchase Result States
+## Состояния результата покупки
 
 ```text
-success
-syncPending
-pending
-cancelled
+успех
+сверка ожидается (`syncPending`)
+ожидание (`pending`)
+отменено (`cancelled`)
 ```

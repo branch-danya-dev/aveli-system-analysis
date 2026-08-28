@@ -1,63 +1,63 @@
-# Authentication and Local Workspace Binding
+# Аутентификация и привязка локального рабочего пространства
 
-## Registration / Login
+## Регистрация и вход
 
 ```text
-User credentials
+Учётные данные пользователя
     ↓
-Flutter Auth
+аутентификация во Flutter
     ↓
-Aveli Backend
+бэкенд Aveli
     ↓
 users + auth_sessions
     ↓
-access / refresh credentials
+токен доступа / токен обновления
     ↓
-Secure Storage
+защищённое хранилище
     ↓
-activate workspace using users.id
+активация рабочего пространства по users.id
 ```
 
-## Identity Link
+## Связь идентичности
 
-Backend account id используется как client-side identity anchor:
+Идентификатор аккаунта на бэкенде используется как общий идентификатор пользователя в нескольких контекстах:
 
 ```text
 users.id
-  ├── secure user id
+  ├── защищённый идентификатор пользователя
   ├── aveli_<userId>.sqlite
   ├── visit_photos/<userId>/
-  ├── access snapshot key
+  ├── ключ снимка доступа
   └── RevenueCat App User ID
 ```
 
-Это **linking identifier**, а не shared data ownership.
+Это связывающий идентификатор, но он не объединяет владение данными разных хранилищ.
 
-## Registration Trial
+## Регистрационный пробный период
 
-Account registration создает один backend-controlled registration trial.
+При регистрации аккаунта бэкенд создаёт один регистрационный пробный период.
 
-Reinstall app или delete local workspace не создает новый backend trial.
+Переустановка приложения или удаление локального рабочего пространства не создают новый пробный период для того же аккаунта.
 
-## Separation of Responsibilities
+## Разделение ответственности
 
-Backend:
-
-```text
-Who is the user?
-Is the session valid?
-What access sources exist?
-```
-
-Frontend:
+Бэкенд отвечает на вопросы:
 
 ```text
-Which local workspace belongs to this authenticated user?
-How should the user enter that workspace?
+Кто является текущим пользователем?
+Действительна ли сессия?
+Какие источники доступа существуют?
 ```
 
-## No Workspace Upload
+Фронтенд отвечает на вопросы:
 
-Authentication не синхронизирует clients/appointments/payments/photos в backend.
+```text
+Какое локальное рабочее пространство принадлежит этому пользователю?
+Как пользователь должен попасть в это рабочее пространство?
+```
 
-Это вне current system boundary.
+## Профессиональные данные не загружаются при входе
+
+Аутентификация не синхронизирует клиентов, записи, оплаты или фотографии с бэкендом.
+
+Такая синхронизация находится вне текущей границы системы.

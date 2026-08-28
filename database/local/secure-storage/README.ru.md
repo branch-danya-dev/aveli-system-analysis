@@ -1,18 +1,18 @@
-# Secure Client-Side Persistence
+# Защищённое клиентское хранение
 
-> Данные, сохраняемые локально вне SQLite в secure storage.
+> Данные, сохраняемые локально вне SQLite в защищённом хранилище устройства.
 
-Область документируется здесь, потому что участвует в общей persistence model. Сам implementation mechanism позже следует cross-link с canonical frontend/security documentation.
+Эта область находится в разделе данных, потому что участвует в общей модели хранения. Конкретный механизм реализации канонически описывается во фронтенде и документации безопасности.
 
-## Access Snapshot
+## Снимок состояния доступа
 
-Key:
+Ключ:
 
 ```text
 aveli_access_snapshot_<sanitizedUserId>
 ```
 
-Value: serialized `AccessState` JSON.
+Значение — сериализованный JSON `AccessState`.
 
 Известные поля:
 
@@ -28,12 +28,12 @@ verifiedAt
 nextVerificationRequiredAt
 ```
 
-Snapshot используется для offline-grace после успешной access verification.
+Снимок используется для ограниченного офлайн-доступа после успешной проверки доступа.
 
-По предоставленному persistence description он очищается при logout / delete profile.
+Согласно подтверждённому поведению он очищается при выходе из аккаунта и удалении профиля.
 
-## Auth Tokens
+## Токены аутентификации
 
-Access и refresh JWT также хранятся через secure client-side storage отдельно от Drift/SQLite.
+Токены доступа и обновления также хранятся в защищённом клиентском хранилище отдельно от Drift/SQLite.
 
-Они участвуют в определении authenticated `userId`, который затем выбирает per-user SQLite database.
+Они участвуют в восстановлении аутентифицированного `userId`, который затем определяет, какую пользовательскую базу SQLite открыть.

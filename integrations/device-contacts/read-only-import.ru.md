@@ -1,18 +1,18 @@
-# Device Contacts — Read-Only Import
+# Контакты устройства — импорт только для чтения
 
-## Technology
+## Технология
 
 ```text
 flutter_contacts 2.3.1
 ```
 
-Repository:
+Репозиторий:
 
 ```text
 FlutterDeviceContactsRepository
 ```
 
-## Permissions
+## Разрешения
 
 Android:
 
@@ -26,55 +26,55 @@ iOS:
 NSContactsUsageDescription
 ```
 
-Client запрашивает read permission.
+Клиент запрашивает разрешение на чтение.
 
-## Data Read
+## Читаемые данные
 
 Aveli читает:
 
 ```text
 displayName
-first non-empty phone
+первый непустой номер телефона
 contact.id
 ```
 
-## Import Processing
+## Обработка импорта
 
 ```text
-Device Contact
+Контакт устройства
   ↓
-read fields
+прочитать поля
   ↓
-normalize phone
+нормализовать номер телефона
   ↓
-deduplicate
+устранить дубли
   ↓
-create/enrich local Aveli Client
+создать или дополнить локального клиента Aveli
 ```
 
-Duplicate detection:
+Обнаружение дубликатов:
 
 - `deviceContactId`;
-- normalized phone.
+- нормализованный номер телефона.
 
-## Write Boundary
+## Граница записи
 
-Integration **read-only**.
+Интеграция работает **только на чтение**.
 
-Aveli не пишет изменения обратно в device address book.
+Aveli не пишет изменения обратно в адресную книгу устройства.
 
-Imported Aveli `Client` становится отдельным device-local workspace record.
+Импортированный `Client` Aveli становится отдельной записью локального рабочего пространства на устройстве.
 
-## Permission Denied
+## Разрешение не предоставлено
 
-Без permission:
+Без разрешения:
 
 ```text
 listWithPhones → []
 ```
 
-Import unavailable, existing Aveli client data остаются unchanged.
+Импорт недоступен, существующие данные клиентов Aveli остаются без изменений.
 
-## Consumer
+## Потребитель
 
 [`../../frontend/workspace/feature-map.ru.md`](../../frontend/workspace/feature-map.ru.md)

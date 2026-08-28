@@ -1,38 +1,38 @@
-# Aveli Backend — Access Resolution
+# Бэкенд Aveli — определение доступа
 
-> Проверенная server-side decision model workspace access.
+> Проверенная серверная модель принятия решения о доступе к рабочему пространству.
 
-## Canonical Priority
+## Канонический приоритет
 
-Первый valid match wins:
+Используется первый действующий источник в порядке:
 
 ```text
-1. lifetime grant
-2. manual_temporary grant
-3. subscription entitlement support
-4. trial grant
-5. none
+1. бессрочное право (`lifetime`)
+2. временное ручное право (`manual_temporary`)
+3. право по подписке `support`
+4. право пробного периода (`trial`)
+5. нет доступа (`none`)
 ```
 
-## Data Loading
+## Загрузка данных
 
 `AccessService` читает:
 
 ```text
-all access_grants for user
+все права пользователя из access_grants
 +
-subscriptions where entitlement_id = 'support'
+подписки из subscriptions, где entitlement_id = 'support'
 ```
 
-Pure decision implementation:
+Чистая функция принятия решения:
 
 ```text
 backend/src/access/access.decision.ts
 ```
 
-## Subscription Entitlement Predicate
+## Условие доступа по подписке
 
-Subscription entitled когда:
+Подписка даёт доступ, если:
 
 ```text
 status ∈ {
@@ -46,7 +46,7 @@ AND
 current_period_end > now
 ```
 
-Non-entitled statuses:
+Статусы без доступа:
 
 ```text
 expired
@@ -56,13 +56,13 @@ revoked
 Важное следствие:
 
 ```text
-cancelled + future current_period_end
-→ access remains valid until period end
+cancelled + будущий current_period_end
+→ доступ сохраняется до конца оплаченного периода
 ```
 
-## AccessStatusView
+## `AccessStatusView`
 
-Canonical public contract:
+Канонический публичный контракт:
 
 [`../api/access/`](../api/access/)
 
@@ -80,74 +80,74 @@ verifiedAt
 nextVerificationRequiredAt
 ```
 
-## Online Verification Flag
+## Необходимость онлайн-проверки
 
-Verified behavior:
+Подтверждённое поведение:
 
-| Effective source | `requiresOnlineVerification` |
+| Итоговый источник | `requiresOnlineVerification` |
 |---|---:|
-| lifetime | false |
-| manual | false |
-| subscription | true |
-| trial | true |
-| none | true |
+| `lifetime` | `false` |
+| `manual` | `false` |
+| `subscription` | `true` |
+| `trial` | `true` |
+| `none` | `true` |
 
-## Denial Reason
+## Причина отказа
 
-При `hasAccess=false`:
+Когда `hasAccess=false`:
 
-| `reason` | Condition |
+| `reason` | Условие |
 |---|---|
-| `trial_expired` | trial ended, subscription not entitled |
-| `subscription_expired` | subscription row существует, но not entitled |
-| `access_required` | иначе |
+| `trial_expired` | пробный период закончился и подписка не даёт доступ |
+| `subscription_expired` | запись о подписке существует, но больше не даёт доступ |
+| `access_required` | остальные случаи |
 
-## Offline Verification Hint
+## Срок следующей офлайн-проверки
 
-Server всегда вычисляет:
+Сервер всегда рассчитывает:
 
 ```text
 nextVerificationRequiredAt =
   verifiedAt + SUBSCRIPTION_OFFLINE_GRACE_HOURS
 ```
 
-Current default:
+Текущее значение по умолчанию:
 
 ```text
-72 hours
+72 часа
 ```
 
-Это environment-controlled policy hint, а не permanent hardcoded entitlement rule.
+Это параметр политики, управляемый окружением, а не неизменное продуктовое правило.
 
-Flutter сохраняет verified snapshot в secure storage и может использовать возвращенное окно offline.
+клиент на Flutter сохраняет проверенный снимок состояния в защищённом хранилище и может использовать возвращённый период при офлайн-работе.
 
-Server остается online authority.
+При работе онлайн сервер остаётся источником окончательного решения.
 
-## Trial
+## Пробный период
 
-Registration trial:
+Регистрационный пробный период:
 
 ```text
-30 days по current product rule
-server-owned
-one registration trial per account
+30 дней по текущему продуктовому правилу
+управляется сервером
+один регистрационный пробный период на аккаунт
 ```
 
-Он не сбрасывается reinstall или local database deletion.
+Его нельзя сбросить переустановкой приложения или удалением локальной базы данных.
 
-## Access Denial Does Not Own Data
+## Отказ в доступе не владеет данными
 
 ```text
 hasAccess = false
         ↓
-workspace unavailable
+рабочее пространство недоступно
 
-NOT
+НЕ
 
-workspace deleted
+рабочее пространство удалено
 ```
 
-## Связанная документация
+## Связанные документы
 
 - [`../api/access/`](../api/access/)
 - [`../billing/`](../billing/)

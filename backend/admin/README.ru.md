@@ -1,13 +1,9 @@
-# Backend Admin CLI
+# Административный CLI бэкенда
 
-> Проверенный non-HTTP administrative access tooling.
+> Проверенные административные инструменты управления доступом вне HTTP API.
 
-## Boundary
+Сейчас Aveli **не имеет административного HTTP API**.
 
-Aveli сейчас **не имеет admin HTTP API**.
+Административные операции выполняются только через CLI.
 
-Administrative access operations доступны только через CLI.
-
-## Навигация
-
-- [`access-cli.ru.md`](access-cli.ru.md)
+Подробнее: [`access-cli.ru.md`](access-cli.ru.md)

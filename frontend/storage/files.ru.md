@@ -1,33 +1,33 @@
-# Local File Usage
+# Использование локальных файлов
 
-## Visit Photos
+## Фотографии визитов
 
-Root:
+Корневой каталог:
 
 ```text
 documents/visit_photos/<sanitizedUserId>/
 ```
 
-Per appointment:
+Для каждой записи:
 
 ```text
 <appointmentId>/<photoId>.<ext>
 ```
 
-## Client Usage
+## Использование клиентом
 
-- image selection через `image_picker`;
-- maximum edge 1920;
-- quality 85;
-- metadata row сохраняется в Drift;
-- binary file хранится на filesystem.
+- выбор изображения через `image_picker`;
+- максимальная сторона 1920;
+- качество 85;
+- строка метаданных сохраняется в Drift;
+- двоичный файл хранится в файловой системе.
 
-## Cleanup
+## Очистка
 
-- delete appointment: DB cascade + repository file cleanup;
-- delete profile: `VisitPhotosRoot.deleteForUser(userId)`;
-- logout: files сохраняются.
+- удаление записи: каскад в БД и очистка файла репозиторием;
+- удаление профиля: `VisitPhotosRoot.deleteForUser(userId)`;
+- выход: файлы сохраняются.
 
-Canonical persistence boundary:
+Каноническая граница хранения:
 
 [`../../database/local/files/`](../../database/local/files/)

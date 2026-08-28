@@ -1,38 +1,38 @@
-# Access Gate
+# Контур проверки доступа
 
-## Decision Function
+## Функция принятия решения
 
-Canonical client decision:
+Каноническое решение клиента:
 
 ```text
 resolveAccessGateDecision
 ```
 
-## Outcomes
+## Результаты
 
-| Decision | Meaning |
+| Решение | Назначение |
 |---|---|
-| `loading` | Пока нет usable access value. |
-| `allowed` | Workspace можно открыть. |
+| `loading` | Допустимое значение доступа ещё не получено. |
+| `allowed` | Рабочее пространство можно открыть. |
 | `blocked` | `hasAccess == false`. |
-| `needsNetwork` | Entitled cached state есть, но verification window истек. |
+| `needsNetwork` | Кэшированное состояние доступа есть, но срок повторной проверки истёк. |
 
 ## UI
 
 `AccessGateScreen` поддерживает:
 
-- expired-trial/access messaging;
-- переход на paywall;
-- restore purchases;
-- retry verification;
-- sign out.
+- сообщение об истёкшем пробном периоде или доступе;
+- переход к экрану оплаты;
+- восстановление покупок;
+- повторить проверку;
+- выход из учётной записи.
 
-## Navigation Enforcement
+## Применение в навигации
 
-Access Gate enforced global router redirect.
+Проверка доступа применяется через глобальное перенаправление маршрутизатора.
 
-Он **не** duplicated wrapper вокруг каждого feature screen.
+Она **не дублируется** отдельной обёрткой вокруг каждого экрана.
 
-## Purchase Boundary
+## Граница покупки
 
-RevenueCat `CustomerInfo` может показать active entitlement после purchase, но workspace unlock все равно требует backend `syncBilling`, обновляющий `AccessState`.
+RevenueCat `CustomerInfo` может показать активное право доступа после покупки, но открытие рабочего пространства всё равно требует вызова серверного `syncBilling`, который обновляет `AccessState`.

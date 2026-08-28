@@ -1,91 +1,87 @@
 # Drift
 
-> Typed Flutter persistence и data-access layer поверх SQLite.
+> Типизированный слой хранения и доступа к данным Flutter поверх SQLite.
 
-## Role
+## Роль
 
-Drift не является storage engine.
-
-Он дает Flutter-side abstraction над SQLite:
+Drift не является отдельной системой хранения. Он предоставляет абстракцию Flutter над SQLite:
 
 ```text
-Flutter repositories
+Репозитории Flutter
         ↓
       Drift
         ↓
       SQLite
 ```
 
-## Current Usage
+## Текущее использование
 
-Implementation использует Drift для:
+Реализация использует Drift для:
 
-- schema definition;
-- schema versioning и migrations;
-- typed queries и generated companions;
-- generated database code;
-- reactive `.watch()` / `tableUpdates`;
-- in-memory database tests.
+- описания схемы;
+- версионирования схемы и миграций;
+- типизированных запросов и сгенерированных `Companion`-объектов;
+- генерации кода базы данных;
+- реактивных `.watch()` и `tableUpdates`;
+- тестов базы данных в памяти.
 
-Reactive table updates используются для обновления Calendar / Today без отдельной manual invalidation system.
+Реактивные обновления таблиц позволяют обновлять экраны «Календарь» и «Сегодня» без отдельного ручного механизма инвалидации.
 
-## Почему подходит Aveli
+## Почему Drift подходит Aveli
 
-Drift сохраняет relational SQLite model и добавляет:
+Drift сохраняет реляционную модель SQLite и добавляет:
 
-- compile-time typing;
-- generated query/model code;
-- migration support;
-- reactive streams;
-- testable in-memory database behavior.
+- типизацию на этапе компиляции;
+- генерацию кода запросов и моделей;
+- поддержку миграций;
+- реактивные потоки;
+- удобное тестирование базы данных в памяти.
 
-Это подходит Flutter application, data layer которой выполняет relational reads и должен реагировать на локальные изменения.
+Это соответствует приложению Flutter, слой данных которого выполняет реляционные чтения и должен реагировать на локальные изменения.
 
 ## Ближайшая альтернатива
 
-Ближайшая замена — не Isar и не Hive.
-
-Это другой access layer поверх SQLite, прежде всего:
+Наиболее близкая замена — другой слой доступа поверх SQLite, прежде всего:
 
 ```text
-sqflite + manual SQL
+sqflite + ручной SQL
 ```
 
-Так можно сохранить `.sqlite` storage model, но придется писать больше data-access и reactive plumbing вручную.
+Так можно сохранить существующую `.sqlite`-модель, но придётся вручную реализовать больше кода доступа к данным и реактивного обновления.
 
-## Dependencies
+## Зависимости
 
 Drift зависит от:
 
 - SQLite;
-- current table definitions;
-- migration history;
-- generated code;
-- repository implementations;
-- database-focused tests.
+- текущих определений таблиц;
+- истории миграций;
+- сгенерированного кода;
+- реализаций репозиториев;
+- тестов базы данных.
 
-Canonical physical model:
+Каноническая физическая модель:
 
 [`../../local/`](../../local/)
 
-## Replaceability
+## Заменяемость
 
-**Replaceability: medium.**
+**Средняя.**
 
 Замена Drift при сохранении SQLite потребует:
 
-- переписать repository implementations;
-- заменить `Companion`, typed selects и generated models;
-- заменить `.watch()` / `tableUpdates`;
-- адаптировать database tests;
-- сохранить или преобразовать migrations.
+- переписать реализации репозиториев;
+- заменить `Companion`, типизированные выборки и сгенерированные модели;
+- заменить `.watch()` и `tableUpdates`;
+- адаптировать тесты базы данных;
+- сохранить или преобразовать историю миграций.
 
-User screens и higher-level domain use cases не должны требовать полного rewrite, если repository/domain boundaries сохранятся.
+Пользовательские экраны и доменные сценарии более высокого уровня не должны требовать полного переписывания, если границы репозиториев и домена сохранятся.
 
-## Alternative Classes
+## Классы альтернатив
 
-- `sqflite` + manual SQL;
+- `sqflite` + ручной SQL;
 - Floor;
-- другой SQLite-oriented Flutter data layer.
+- другой ориентированный на SQLite слой данных Flutter.
 
-Переход на Isar/Hive — это не ORM replacement, а смена persistence model.
+Переход на Isar или Hive — это уже смена модели хранения, а не просто замена слоя, подобного ORM слоя.

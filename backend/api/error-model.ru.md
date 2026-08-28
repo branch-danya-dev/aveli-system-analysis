@@ -1,8 +1,8 @@
-# API Error Model
+# Модель ошибок API
 
-> Canonical wire representation backend HTTP errors.
+> Канонический формат ошибок HTTP бэкенда.
 
-## Shape
+## Формат
 
 ```json
 {
@@ -11,38 +11,38 @@
 }
 ```
 
-`ApiExceptionFilter` нормализует errors в этот shape.
+`ApiExceptionFilter` приводит ошибки к этой структуре.
 
-## Common HTTP Mapping
+## Типичное соответствие статусов HTTP
 
-| HTTP | Typical Meaning |
+| HTTP | Значение |
 |---:|---|
-| 400 | DTO / generic validation failure |
-| 401 | Invalid credentials, invalid JWT, expired/invalid refresh session |
-| 403 | Disabled/deleted account state через `AUTH_USER_DISABLED` |
-| 409 | Registration email conflict |
-| 500 | Internal error |
-| 501 | Declared auth stub не реализован |
-| 502 | Billing synchronization не может проверить RevenueCat state |
-| 503 | Readiness dependency failure |
+| 400 | ошибка DTO или общая ошибка валидации |
+| 401 | неверные учётные данные, недействительный JWT, истёкшая или недействительная сессия обновления |
+| 403 | отключённый или удалённый аккаунт, представленный как `AUTH_USER_DISABLED` |
+| 409 | конфликт электронной почты при регистрации |
+| 500 | внутренняя ошибка |
+| 501 | объявленная, но не реализованная заглушка аутентификации |
+| 502 | невозможно подтвердить состояние RevenueCat при сверке биллинга |
+| 503 | зависимость не готова к обслуживанию |
 
-## Canonical Error Codes
+## Канонические коды ошибок
 
-Backend code ownership:
+Владение кодами бэкенда:
 
 [`../errors/error-codes.ru.md`](../errors/error-codes.ru.md)
 
-## Access Denial Is Not an HTTP Error
+## Отказ в доступе не является ошибкой HTTP
 
-Valid authenticated request:
+Корректный аутентифицированный запрос:
 
 ```text
 GET /v1/access
 ```
 
-возвращает HTTP 200 даже при denied workspace access.
+возвращает HTTP 200 даже тогда, когда доступ к рабочему пространству запрещён.
 
-Denial представлен:
+Отказ выражается данными:
 
 ```json
 {
@@ -52,10 +52,10 @@ Denial представлен:
 }
 ```
 
-Важно:
+Должно сохраняться различие:
 
 ```text
-technical/auth failure
+техническая ошибка / ошибка аутентификации
         ≠
-valid product access denial
+корректный продуктовый отказ в доступе
 ```

@@ -1,17 +1,17 @@
-# Dart http
+# Пакет `http` для Dart
 
-> Thin HTTP transport Aveli auth/access data sources.
+> Тонкий транспорт HTTP для источников данных аутентификации и доступа Aveli.
 
-## Verified Version
+## Подтверждённая версия
 
 `http 1.6.0`
 
-## Role
+## Роль
 
-Client явно строит requests к backend account/access APIs. Dio dependency отсутствует, centralized HTTP interceptor middleware нет.
+Клиент явно формирует запросы к серверным API учётной записи и доступа. Зависимость Dio отсутствует; централизованного перехватчика HTTP также нет.
 
-Bearer headers добавляются data sources; access requests могут выполнить single 401 refresh/retry path.
+Заголовки Bearer добавляются источниками данных; запрос доступа может один раз обновить сессию после 401 и повторить запрос.
 
-## Replaceability
+## Заменяемость
 
-**High.** Wrapper thin и хорошо изолирован относительно state/domain.
+**Высокая.** Обёртка тонкая и хорошо изолирована от состояния и доменной логики.

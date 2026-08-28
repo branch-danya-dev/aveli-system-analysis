@@ -1,15 +1,17 @@
 # `services`
 
-> Physical service records в local workspace.
+> Физические записи услуг в локальном рабочем пространстве.
 
-| Column | Type | NULL | Meaning |
+| Столбец | Тип | NULL | Назначение |
 |---|---|---|---|
-| `id` | TEXT | NO | PK; UUID v4. |
+| `id` | TEXT | NO | Первичный ключ; UUID v4. |
 | `name` | TEXT | NO | Название услуги. |
 | `duration` | INTEGER | NO | Длительность в минутах. |
 | `price` | INTEGER | NO | Цена в целых единицах валюты профиля. |
-| `return_interval` | INTEGER | YES | Интервал возврата в минутах. |
+| `return_interval` | INTEGER | YES | Интервал повторного обращения в минутах. |
 
-## Verification Note
+## Замечание о проверке
 
-Source ER overview использует `duration_minutes` / `return_interval_minutes`, а detailed table definition — `duration` / `return_interval`. Здесь используются detailed names до прямой сверки с кодом.
+В обзорной модели «сущность — связь» используются имена `duration_minutes` / `return_interval_minutes`, а в детальном описании таблицы — `duration` / `return_interval`.
+
+До прямой сверки с кодом в этой документации используются имена из детального описания.

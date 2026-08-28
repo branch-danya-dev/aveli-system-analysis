@@ -1,108 +1,108 @@
-# RevenueCat — Webhook Boundary
+# RevenueCat — граница вебхука
 
-## Endpoint
+## Конечная точка
 
 ```text
 POST /v1/webhooks/revenuecat
 ```
 
-Backend service:
+Сервис бэкенда:
 
 ```text
 RevenueCatWebhookService
 ```
 
-## Authentication
+## Аутентификация
 
-Incoming header:
+Входящий заголовок:
 
 ```text
 Authorization
 ```
 
-должен точно равняться configured:
+должен точно совпадать с настроенным значением:
 
 ```text
 REVENUECAT_WEBHOOK_AUTH
 ```
 
-Это shared-secret webhook boundary, не JWT client authentication.
+Это граница вебхука с общим секретом, а не клиентская аутентификация по JWT.
 
-## Event Identity
+## Идентификация события
 
-Primary external id:
+Основной внешний идентификатор:
 
 ```text
 event.id
 ```
 
-Fallback synthetic id:
+Запасной синтетический идентификатор:
 
 ```text
 noid:<sha256(JSON...)>
 ```
 
-## Idempotency
+## Идемпотентность
 
-Canonical key:
+Канонический ключ:
 
 ```text
 subscription_events.external_event_id
 ```
 
-Processed duplicate пропускается.
+Уже обработанный дубликат пропускается.
 
-## Persisted Event Evidence
+## Сохранённые сведения о событии
 
-Backend сохраняет:
+Бэкенд сохраняет:
 
 ```text
 provider
 eventType
 userId
-sanitized payload
+очищенная полезная нагрузка
 receivedAt
 processedAt
 processingError
 ```
 
-## User Mapping
+## Сопоставление пользователя
 
-Webhook:
+Вебхук:
 
 ```text
 event.app_user_id
 ```
 
-должен соответствовать expected Aveli UUID format до server reconciliation.
+должен соответствовать ожидаемому формату UUID Aveli до серверной сверки.
 
-Invalid/non-Aveli ids не используются для resolve другого account.
+Некорректные или не относящиеся к Aveli идентификаторы не используются для выбора другой учётной записи.
 
-## Critical Access Rule
+## Критичное правило доступа
 
-Webhook `event_type` **не** выдает/revokes Aveli workspace access напрямую.
+`event_type` вебхука **не выдаёт и не отзывает** доступ Aveli к рабочему пространству напрямую.
 
 ```text
-Webhook
+Вебхук
   ↓
-identify Aveli user
+определить пользователя Aveli
   ↓
-RevenueCat REST reconciliation
+сверка через REST RevenueCat
   ↓
-normalized subscription
+нормализованная подписка
   ↓
-Aveli access decision
+решение Aveli о доступе
 ```
 
-## Failure Semantics
+## Поведение при сбое
 
-Processing failure:
+При ошибке обработки:
 
-- writes `processingError`;
-- rethrows;
-- приводит к non-2xx provider response.
+- записывается `processingError`;
+- ошибка пробрасывается дальше;
+- провайдер получает ответ со статусом вне диапазона 2xx.
 
-Success:
+При успехе:
 
 ```json
 { "ok": true }
@@ -110,6 +110,6 @@ Success:
 
 HTTP 200.
 
-Backend-local implementation:
+Локальная реализация бэкенда:
 
 [`../../backend/billing/webhook-processing.ru.md`](../../backend/billing/webhook-processing.ru.md)

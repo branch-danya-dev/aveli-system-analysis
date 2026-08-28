@@ -1,11 +1,11 @@
-# Auth API
+# API аутентификации
 
-> Canonical HTTP contract `/v1/auth/*`.
+> Канонические контракты HTTP `/v1/auth/*`.
 
-## Навигация
+Контракты запросов и ответов:
 
-- [`contracts.ru.md`](contracts.ru.md)
+[`contracts.ru.md`](contracts.ru.md)
 
-Internal authentication behavior:
+Внутренняя логика аутентификации:
 
 [`../../auth/`](../../auth/)

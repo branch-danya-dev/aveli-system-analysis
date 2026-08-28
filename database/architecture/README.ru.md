@@ -1,6 +1,6 @@
-# Data Architecture
+# Архитектура данных
 
-> Ownership, source-of-truth boundaries, isolation и lifecycle данных Aveli.
+> Владение данными, границы источников истины, изоляция и жизненный цикл данных Aveli.
 
 ## Назначение
 
@@ -9,20 +9,20 @@
 ## Ответственность
 
 Область владеет:
-- границами data domains;
-- canonical data authority;
-- user-workspace isolation;
-- сохранностью данных при logout и изменении access;
-- lifecycle rules, общими для нескольких persistence components.
+- границами доменов данных;
+- каноническими полномочиями над данными;
+- изоляцией пользовательских рабочих пространств;
+- сохранностью данных при выходе и изменении доступа;
+- правилами жизненного цикла, общими для нескольких компонентов хранения.
 
 ## Границы
 
-Здесь не определяются table columns, SQL types, ORM models, indexes или migration syntax.
+Здесь не определяются столбцы таблиц, типы SQL, модели ORM, индексы или синтаксис миграций.
 
 ## Навигация
 
 - [`data-ownership.ru.md`](data-ownership.ru.md)
 - [`data-lifecycle.ru.md`](data-lifecycle.ru.md)
 
-Канонические business rules:
+Канонические бизнес-правила:
 [`../../business/requirements/business-rules.ru.md`](../../business/requirements/business-rules.ru.md)

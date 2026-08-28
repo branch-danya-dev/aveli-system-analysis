@@ -1,21 +1,32 @@
 # NestJS
 
-> Application framework Aveli account/access backend.
+> Фреймворк приложения для бэкенда аккаунта и доступа Aveli.
 
-## Role
+## Роль
 
 ```text
-HTTP ingress
+Входящий HTTP-запрос
    ↓
-controllers
+Controllers
    ↓
-services / guards / filters
+Services / Guards / Filters
    ↓
-persistence + integrations
+Хранение + интеграции
 ```
 
-Current modules: `ConfigModule`, `ThrottlerModule`, `PrismaModule`, `HealthModule`, `AuthModule`, `AccessModule`, `BillingModule`.
+Текущие модули: `ConfigModule`, `ThrottlerModule`, `PrismaModule`, `HealthModule`, `AuthModule`, `AccessModule`, `BillingModule`.
 
-Persistence access → [`../prisma/`](../prisma/)
+## Использование в Aveli
 
-**Replaceability: medium to low as implementation grows.**
+- аутентификация → [`../../auth/`](../../auth/)
+- доступ → [`../../access/`](../../access/)
+- биллинг → [`../../billing/`](../../billing/)
+- контракты HTTP → [`../../api/`](../../api/)
+- безопасность → [`../../security/`](../../security/)
+- доступ к данным → [`../prisma/`](../prisma/)
+
+## Заменяемость
+
+**От средней к низкой по мере роста реализации.**
+
+Публичные API и продуктовые правила могут сохраниться, но придётся заменить конфигурацию фреймворка, контроллеры, защитные компоненты, фильтры и связанные тесты.

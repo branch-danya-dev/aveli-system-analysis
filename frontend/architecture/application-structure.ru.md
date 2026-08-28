@@ -1,6 +1,6 @@
-# Frontend Application Structure
+# Структура фронтенд-приложения
 
-## Verified Source Shape
+## Проверенная структура исходного кода
 
 ```text
 lib/
@@ -32,53 +32,53 @@ lib/
 └── l10n/
 ```
 
-## Architecture Style
+## Архитектурный стиль
 
-Current implementation — **feature-first hybrid**.
+Текущая реализация использует **гибридный подход с организацией по возможностям** (`feature-first`).
 
-Features обычно организуют собственные:
-
-```text
-presentation
-domain
-data
-```
-
-Cross-cutting infrastructure находится в `core/`.
-
-Thin `app/` shell владеет application-wide composition: router, app shell, bootstrap helpers и lifecycle binding.
-
-## Dependency Direction
-
-Типичная chain:
+Возможности приложения обычно организуют собственные:
 
 ```text
-Screen
-  ↓
-Provider / Controller
-  ↓
-Domain use case / repository interface
-  ↓
-Repository implementation
-  ↓
-Drift / HTTP / device service
+представление
+домен
+доступ к данным
 ```
 
-Не каждый feature использует все layers.
+Общая инфраструктура находится в `core/`.
 
-## Representative Chains
+Тонкий слой `app/` отвечает за общую композицию приложения: маршрутизатор, оболочку, вспомогательную логику запуска и привязку к жизненному циклу.
 
-### Today
+## Направление зависимостей
+
+Типичная цепочка:
+
+```text
+Экран
+  ↓
+Провайдер / контроллер
+  ↓
+Доменный сценарий / интерфейс репозитория
+  ↓
+Реализация репозитория
+  ↓
+Drift / HTTP / служба устройства
+```
+
+Не каждая возможность использует все уровни.
+
+## Характерные цепочки
+
+### Сегодня
 
 ```text
 TodayScreen
   → todayOverviewProvider
   → todayRepositoryProvider
   → TodayRepositoryImpl
-  → feature repositories / AppDatabase
+  → репозитории функциональных областей / AppDatabase
 ```
 
-### Registration
+### Регистрация
 
 ```text
 RegisterScreen
@@ -90,17 +90,17 @@ RegisterScreen
   → PurchaseService.logIn
 ```
 
-### Purchase
+### Покупка
 
 ```text
-Paywall
+Экран подписки
   → AccessController.purchasePackage
   → RevenueCatPurchaseService.purchase
   → AccessController.syncBilling
-  → backend AccessStatusView
-  → secure snapshot
+  → серверный AccessStatusView
+  → защищённый снимок состояния
 ```
 
-## Canonicality
+## Каноническое владение
 
-Документ описывает real implementation organization и не требует от каждого future feature одинаковой folder depth.
+Документ описывает фактическую организацию реализации и не требует от каждой будущей возможности одинаковой глубины директорий.

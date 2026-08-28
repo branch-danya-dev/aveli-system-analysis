@@ -1,38 +1,38 @@
-# Data Models
+# Модели данных
 
-> Conceptual и logical представления данных Aveli.
+> Концептуальное и логическое представления данных Aveli.
 
 ## Назначение
 
-`models/` отделяет **смысл системы и technology-independent структуру от physical persistence**.
+`models/` отделяет **смысл системы и технологически независимую структуру от физического хранения**.
 
 ```text
-Conceptual Model
+Концептуальная модель
     ↓
-Logical Model
+Логическая модель
     ↓
-Physical Persistence
+Физическое хранение
 ```
 
-- **Conceptual** — information concepts и relationships без storage technology.
-- **Logical** — attributes, identifiers, relationships и cardinality без конкретного SQL dialect или ORM.
-- **Physical** — принадлежит persistence component, который хранит реальные данные.
+- **Концептуальный уровень** — понятия и связи без привязки к технологии хранения.
+- **Логический уровень** — атрибуты, идентификаторы, связи и кардинальности без привязки к конкретному диалекту SQL или ORM.
+- **Физический уровень** — принадлежит компоненту хранения, который сохраняет реальные данные.
 
 ## Навигация
 
-Conceptual model:
+Концептуальная модель:
 
 [`conceptual/domain-model.ru.md`](conceptual/domain-model.ru.md)
 
-Verified logical baseline:
+Проверенная логическая базовая модель:
 
 [`logical/data-model.ru.md`](logical/data-model.ru.md)
 
-Physical persistence:
+Физическое хранение:
 
 - [`../local/`](../local/)
 - [`../server/`](../server/)
 
-Persistence technologies:
+Технологии хранения:
 
 [`../stack/`](../stack/)

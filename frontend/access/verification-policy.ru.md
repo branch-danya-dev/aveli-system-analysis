@@ -1,10 +1,10 @@
-# Access Verification Policy
+# Политика проверки доступа
 
-## Purpose
+## Назначение
 
-Policy решает, может ли cached entitled access state временно разрешить offline workspace entry.
+Политика определяет, может ли кэшированное подтверждённое состояние доступа временно разрешить вход в рабочее пространство без сети.
 
-## Server Deadline Preferred
+## Приоритет срока, заданного сервером
 
 При наличии:
 
@@ -12,11 +12,11 @@ Policy решает, может ли cached entitled access state временн
 nextVerificationRequiredAt
 ```
 
-используется как preferred verification deadline.
+используется как приоритетный срок повторной проверки.
 
-## Client Default
+## Клиентское значение по умолчанию
 
-Current client также содержит default offline grace:
+Клиент также содержит значение льготного офлайн-периода по умолчанию:
 
 ```text
 Duration(hours: 72)
@@ -24,13 +24,13 @@ Duration(hours: 72)
 
 в `AccessVerificationPolicy`.
 
-Это **verified client implementation default**.
+Это **подтверждённое значение по умолчанию в текущей клиентской реализации**.
 
-Его нельзя путать с immutable product rule: backend также возвращает next verification deadline.
+Его нельзя считать неизменным продуктовым правилом: бэкенд также возвращает следующий срок обязательной проверки.
 
-## Decision Boundary
+## Граница решения
 
-Offline grace применяется когда:
+Льготный офлайн-период применяется, когда:
 
 ```text
 hasAccess = true
@@ -38,16 +38,16 @@ AND
 requiresOnlineVerification = true
 ```
 
-## Expired Verification
+## Истёкший срок проверки
 
-Entitled snapshot с прошедшим deadline дает:
+Снимок с ранее подтверждённым доступом после истечения срока проверки даёт:
 
 ```text
 needsNetwork
 ```
 
-а не local-data deletion.
+а не удаление локальных данных.
 
-## Snapshot Cleanup
+## Очистка снимка состояния
 
-Controller может очищать expired/denied cached state с disk, когда fallback больше не valid.
+Контроллер может удалить с диска просроченное или запрещённое кэшированное состояние, когда запасной офлайн-сценарий больше неприменим.

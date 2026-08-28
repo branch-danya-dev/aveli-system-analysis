@@ -1,46 +1,46 @@
-# Administrative Access CLI
+# Административный CLI доступа
 
-## Invocation
+## Запуск
 
 ```bash
 npm run admin -- <command> [args] [--yes]
 ```
 
-## Commands
+## Команды
 
-| Command | Behavior |
+| Команда | Поведение |
 |---|---|
-| `inspect-access <email>` | Inspect user и effective access/grants. |
-| `grant-lifetime <email>` | Создать lifetime/admin access grant. |
-| `grant-days <email> <days>` | Создать temporary manual/admin access grant. |
-| `revoke-access <email>` | Revoke lifetime + manual grants, сохранив trial history. |
-| `soft-delete-user <email>` | Выполнить account soft deletion по email. |
+| `inspect-access <email>` | Показать пользователя, его итоговый доступ и права. |
+| `grant-lifetime <email>` | Создать бессрочное административное право доступа. |
+| `grant-days <email> <days>` | Создать временное ручное право доступа на заданное число дней. |
+| `revoke-access <email>` | Отозвать бессрочные и ручные права, сохранив историю пробного периода. |
+| `soft-delete-user <email>` | Выполнить мягкое удаление аккаунта по электронной почте. |
 
-Implementation:
+Реализация:
 
 ```text
 backend/src/admin/cli.ts
 backend/src/admin/admin-access.service.ts
 ```
 
-`AdminAccessService` CLI-only и не имеет current HTTP controller.
+`AdminAccessService` доступен только через CLI и не имеет контроллера HTTP.
 
-## Development Seed
+## Тестовое заполнение для разработки
 
 ```bash
 npm run prisma:seed
 ```
 
-Current seed behavior:
+Текущие начальные данные для разработки:
 
-- upsert admin account;
-- create lifetime access grant.
+- создаёт или обновляет административный аккаунт;
+- создаёт бессрочное право доступа.
 
-Safety:
+Ограничения безопасности:
 
 ```text
 forbidden when NODE_ENV=production
 requires SEED_ADMIN_PASSWORD
 ```
 
-Seed — development tooling, а не production admin workflow.
+Начальное заполнение предназначено для разработки, а не для административных операций в производственной среде.

@@ -1,40 +1,32 @@
-# Backend Billing
+# Биллинг бэкенда
 
-> Server-side RevenueCat reconciliation и subscription-state processing.
+> Серверная сверка подписок RevenueCat и обработка событий провайдера.
 
-## Назначение
+Биллинг не выдаёт доступ самостоятельно и не обходит общую модель доступа.
 
-`billing/` объясняет, как Aveli преобразует external subscription evidence в normalized backend subscription state.
-
-Billing не обходит common access decision напрямую.
-
-## Components
-
-Verified implementation:
+Основная цепочка:
 
 ```text
-BillingModule
-├── BillingController
-├── SubscriptionSyncService
-├── RevenueCatWebhookService
-└── HttpRevenueCatGateway
+RevenueCat
+   ↓
+сверка состояния подписки
+   ↓
+нормализованная подписка
+   ↓
+общее определение доступа
 ```
 
-## Навигация
+Область владеет:
+
+- серверным запросом состояния RevenueCat;
+- нормализацией подписки;
+- записью состояния подписки;
+- обработкой вебхуков;
+- идемпотентностью событий;
+- передачей результата в общий алгоритм доступа.
+
+Документы:
 
 - [`subscription-sync.ru.md`](subscription-sync.ru.md)
-- [`webhook-processing.ru.md`](webhook-processing.ru.md)
 - [`revenuecat-mapping.ru.md`](revenuecat-mapping.ru.md)
-- [`billing-flow.puml`](billing-flow.puml)
-
-Canonical HTTP contracts:
-
-[`../api/billing/`](../api/billing/)
-
-Provider-specific RevenueCat integration принадлежит system integration area:
-
-```text
-../../integrations/revenuecat/
-```
-
-после миграции target area.
+- [`webhook-processing.ru.md`](webhook-processing.ru.md)

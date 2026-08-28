@@ -1,85 +1,85 @@
-# Boundary-Changing Features
+# Возможности, меняющие границу системы
 
-## Purpose
+## Назначение
 
-Некоторые requests выглядят обычными features, но меняют foundational system decisions.
+Некоторые запросы выглядят как обычные новые функции, но на самом деле меняют фундаментальные решения системы.
 
-Для них нужен architecture review до implementation decomposition.
+Такие изменения требуют архитектурного анализа до декомпозиции на задачи реализации.
 
-## Multi-Device Workspace Sync
+## Синхронизация рабочего пространства между устройствами
 
-Меняет:
-
-```text
-device-only workspace source of truth
-→ distributed / server-mediated workspace state
-```
-
-Impact:
-
-- data ownership;
-- sync/conflict model;
-- backend responsibilities;
-- identity/device model;
-- media storage;
-- offline merge behavior;
-- privacy/security;
-- migrations.
-
-## Cloud Workspace Backup
-
-Managed backup вводит server-held copy professional data.
-
-Даже без live sync это меняет:
-
-- persistence boundary;
-- retention/deletion rules;
-- encryption/security;
-- restore semantics;
-- user expectations.
-
-## Public Online Booking
-
-Вводит server-side professional availability/booking data.
-
-Это меняет current rule: backend не stores appointments/workspace entities.
-
-## Shared Team Workspace
-
-Personal ownership превращается в shared ownership.
-
-Нужны:
+Изменение превращает текущую модель:
 
 ```text
-organizations
-roles
-permissions
-shared records
-concurrency
-audit
+локальное устройство — единственный источник истины
+→ распределённое / серверно-опосредованное состояние рабочего пространства
 ```
 
-## Server-Driven Client Messaging
+и затрагивает:
 
-Вводит:
+- владение данными;
+- модель синхронизации и разрешения конфликтов;
+- ответственность бэкенда;
+- модель пользователя и устройства;
+- хранение медиафайлов;
+- объединение изменений без сети;
+- приватность и безопасность;
+- миграции.
+
+## Облачное резервное копирование рабочего пространства
+
+Управляемое резервное копирование создаёт серверную копию профессиональных данных.
+
+Даже без постоянной синхронизации это меняет:
+
+- границу хранения;
+- правила сроков хранения и удаления;
+- требования к шифрованию и безопасности;
+- семантику восстановления;
+- ожидания пользователя.
+
+## Публичная онлайн-запись
+
+Такая возможность вводит серверные данные о доступности специалиста и публичных записях.
+
+Это меняет текущее правило, по которому бэкенд не хранит записи клиентов и другие сущности профессионального рабочего пространства.
+
+## Совместное рабочее пространство команды
+
+Личное владение данными превращается в совместное.
+
+Появляются новые понятия:
 
 ```text
-server-side communication jobs
-client-contact destinations
-delivery providers
-consent / notification rules
+организации
+роли
+права
+общие записи
+конкурентные изменения
+аудит
 ```
 
-Это не то же самое, что current local reminders.
+## Управляемые сервером сообщения клиенту
 
-## Organization / Employee Management
+Такая функция вводит:
 
-Меняет product model от personal workspace к multi-user operational platform.
+```text
+серверные задачи коммуникации
+адресаты среди клиентов
+провайдеры доставки сообщений
+правила согласий и уведомлений
+```
 
-## Rule
+Это уже другая архитектурная ответственность, а не расширение текущих локальных напоминаний.
 
-> Feature, меняющий data ownership, trust authority или system boundary, должен сначала рассматриваться как architecture change, а уже потом как implementation task.
+## Управление организацией и сотрудниками
 
-Canonical scope:
+Функция меняет саму модель продукта: персональное рабочее пространство превращается в многопользовательскую операционную платформу.
+
+## Правило
+
+> Возможность, меняющая владение данными, источник полномочий или границу системы, сначала должна рассматриваться как архитектурное изменение и только затем — как задача реализации.
+
+Канонические границы продукта:
 
 [`../../business/scope/scope.ru.md`](../../business/scope/scope.ru.md)

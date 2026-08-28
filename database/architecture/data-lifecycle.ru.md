@@ -1,119 +1,119 @@
-# Aveli — Data Lifecycle
+# Aveli — жизненный цикл данных
 
-> Поведение persistent data при важных состояниях продукта Aveli.
+> Поведение сохраняемых данных при важных изменениях состояния продукта Aveli.
 
 ## Основной принцип
 
 Aveli разделяет:
 
 ```text
-Identity state
-Access state
-Workspace state
+состояние идентификации
+состояние доступа
+состояние рабочего пространства
 ```
 
 Изменение одного состояния не должно неявно уничтожать данные другого.
 
-> **Logout или access expiration могут сделать workspace неактивным или недоступным, но не должны удалять persistent professional data.**
+> **Выход из аккаунта или истечение доступа могут сделать рабочее пространство неактивным или недоступным, но не должны удалять сохранённые профессиональные данные.**
 
-## Workspace Lifecycle
-
-```text
-Workspace created / first used
-        ↓
-Professional data created and updated
-        ↓
-Workspace remains persistent
-        ↓
-May become inactive after logout
-        ↓
-May become unavailable after access loss
-        ↓
-Can become active again for the same user
-```
-
-## Logout
-
-`BR-025`, `BR-043`–`BR-046` требуют завершения authenticated state при сохранении persistent workspace information.
-
-## Account Switching
-
-`BR-047` требует isolation:
+## Жизненный цикл рабочего пространства
 
 ```text
-Workspace A inactive
+Рабочее пространство создано или впервые использовано
         ↓
-User B becomes active
+Профессиональные данные создаются и изменяются
         ↓
-Workspace B active
+Рабочее пространство сохраняется
+        ↓
+После выхода оно может стать неактивным
+        ↓
+После потери доступа оно может стать недоступным
+        ↓
+После входа того же пользователя оно снова становится активным
 ```
 
-Professional workspace data между пользователями не переносятся.
+## Выход из аккаунта
 
-## Access Expiration
+`BR-025`, `BR-043`–`BR-046` требуют завершить аутентифицированное состояние, сохранив постоянные данные рабочего пространства.
+
+## Смена аккаунта
+
+`BR-047` требует изоляции:
+
+```text
+Рабочее пространство A неактивно
+        ↓
+Пользователь B становится активным
+        ↓
+Рабочее пространство B активно
+```
+
+Данные профессионального рабочего пространства между пользователями не переносятся.
+
+## Истечение доступа
 
 `BR-026` требует:
 
 ```text
-Access expires
+Доступ истёк
     ↓
-Workspace blocked
+Рабочее пространство заблокировано
     ↓
-Persistent data preserved
+Постоянные данные сохранены
     ↓
-Access restored
+Доступ восстановлен
     ↓
-Same preserved workspace available again
+То же рабочее пространство снова доступно
 ```
 
-## Reinstall / Local Data Loss
+## Переустановка / потеря локальных данных
 
-Текущая persistence model имеет важную границу:
+Текущая модель хранения имеет важную границу:
 
 ```text
-Reinstall
+Переустановка приложения
     ↓
-Local application data могут быть потеряны
+Локальные данные приложения могут быть потеряны
     ↓
-Тот же account выполняет sign in
+Тот же аккаунт снова выполняет вход
     ↓
 Может быть создан новый пустой aveli_<userId>.sqlite
 ```
 
-Server-controlled registration trial state независим от local database и **не сбрасывается reinstall**.
+Состояние регистрационного пробного периода управляется сервером, не зависит от локальной базы данных и **не сбрасывается при переустановке**.
 
-Legacy `aveli.db` не привязывается к account автоматически; без explicit claim/migration path данные остаются неприсвоенными.
+Устаревшая `aveli.db` не привязывается к аккаунту автоматически; без явного сценария присвоения или миграции данные остаются неприсвоенными.
 
-Это следствие текущей local-first ownership model. При появлении cloud backup или workspace synchronization правило необходимо пересмотреть.
+Это следствие текущей модели владения данными с приоритетом локального хранения. При появлении облачного резервного копирования или синхронизации рабочего пространства правило необходимо пересмотреть.
 
-## Client Lifecycle
+## Жизненный цикл клиента
 
 Известное правило (`BR-040`):
 
 ```text
-Active Client
-    ↓ archive
-Archived Client
+Активный клиент
+    ↓ архивация
+Архивный клиент
     ↓
-Historical information remains preserved
+Исторические данные сохраняются
 ```
 
-Permanent client deletion остается product-level open question.
+Безвозвратное удаление клиента остаётся продуктовым вопросом, который должен быть явно согласован с актуальными бизнес-правилами.
 
-## Appointment / Visit Lifecycle
+## Жизненный цикл записи / визита
 
-Известные business states: `Scheduled`, `Cancelled`, `No-show`, `Completed`.
+Известные бизнес-состояния: `Scheduled`, `Cancelled`, `No-show`, `Completed`.
 
-Physical implementation также содержит `confirmed`. Его product significance нужно классифицировать до продвижения в canonical business behavior.
+Физическая реализация также содержит `confirmed`. Его продуктовое значение требуется классифицировать до включения в каноническое бизнес-поведение.
 
-Completed work может содержать notes, photos и payment state.
+Завершённая работа может содержать заметки, фотографии и состояние оплаты.
 
-## Payment Lifecycle
+## Жизненный цикл оплаты
 
-Physical persistence подтверждена:
+Физическое хранение подтверждает:
 
 ```text
-Appointment 1 → 0..1 Payment
+Запись 1 → 0..1 Оплата
 
 PaymentStatus:
 unpaid
@@ -121,36 +121,36 @@ partial
 paid
 ```
 
-Partial payment хранится в той же строке через `amount_paid`.
+Частичная оплата хранится в той же строке через `amount_paid`.
 
-Открытым остается **business transition policy**: какие transitions разрешены, когда они происходят и существуют ли правила correction/reversal.
+Открытым остаётся **бизнес-правило переходов между состояниями**: какие переходы разрешены, когда они происходят и существуют ли правила исправления или отмены.
 
-## Workspace Media
+## Материалы рабочего пространства
 
-Visit-photo persistence разделен между database metadata и device files:
+Хранение фотографий визита разделено между метаданными базы данных и файлами на устройстве:
 
 ```text
-visit_photos row
+строка visit_photos
     +
 documents/visit_photos/<userId>/<appointmentId>/...
 ```
 
-Delete appointment каскадом удаляет связанные `visit_photos` metadata rows.
+Удаление записи каскадом удаляет связанные строки метаданных `visit_photos`.
 
-Physical files очищаются отдельно repository/file-root логикой (`VisitPhotosRoot.deleteForUser` входит в документированное implementation behavior).
+Физические файлы очищаются отдельно логикой репозитория и корневой папки файлов; `VisitPhotosRoot.deleteForUser` входит в подтверждённое поведение реализации.
 
-Открытыми остаются policy-level guarantees: orphan cleanup coverage, retention, backup и recovery.
+Открытыми остаются гарантии на уровне политики: полнота очистки потерянных файлов, сроки хранения, резервное копирование и восстановление.
 
-## Открытые вопросы lifecycle
+## Открытые вопросы жизненного цикла
 
-- permanent client deletion;
-- service deactivation или deletion;
-- business rules payment correction/transitions;
-- import/export conflict behavior;
-- orphan-file guarantees и media retention;
-- backup и restore behavior.
+- безвозвратное удаление клиента;
+- деактивация или удаление услуги;
+- бизнес-правила исправления оплаты и переходов её состояния;
+- поведение при конфликтах импорта и экспорта;
+- гарантии очистки потерянных файлов и сроки хранения медиа;
+- поведение резервного копирования и восстановления.
 
-Видимый gap лучше выдуманного правила.
+Явно зафиксированный пробел лучше выдуманного правила.
 
 ## Связанная документация
 

@@ -1,8 +1,8 @@
-# Server PostgreSQL Enumerations
+# Перечисления серверной PostgreSQL
 
-> PostgreSQL/Prisma enum values backend persistence model.
+> Значения перечислений PostgreSQL/Prisma, используемые в серверной модели хранения.
 
-| Enum | Values |
+| Перечисление | Значения |
 |---|---|
 | `UserStatus` | `active`, `disabled`, `deleted` |
 | `AccessGrantType` | `trial`, `lifetime`, `manual_temporary` |
@@ -11,8 +11,8 @@
 | `Store` | `app_store`, `play_store`, `unknown` |
 | `SubscriptionStatus` | `trialing`, `active`, `past_due`, `cancelled`, `expired`, `grace_period`, `revoked` |
 
-## Граница
+## Граница модели
 
-Это physical/backend persistence values.
+Это физические значения серверной модели хранения.
 
-Их наличие не означает автоматически, что каждый value должен присутствовать в business documentation. Product meaning поднимается выше только после classification и traceability review.
+Их наличие не означает, что каждое значение автоматически должно присутствовать в бизнес-документации. Значение для продукта поднимается на более высокий уровень только после классификации и проверки трассируемости.

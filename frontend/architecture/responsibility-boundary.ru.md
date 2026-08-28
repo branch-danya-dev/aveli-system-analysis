@@ -1,21 +1,21 @@
-# Aveli Frontend — Responsibility Boundary
+# Aveli — граница ответственности фронтенда
 
-## Миссия Frontend
+## Назначение фронтенда
 
-Frontend предоставляет specialist working environment и координирует device-local work с backend-owned identity/access authority.
+Фронтенд предоставляет специалисту рабочее пространство и координирует локальную работу на устройстве с управляемой бэкендом идентификацией и доступом.
 
-## Frontend-Owned Capabilities
+## Возможности, за которые отвечает фронтенд
 
-### Interaction и Navigation
+### Взаимодействие и навигация
 
-- screens и user interaction;
-- navigation и route redirects;
-- workspace shell и deep links;
-- local presentation state.
+- экраны и взаимодействие с пользователем;
+- навигацию и перенаправления маршрутов;
+- оболочку рабочего пространства и глубокие ссылки;
+- локальное состояние представления.
 
-### Operational Workspace
+### Профессиональное рабочее пространство
 
-Frontend владеет application behavior вокруг device-local:
+Фронтенд отвечает за поведение приложения вокруг локальных данных на устройстве:
 
 ```text
 clients
@@ -28,66 +28,66 @@ schedule
 settings/profile
 ```
 
-Canonical physical persistence остается в [`../../database/local/`](../../database/local/).
+Каноническое физическое хранение остается в [`../../database/local/`](../../database/local/).
 
-### Session Client
+### Клиентская сессия
 
-Frontend:
+Фронтенд:
 
-- собирает credentials;
+- собирает учётные данные;
 - вызывает `/v1/auth/*`;
-- хранит access/refresh credentials в secure storage;
-- восстанавливает session через refresh;
-- открывает правильную per-user local database;
-- выполняет RevenueCat logIn с server UUID;
-- делает client cleanup при logout.
+- хранит токены доступа и обновления в защищённом хранилище;
+- восстанавливает сессию через обновление токена;
+- открывает правильную локальную базу данных пользователя;
+- выполняет вход в RevenueCat с серверным UUID;
+- делает очистку клиентского состояния при выходе.
 
-Backend остается authoritative для session validity.
+Бэкенд остаётся источником истины о действительности сессии.
 
-### Access Gate
+### Контур проверки доступа
 
-Client consumes server `AccessStatusView`, сохраняет secure snapshot, применяет offline verification policy и маршрутизирует в workspace или access UI.
+Клиент получает от сервера `AccessStatusView`, сохраняет защищённый снимок состояния, применяет политику офлайн-проверки и маршрутизирует в рабочее пространство или экран доступа.
 
-Client **не** reimplements server priority:
+Клиент **не** воспроизводит серверный порядок приоритетов:
 
 ```text
 lifetime → manual → subscription → trial
 ```
 
-Он доверяет `AccessState.hasAccess` от backend/snapshot.
+Он доверяет `AccessState.hasAccess` от бэкенда или снимка состояния.
 
-### Billing Client
+### Клиентский биллинг
 
-Frontend использует RevenueCat SDK для purchase/restore UI, затем вызывает backend billing sync.
+Фронтенд использует RevenueCat SDK для интерфейса покупки и восстановления, затем вызывает синхронизацию биллинга на бэкенде.
 
-RevenueCat client result сам по себе не является final workspace-unlock authority.
+Результат RevenueCat на клиенте сам по себе не является окончательным основанием для открытия рабочего пространства.
 
-### Device Integrations
+### Интеграции с устройством
 
-Verified client-side integrations:
+Подтверждённые клиентские интеграции:
 
-- local notifications;
-- device contacts read/import;
-- local filesystem visit photos;
-- connectivity status hint;
-- image picker;
-- exchange-rate HTTP lookup.
+- локальные уведомления;
+- чтение и импорт контактов устройства;
+- локальное файловое хранение фотографий визита;
+- сигнал о состоянии подключения;
+- выбор изображения;
+- запрос HTTP курса валют.
 
-## Explicit Non-Responsibility
+## Явно исключённая ответственность
 
-Frontend не владеет:
+Фронтенд не владеет:
 
-- PostgreSQL account/session records;
-- server trial creation;
-- server access-grant precedence;
-- normalized server subscription authority;
-- RevenueCat webhook processing;
-- backend secrets;
-- cloud sync professional workspace entities.
+- записями аккаунтов и сессий PostgreSQL;
+- созданием пробного периода на сервере;
+- серверным приоритетом прав доступа;
+- нормализованным серверным состоянием подписки;
+- обработкой вебхуков RevenueCat;
+- секретами бэкенда;
+- облачной синхронизацией сущностей профессионального рабочего пространства.
 
-## Local Isolation
+## Локальная изоляция
 
-Authenticated server user id определяет local workspace:
+Идентификатор аутентифицированного пользователя сервера определяет локальное рабочее пространство:
 
 ```text
 users.id
@@ -95,25 +95,25 @@ users.id
 aveli_<userId>.sqlite
 ```
 
-Visit-photo paths используют ту же per-user boundary.
+Пути фотографий визита используют ту же границу пользователя.
 
-## Important Lifecycle Distinction
+## Важное различие жизненных циклов
 
-### Logout
+### Выход
 
-Logout очищает active client identity/access state и закрывает current DB, но **не** удаляет local workspace database.
+Выход очищает активное клиентское состояние идентификации и доступа и закрывает текущую БД, но **не** удаляет локальную базу рабочего пространства.
 
-### Profile Delete
+### Удаление профиля
 
-Account/profile deletion сильнее: current client удаляет user photos, SQLite data, secure snapshot и session state как часть profile-deletion flow.
+Удаление аккаунта или профиля — более сильная операция: текущий клиент удаляет фотографии пользователя, данные SQLite, защищённый снимок доступа и состояние сессии в рамках сценария удаления профиля.
 
-Эти behaviors нельзя смешивать.
+Эти сценарии нельзя смешивать.
 
-## Current Out-of-Scope / Missing Client Capabilities
+## Текущее вне границ / отсутствующие возможности клиента
 
-- logout-all-devices UI/client method;
-- cloud workspace synchronization;
-- implemented email verification/password reset backend behavior;
-- multi-account UI;
-- global RevenueCat customer-info listener;
-- verified legacy `aveli.db` claim UI.
+- интерфейс и клиентский метод выхода со всех устройств;
+- облачная синхронизация рабочего пространства;
+- реализованная серверная проверка электронной почты и сброс пароля;
+- интерфейс переключения нескольких аккаунтов;
+- глобальный слушатель CustomerInfo RevenueCat;
+- подтверждённый устаревший `aveli.db` интерфейс присвоения данных.

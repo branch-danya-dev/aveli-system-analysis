@@ -1,6 +1,6 @@
-# System Runtime Flows
+# Системные сценарии выполнения
 
-> End-to-end models, пересекающие несколько Aveli components.
+> Сквозные модели поведения, которые проходят через несколько компонентов Aveli.
 
 ## Навигация
 
@@ -11,4 +11,4 @@
 - [`logout-and-profile-delete.ru.md`](logout-and-profile-delete.ru.md)
 - [`system-runtime.puml`](system-runtime.puml)
 
-Detailed component behavior остается у lower-level owner.
+Детали поведения отдельного компонента остаются в документации его владельца.

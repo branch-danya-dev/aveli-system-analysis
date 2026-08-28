@@ -1,28 +1,28 @@
-# Local Database Lifecycle
+# Жизненный цикл локальной базы данных
 
-## Canonical Physical Schema
+## Каноническая физическая схема
 
 См.:
 
 [`../../database/local/`](../../database/local/)
 
-Этот документ владеет Flutter-side lifecycle usage.
+Этот документ описывает использование жизненного цикла базы данных со стороны Flutter.
 
-## Verified Behavior
+## Подтверждённое поведение
 
-| Concern | Frontend behavior |
+| Аспект | Поведение фронтенда |
 |---|---|
-| Create/open | `AppDatabase(executor)`, Drift schema v11. |
-| File | `aveli_<userId>.sqlite`. |
-| Login/restore | `LocalDatabaseManager.openForUser(userId)`. |
-| Logout | `closeCurrent()`, file preserved. |
-| Delete profile | `deleteLocalDataForUser`. |
-| Active provider | `appDatabaseProvider`; throws при DB unavailable/user mismatch. |
-| Migration | Drift `MigrationStrategy` on open. |
-| Tests | `NativeDatabase.memory()` для DB tests. |
+| Создание / открытие | `AppDatabase(executor)`, схема Drift v11. |
+| Файл | `aveli_<userId>.sqlite`. |
+| Вход / восстановление | `LocalDatabaseManager.openForUser(userId)`. |
+| Выход | `closeCurrent()`; файл базы данных сохраняется. |
+| Удаление профиля | `deleteLocalDataForUser`. |
+| Активный провайдер | `appDatabaseProvider`; выбрасывает ошибку, если БД недоступна или принадлежит другому пользователю. |
+| Миграция | `MigrationStrategy` Drift при открытии. |
+| Тесты | `NativeDatabase.memory()` для тестов БД. |
 
-## Legacy Database
+## Устаревшая база данных
 
-Legacy helpers существуют, но production UI не вызывает `claimLegacyIfPresent: true`.
+Вспомогательные функции для устаревшей БД существуют, но производственный интерфейс не вызывает `claimLegacyIfPresent: true`.
 
-Automatic legacy adoption не является current behavior.
+Автоматическое присвоение устаревшей базы данных не является текущим поведением.

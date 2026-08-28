@@ -1,106 +1,108 @@
-# Bootstrap and Workspace Access
+# Запуск приложения и доступ к рабочему пространству
 
-## Purpose
+## Назначение
 
-Flow объясняет, как existing user попадает в professional workspace после application start.
+Сценарий объясняет, как существующий пользователь попадает в профессиональное рабочее пространство после запуска приложения.
 
-## End-to-End Flow
+## Сквозной сценарий
 
 ```text
-Application start
+Запуск приложения
     ↓
-Flutter bootstrap
+Инициализация Flutter
     ↓
-restore authenticated session
+восстановить аутентифицированную сессию
     ↓
-open local DB for authenticated user
+открыть локальную БД пользователя
     ↓
 RevenueCat logIn(userId)
     ↓
-restore local UI preferences
+восстановить локальные настройки интерфейса
     ↓
-restore / verify access state
+восстановить / проверить состояние доступа
     ↓
-Access Gate decision
+решение проверки доступа
     ↓
-Workspace OR Access UI
+рабочее пространство ИЛИ экран доступа
 ```
 
-## Session Restoration
+## Восстановление сессии
 
-Mobile client использует stored refresh credential для restore backend identity.
+Мобильный клиент использует сохранённый токен обновления, чтобы восстановить идентичность пользователя через бэкенд.
 
-Frontend:
+Фронтенд:
 
 [`../../frontend/auth/session-lifecycle.ru.md`](../../frontend/auth/session-lifecycle.ru.md)
 
-Backend:
+Бэкенд:
 
 [`../../backend/auth/session-lifecycle.ru.md`](../../backend/auth/session-lifecycle.ru.md)
 
-## Workspace Activation
+## Активация рабочего пространства
 
-Authenticated server user id выбирает:
+Идентификатор аутентифицированного пользователя выбирает:
 
 ```text
 aveli_<userId>.sqlite
 ```
 
-и matching local file/access context.
+а также соответствующий файловый контекст и снимок доступа.
 
-Local workspace открывается **до** показа пользователю.
+Локальное рабочее пространство открывается **до** того, как оно становится доступно пользователю в интерфейсе.
 
-## Access Verification
+## Проверка доступа
 
-Online:
+При наличии сети:
 
 ```text
 GET /v1/access
     ↓
-Backend access resolution
+определение доступа на бэкенде
     ↓
 AccessStatusView
     ↓
-secure snapshot
+защищённый снимок состояния
 ```
 
-Server priority:
+Бэкенд использует приоритет:
 
 ```text
-lifetime
-→ manual
-→ subscription
-→ trial
-→ none
+бессрочный доступ
+→ ручное право
+→ подписка
+→ пробный период
+→ нет доступа
 ```
 
-Canonical:
+Каноническое решение:
 
 [`../../backend/access/access-resolution.ru.md`](../../backend/access/access-resolution.ru.md)
 
-## Final Gate
+## Итоговый контур проверки
 
-Frontend не рассчитывает entitlement precedence.
+Фронтенд не вычисляет приоритет источников доступа самостоятельно.
 
-Он evaluates trusted `AccessState` + verification policy.
+Он использует полученный `AccessState` и применяет политику повторной проверки.
 
-Outcomes:
+Возможные результаты:
 
 ```text
-allowed
-blocked
-needsNetwork
-loading
+доступ разрешён
+доступ заблокирован
+требуется сеть (`needsNetwork`)
+загрузка
 ```
 
-Canonical:
+Каноническое описание фронтенда:
 
 [`../../frontend/access/`](../../frontend/access/)
 
-## Key Invariant
+## Ключевой инвариант
 
 ```text
-Access denied
+Доступ запрещён
 ≠
-workspace deleted
+рабочее пространство удалено
 ```
+
+Отказ в доступе не означает удаление рабочего пространства.

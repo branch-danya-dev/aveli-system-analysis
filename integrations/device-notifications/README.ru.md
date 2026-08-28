@@ -1,6 +1,6 @@
-# Device Notifications Integration
+# Интеграция с уведомлениями устройства
 
-> OS-local visit reminders и notification-to-app navigation.
+> Локальные системные напоминания о визитах и навигация из уведомления в приложение.
 
 ## Навигация
 

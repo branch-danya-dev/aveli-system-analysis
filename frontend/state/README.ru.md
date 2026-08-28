@@ -1,6 +1,6 @@
-# Frontend State and Dependency Injection
+# Состояние фронтенда и внедрение зависимостей
 
-> Riverpod container, shared providers и representative dependency chains.
+> Контейнер Riverpod, общие провайдеры и характерные цепочки зависимостей.
 
 ## Навигация
 

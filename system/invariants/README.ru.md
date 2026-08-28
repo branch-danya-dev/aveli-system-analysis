@@ -1,7 +1,5 @@
-# System Invariants
+# Системные инварианты
 
-> Cross-component rules, которые должны оставаться true across implementation boundaries.
+> Правила, пересекающие несколько компонентов и обязанные сохраняться независимо от деталей реализации.
 
-## Навигация
-
-- [`system-invariants.ru.md`](system-invariants.ru.md)
+- [`system-invariants.ru.md`](system-invariants.ru.md) — канонический набор системных инвариантов Aveli.

@@ -1,25 +1,25 @@
-# RevenueCat Mobile SDK
+# Мобильный SDK RevenueCat
 
-> Mobile purchase/restore integration через `purchases_flutter`.
+> Интеграция покупки и восстановления на мобильном клиенте через `purchases_flutter`.
 
-## Verified Version
+## Подтверждённая версия
 
 `purchases_flutter 10.9.1`
 
-## Role
+## Роль
 
-Client загружает offerings, запускает purchase/restore, выполняет logIn server UUID как RevenueCat App User ID и затем вызывает backend `/v1/billing/sync`.
+Клиент загружает предложения, запускает покупку или восстановление, выполняет `logIn` с серверным UUID пользователя как идентификатор RevenueCat `App User ID`, а затем вызывает серверный `/v1/billing/sync`.
 
-RevenueCat client state не final access authority.
+Клиентское состояние RevenueCat не является окончательным источником решения о доступе.
 
-## Configuration
+## Конфигурация
 
-Public dart-defines:
+Публичные параметры `dart-define`:
 
 - `REVENUECAT_IOS_API_KEY`
 - `REVENUECAT_ANDROID_API_KEY`
-- `REVENUECAT_ENTITLEMENT_ID` (default `support`)
+- `REVENUECAT_ENTITLEMENT_ID` (по умолчанию `support`)
 
-## Replaceability
+## Заменяемость
 
-**Medium.** Usage скрыт за `PurchaseService`, поэтому impact в основном ограничен billing/subscription UI.
+**Средняя.** Использование скрыто за `PurchaseService`, поэтому влияние замены в основном ограничено интерфейсом биллинга и подписки.

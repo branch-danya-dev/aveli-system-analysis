@@ -1,33 +1,31 @@
-# Backend API
+# API бэкенда
 
-> Canonical HTTP contract Aveli backend.
+> Канонические контракты HTTP бэкенда Aveli.
 
-## Contract Ownership
+## Владение контрактами
 
-`api/` владеет:
+`backend/api/` определяет:
 
-- paths и methods;
-- authentication requirements;
-- request bodies;
-- response bodies;
-- HTTP statuses;
-- stable public JSON shapes;
-- public error shape.
+- маршруты и методы HTTP;
+- требования к аутентификации;
+- тела запросов и ответов;
+- статусы HTTP;
+- стабильные публичные структуры JSON;
+- формат публичной ошибки.
 
-Internal service logic принадлежит `auth/`, `access/`, `billing/` и другим owning backend areas.
+Внутренняя логика сервисов принадлежит `auth/`, `access/`, `billing/` и другим соответствующим областям бэкенда.
 
-## Base
+## Базовый префикс
+
+Основные продуктовые маршруты используют:
 
 ```text
-release:  https://api.aveli.app
-staging:  https://api-staging.aveli.app
-prefix:   /v1
-format:   JSON
+/v1
 ```
 
-Health endpoints unversioned.
+Эндпоинты состояния `/health` и `/ready` не версионируются.
 
-## Contract Areas
+## Области контрактов
 
 - [`auth/`](auth/)
 - [`access/`](access/)
@@ -35,39 +33,33 @@ Health endpoints unversioned.
 - [`health/`](health/)
 - [`error-model.ru.md`](error-model.ru.md)
 
-Machine-readable contract:
+Машиночитаемый контракт:
 
 [`openapi.yaml`](openapi.yaml)
 
-## Stable Client-Dependent Shapes
+## Структуры, от которых зависит клиент
 
-Current client compatibility зависит от:
+Текущий клиент на Flutter зависит, в частности, от:
 
-- `AuthTokensResponse`;
+- ответа аутентификации с `user`, `accessToken`, `refreshToken`;
 - `AccessStatusView`;
-- `{ code, message }` error JSON;
-- `POST /v1/billing/sync` returning `AccessStatusView`;
-- entitlement id `support`.
+- структуры ошибки `{ code, message }`;
+- результата `POST /v1/billing/sync`;
+- идентификатора права доступа `support`.
 
-Изменение этих contracts является client-breaking без coordinated Flutter update.
+Изменение этих структур без согласованного обновления клиента на Flutter ломает совместимость.
 
-## Validation
+## Валидация
 
-Global body validation:
+Глобальная валидация тела запроса использует разрешающий список полей и отклоняет неизвестные поля.
 
-```text
-whitelist = true
-forbidNonWhitelisted = true
-transform = true
-```
+Неизвестные поля тела запроса приводят к HTTP 400.
 
-Unknown request-body fields → HTTP 400.
+## Отсутствующий контракт
 
-## Deprecated / Absent Contract
+Контроллера `/v1/subscription` в текущей реализации нет.
 
-Current `/v1/subscription` controller отсутствует.
-
-Canonical subscription/access routes:
+Канонические маршруты подписки и доступа:
 
 ```text
 GET  /v1/access

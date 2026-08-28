@@ -1,6 +1,6 @@
-# Device Handoff Integrations
+# Интеграции с передачей управления системным приложениям
 
-> User-mediated transfer между Aveli и OS-managed applications/services.
+> Передача управления между Aveli и приложениями или сервисами операционной системы, инициируемая пользователем.
 
 ## Навигация
 

@@ -1,30 +1,30 @@
-# Secure Storage Usage
+# Использование защищённого хранилища
 
-## Keys
+## Ключи
 
-| Key | Content |
+| Ключ | Содержимое |
 |---|---|
-| `aveli_user_id` | Server user UUID. |
-| `aveli_access_token` | JWT access token. |
-| `aveli_refresh_token` | Opaque refresh token. |
+| `aveli_user_id` | Серверный UUID пользователя. |
+| `aveli_access_token` | токен JWT доступа. |
+| `aveli_refresh_token` | Непрозрачный токен обновления. |
 | `aveli_access_snapshot_<sanitizedUserId>` | JSON `AccessState`. |
 
-Snapshot key sanitization заменяет `/` и `\` на `_`.
+При формировании ключа снимка символы `/` и `\` заменяются на `_`.
 
 ## iOS
 
-Verified accessibility:
+Подтверждённая доступность:
 
 ```text
 KeychainAccessibility.first_unlock_this_device
 ```
 
-## Cleanup
+## Очистка
 
-Logout очищает session credentials и access snapshot current user.
+Выход очищает данные сессии и снимок состояния доступа текущего пользователя.
 
-Delete profile также удаляет secure state как часть destructive cleanup.
+Удаление профиля также очищает защищённое состояние как часть безвозвратного удаления локальных данных.
 
-## Boundary
+## Граница
 
-Secure session/access state намеренно отделен от professional SQLite workspace.
+Защищённые данные сессии и доступа намеренно отделены от профессионального рабочего пространства SQLite.

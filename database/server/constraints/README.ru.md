@@ -1,17 +1,17 @@
-# Server Database Constraints
+# Ограничения серверной базы данных
 
-> Cross-table и product-significant invariants, enforced PostgreSQL.
+> Межтабличные и значимые для продукта инварианты, обеспечиваемые PostgreSQL.
 
 ## Назначение
 
-`constraints/` собирает persistence rules, которые важны сразу для нескольких server entities или представляют product-significant database guarantees.
+`constraints/` собирает правила физического хранения, которые важны сразу для нескольких серверных сущностей или представляют существенные гарантии целостности продукта.
 
-Entity-specific details остаются в документации owning table.
+Детали, относящиеся только к одной сущности, остаются в документации соответствующей таблицы.
 
 ## Навигация
 
 - [`invariants.ru.md`](invariants.ru.md)
 
-Связанная physical schema:
+Связанная физическая схема:
 
 [`../schema/`](../schema/)

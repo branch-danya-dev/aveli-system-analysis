@@ -1,6 +1,6 @@
-# Client Authentication Lifecycle
+# Жизненный цикл аутентификации клиента
 
-## Verified Layers
+## Подтверждённые уровни
 
 ```text
 AuthRemoteDataSource
@@ -12,7 +12,7 @@ AuthController
 SecureTokenStorage
 ```
 
-Session domain types:
+Доменные типы сессии:
 
 ```text
 AuthSession
@@ -20,83 +20,83 @@ AuthUser
 AuthTokens
 ```
 
-## Register
+## Регистрация
 
 ```text
 POST /v1/auth/register
   ↓
-persist returned tokens
+сохранить полученные токены
   ↓
-commit session
+зафиксировать сессию
   ↓
-activate local workspace
+активировать локальное рабочее пространство
 ```
 
-## Login
+## Вход
 
 ```text
 POST /v1/auth/login
   ↓
-persist returned tokens
+сохранить полученные токены
   ↓
-commit session
+зафиксировать сессию
   ↓
-activate local workspace
+активировать локальное рабочее пространство
 ```
 
-## Session Restore
+## Восстановление сессии
 
-Cold-start restore использует stored refresh token:
+Восстановление при холодном запуске использует сохранённый токен обновления:
 
 ```text
-read refresh token
+прочитать токен обновления
   ↓
 POST /v1/auth/refresh
   ↓
-persist rotated credentials
+сохранить обновлённые учётные данные
   ↓
-commit session
+зафиксировать сессию
 ```
 
-Terminal refresh errors очищают stored credentials.
+Неустранимые ошибки обновления сессии очищают сохранённые учётные данные.
 
-## Access Token Refresh
+## Обновление токена доступа
 
-`AuthRepository.refresh()` используется access HTTP handling для one retry после 401.
+`AuthRepository.refresh()` используется при обработке запросов HTTP доступа для одной повторной попытки после 401.
 
-Centralized interceptor middleware отсутствует.
+Централизованный промежуточный слой интерцепторов отсутствует.
 
-## Logout
+## Выход
 
-Verified `AuthController.logout` order:
+Подтверждённый порядок `AuthController.logout`:
 
-1. cancel all visit reminders;
-2. clear access snapshot current user;
+1. отменить все напоминания о визитах;
+2. очистить снимок состояния доступа текущего пользователя;
 3. RevenueCat `logOut`;
-4. backend logout + secure token clear;
-5. close current local database;
-6. set auth state → `null`.
+4. выполнить серверный выход и удалить защищённые токены;
+5. закрыть текущую локальную базу данных;
+6. установить состояние аутентификации → `null`.
 
-SQLite file сохраняется.
+Файл SQLite сохраняется.
 
-## Delete Profile
+## Удаление профиля
 
-Current client delete-profile flow отличается от logout:
+Текущий сценарий удаления профиля на клиенте отличается от обычного выхода:
 
-- вызывает backend `DELETE /v1/auth/me`;
-- удаляет visit-photo tree user;
-- удаляет local SQLite data user;
-- очищает access snapshot;
-- очищает secure session state.
+- вызывает серверный `DELETE /v1/auth/me`;
+- удаляет дерево фотографий визитов пользователя;
+- удаляет локальные данные пользователя из SQLite;
+- очищает снимок состояния доступа;
+- очищает защищённое состояние сессии.
 
-Это destructive local-data cleanup и его нельзя смешивать с logout behavior.
+Это безвозвратная очистка локальных данных, и её нельзя смешивать с поведением обычного выхода.
 
-## Missing Client Capability
+## Отсутствующая возможность клиента
 
-Backend поддерживает logout-all, но Flutter source не содержит logout-all client method/UI.
+Бэкенд поддерживает выход со всех устройств, но в исходном коде Flutter нет соответствующего клиентского метода или интерфейса.
 
-## Auth Stubs
+## Заглушки аутентификации
 
-Forgot-password UI вызывает backend route, но current backend отвечает `501 AUTH_NOT_IMPLEMENTED`.
+Интерфейс восстановления пароля вызывает серверный маршрут, но текущий бэкенд отвечает `501 AUTH_NOT_IMPLEMENTED`.
 
-Email verification/password-reset не являются shipped end-to-end workflow.
+Подтверждение адреса электронной почты и сброс пароля пока не являются завершёнными сквозными пользовательскими сценариями.

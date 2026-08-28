@@ -1,40 +1,40 @@
-# Offline Policy
+# Политика работы без сети
 
-## Local Workspace
+## Локальное рабочее пространство
 
-Normal workspace operations продолжают работать с local persistence без backend synchronization.
+Обычные операции рабочего пространства продолжают работать с локальным хранилищем без синхронизации с бэкендом.
 
-## Access Verification
+## Проверка доступа
 
-Verified startup cases:
+Подтверждённые сценарии запуска:
 
-| Scenario | Result |
+| Сценарий | Результат |
 |---|---|
-| Online | Fetch `/v1/access`, persist snapshot. |
-| Offline + valid snapshot | Use cached access если policy разрешает. |
-| Offline + no snapshot | Access needs network. |
-| Cached verification deadline expired | `needsNetwork`. |
-| Denied/expired cached state | Snapshot может быть cleared, показывается gate. |
+| Онлайн | Получить `/v1/access` и сохранить снимок состояния доступа. |
+| Офлайн + допустимый снимок | Использовать кэшированное состояние доступа, если политика проверки это разрешает. |
+| Офлайн + снимок отсутствует | Для проверки доступа требуется сеть. |
+| Срок повторной проверки кэшированного состояния истёк | `needsNetwork`. |
+| Доступ запрещён или кэш устарел | Снимок может быть очищен; пользователю показывается экран проверки доступа. |
 
-## Connectivity Hint
+## Сигнал о наличии подключения
 
 `networkAvailableProvider` использует `connectivity_plus`.
 
-Если сам connectivity plugin падает, provider сейчас **fails open** и возвращает `true`.
+Если сам плагин проверки подключения завершается ошибкой, текущая реализация при ошибке считает подключение доступным и возвращает `true`.
 
-HTTP/API failures обрабатываются отдельно и могут привести к stale-cache fallback.
+Ошибки HTTP и API обрабатываются отдельно и могут привести к использованию устаревшего кэша как запасного сценария.
 
-## Network Restoration
+## Восстановление сети
 
-Recovery запускается user/lifecycle events:
+Повторное восстановление запускается действиями пользователя и событиями жизненного цикла:
 
-- retry из access gate;
-- app resume triggers access/billing refresh.
+- повторная проверка с экрана доступа;
+- возврат приложения на передний план запускает обновление доступа и биллинга.
 
-## Failure Isolation
+## Изоляция отказов
 
-Backend/network failure не должен удалять professional workspace.
+Сбой бэкенда или сети не должен удалять профессиональное рабочее пространство.
 
-## No Cloud Sync
+## Облачная синхронизация отсутствует
 
-Network restoration не загружает на backend clients, appointments, payments, notes или photos.
+Восстановление сети не загружает на бэкенд клиентов, записи, оплаты, заметки или фотографии.

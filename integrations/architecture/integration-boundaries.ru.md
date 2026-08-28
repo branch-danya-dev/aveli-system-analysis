@@ -1,148 +1,148 @@
-# Aveli — Integration Boundaries
+# Aveli — границы интеграций
 
-## Core Principle
+## Основной принцип
 
-External systems могут поставлять evidence, platform capabilities или transport, но не становятся автоматически owner Aveli product decisions.
+Внешние системы могут предоставлять подтверждения, возможности платформы или канал передачи данных, но не становятся автоматически владельцами продуктовых решений Aveli.
 
-Главный пример — subscription access:
+Главный пример — доступ по подписке:
 
 ```text
-Apple / Google Store
+Магазин Apple / Google
         ↓
 RevenueCat
         ↓
-Aveli Backend Reconciliation
+Сверка на бэкенде Aveli
         ↓
-Aveli Access Decision
+Решение Aveli о доступе
 ```
 
 RevenueCat отвечает:
 
-> Какое subscription state признает store/provider?
+> Какое состояние подписки признаёт магазин или провайдер?
 
 Aveli отвечает:
 
-> Может ли account открыть workspace?
+> Может ли аккаунт открыть рабочее пространство?
 
-## Subscription Ecosystem
+## Экосистема подписки
 
 ```text
-Aveli Mobile
-   ↕ RevenueCat SDK
+Мобильный клиент Aveli
+   ↕ SDK RevenueCat
 RevenueCat
    ↕ Apple App Store / Google Play
 
 RevenueCat
-   ↕ REST + webhook
-Aveli Backend
+   ↕ REST + вебхук
+Бэкенд Aveli
    ↓
 subscriptions + subscription_events
    ↓
-Access Resolution
+Определение доступа
 ```
 
-Mobile client не self-grants workspace access из `CustomerInfo`.
+Мобильный клиент не выдаёт себе доступ к рабочему пространству на основании `CustomerInfo`.
 
-## Device Capability Boundaries
+## Границы возможностей устройства
 
-### Contacts
+### Контакты
 
 ```text
-Device Contacts
-      ↓ read only
-Aveli Client
-      ↓ normalize / deduplicate
-Local Client Record
+Контакты устройства
+      ↓ только чтение
+Клиент Aveli
+      ↓ нормализация / устранение дублей
+Локальная запись клиента
 ```
 
-Aveli не пишет обратно в device address book.
+Aveli не пишет обратно в адресную книгу устройства.
 
-### Notifications
+### Уведомления
 
 ```text
-Appointment
+Запись
    ↓
-Local Scheduler
+Локальный планировщик
    ↓
-OS Notification Service
-   ↓ tap payload
-Aveli Appointment Details
+Служба уведомлений ОС
+   ↓ данные нажатия
+Карточка записи Aveli
 ```
 
-FCM/APNs workspace push integration отсутствует.
+Интеграция пуш-уведомлений рабочего пространства через FCM/APNs отсутствует.
 
-### Media
+### Медиа
 
 ```text
-Camera / Gallery
+Камера / галерея
       ↓
-Aveli Picker
-      ↓ copy
-Aveli-owned visit-photo file
+Выбор файла в Aveli
+      ↓ копирование
+Файл фотографии визита под управлением Aveli
 ```
 
-External media source — temporary input; copied file становится Aveli local persistence.
+Внешний источник медиа — временный вход; после копирования файл становится частью локального хранения Aveli.
 
-### Exchange Rates
+### Курсы валют
 
 ```text
-Aveli Client
-      ↓ HTTPS GET
+Клиент Aveli
+      ↓ GET по HTTPS
 open.er-api.com
-      ↓ rate data
-Local cache
+      ↓ данные курса
+Локальный кэш
       ↓
-Currency conversion workflow
+Сценарий конвертации валюты
 ```
 
-## Device Handoff
+## Передача управления системным приложениям
 
-Client может передавать данные другой OS-managed application через:
+Клиент может передавать данные другому приложению, управляемому ОС, через:
 
-- SMS composer;
-- share sheet;
-- file picker;
-- browser/store subscription-management URL.
+- редактор SMS;
+- системное меню «Поделиться»;
+- выбор файла;
+- URL управления подпиской в браузере или магазине приложений.
 
-Это user-mediated handoff boundaries, а не Aveli-owned cloud backends.
+Это границы передачи управления по инициативе пользователя, а не облачные сервисы, принадлежащие Aveli.
 
-## Failure Isolation
+## Изоляция отказов
 
-External integration failure не должен удалять unrelated professional workspace data.
+Сбой внешней интеграции не должен удалять несвязанные данные профессионального рабочего пространства.
 
 ```text
-RevenueCat unavailable
-→ billing sync unavailable
-→ local workspace data preserved
+RevenueCat недоступен
+→ сверка биллинга недоступна
+→ локальные данные рабочего пространства сохранены
 
-Exchange API unavailable
-→ conversion blocked/manual fallback
-→ local workspace preserved
+API курсов валют недоступен
+→ конвертация недоступна / ручной запасной сценарий
+→ локальное рабочее пространство сохранено
 
-Notification permission denied
-→ reminders unavailable
-→ appointments preserved
+нет разрешения на уведомления
+→ напоминания недоступны
+→ записи сохранены
 
-Contacts permission denied
-→ import unavailable
-→ existing clients preserved
+нет разрешения на контакты
+→ импорт недоступен
+→ существующие клиенты сохранены
 ```
 
-## Ownership Rule
+## Правило владения
 
-Provider-specific integration documentation владеет:
+Документация конкретного внешнего провайдера владеет:
 
 ```text
-external responsibility
-Aveli-side responsibility
-identity mapping
-data crossing boundary
-protocol / SDK
-authentication / trust
-failure semantics
-idempotency / reconciliation
-configuration
-platform constraints
+ответственность внешней стороны
+ответственность Aveli
+сопоставление идентичностей
+данные, пересекающие границу
+протокол / SDK
+аутентификация / доверие
+поведение при сбоях
+идемпотентность / сверка
+конфигурация
+ограничения платформы
 ```
 
-Frontend/backend implementation details остаются у своих components.
+Детали реализации фронтенда и бэкенда остаются в документации соответствующих компонентов.

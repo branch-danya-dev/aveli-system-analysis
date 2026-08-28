@@ -1,6 +1,6 @@
-# Frontend Bootstrap
+# Начальная инициализация фронтенда
 
-> Cold-start initialization и first destination resolution.
+> Инициализация при холодном запуске и определение первого экрана.
 
 ## Навигация
 

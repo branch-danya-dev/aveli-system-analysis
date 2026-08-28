@@ -1,6 +1,6 @@
-# Local Entities
+# Локальные сущности
 
-Physical table documentation текущей SQLite schema.
+Физическое описание таблиц текущей схемы SQLite.
 
 - [`clients.ru.md`](clients.ru.md)
 - [`services.ru.md`](services.ru.md)

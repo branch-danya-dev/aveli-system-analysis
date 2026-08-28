@@ -1,5 +1,5 @@
-# Apple App Store — Native Evidence
+# Apple App Store — подтверждения нативной конфигурации
 
-Verified: bundle `com.aveli.aveli`, iOS 15.0, `purchases_flutter`, Apple subscription-management URL, camera/photo/contacts usage descriptions.
+Подтверждено: идентификатор пакета `com.aveli.aveli`, iOS 15.0, `purchases_flutter`, URL управления подпиской Apple и описания разрешений для камеры, фотографий и контактов.
 
-Production product ids/group/offering/StoreKit config/real-store E2E — external release evidence, не repository architecture facts. Test fixture ids не считаются production ids.
+Идентификаторы производственных продуктов, группа подписок, предложения, конфигурация StoreKit и сквозная проверка в реальном магазине относятся к внешним подтверждениям для релиза, а не к архитектурным фактам репозитория. Идентификаторы из тестовых фикстур не считаются производственными.

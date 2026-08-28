@@ -1,23 +1,46 @@
 # Prisma
 
-> Schema-first ORM, typed database client и migration layer NestJS backend.
+> ORM с описанием схемы, типизированный клиент базы данных и механизм миграций бэкенда NestJS.
 
-## Role
+## Роль
 
 ```text
-NestJS services
+Сервисы NestJS
       ↓
 Prisma
       ↓
 PostgreSQL
 ```
 
-Current usage: `schema.prisma`, typed DB access, migrations, enums/relations, transactions, direct `PrismaService`. Separate repository abstraction отсутствует.
+Текущая реализация использует `schema.prisma`, типизированный доступ к данным, версионированные миграции, перечисления, связи, транзакции и прямой `PrismaService`.
 
-Canonical physical model: [`../../../database/server/`](../../../database/server/)
+Отдельного абстрактного слоя репозиториев поверх Prisma сейчас нет.
 
-## Replaceability
+## Почему подходит
 
-**Medium.** Replacement затронет backend data access, migration tooling и tests при сохранении PostgreSQL/API contracts.
+Бэкенд Aveli — компактный реляционный сервис. Здесь полезны явная схема, типизированный доступ к данным, воспроизводимые миграции и небольшой объём служебного кода.
 
-Prisma — backend implementation technology, не public API/business concept.
+## Зависимости
+
+- физическая модель PostgreSQL;
+- миграции Prisma;
+- серверные сервисы, использующие `PrismaService`;
+- тесты и имитации зависимостей, завязанные на Prisma.
+
+Каноническая физическая модель: [`../../../database/server/`](../../../database/server/)
+
+## Заменяемость
+
+**Средняя.**
+
+При сохранении PostgreSQL и публичных API замена Prisma в основном затронет доступ к данным, инструменты миграций и связанные тесты.
+
+## Альтернативы
+
+TypeORM, Drizzle, Kysely + `pg` или прямое использование `pg`.
+
+Исторического ADR, подтверждающего формальное сравнение до реализации, нет.
+
+## Граница
+
+Prisma — технология реализации бэкенда, а не публичный API и не бизнес-понятие.

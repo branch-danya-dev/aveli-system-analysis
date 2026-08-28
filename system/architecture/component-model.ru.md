@@ -1,72 +1,72 @@
-# Aveli — Component Model
+# Aveli — модель компонентов
 
-## System Components
+## Компоненты системы
 
-### Aveli Mobile Client
+### Мобильный клиент Aveli
 
-Primary user-facing component.
+Основной пользовательский компонент.
 
-Responsibilities:
+Ответственность:
 
 ```text
-UI / navigation
-local workspace behavior
-local persistence usage
-session credential handling
-access presentation / gating
-purchase / restore initiation
-device integrations
-offline operation
+интерфейс / навигация
+поведение локального рабочего пространства
+использование локального хранения
+работа с учётными данными сессии
+отображение и проверка доступа
+запуск покупки / восстановления
+интеграции с устройством
+автономная работа
 ```
 
-Canonical:
+Каноническое описание:
 
 [`../../frontend/`](../../frontend/)
 
-### Aveli Backend
+### Бэкенд Aveli
 
-Narrow account/access service.
+Узкий сервис аккаунта и доступа.
 
-Responsibilities:
+Ответственность:
 
 ```text
-registration / authentication
-refresh sessions
-account lifecycle
-trial / grants
-subscription normalization
-effective access resolution
-billing reconciliation
-RevenueCat webhook processing
+регистрация / аутентификация
+обновление сессий
+жизненный цикл аккаунта
+пробный период / права доступа
+нормализация подписки
+определение итогового доступа
+сверка биллинга
+обработка вебхуков RevenueCat
 ```
 
-Professional workspace records backend не owns.
+Бэкенд не владеет записями профессионального рабочего пространства.
 
-Canonical:
+Каноническое описание:
 
 [`../../backend/`](../../backend/)
 
-### Local Workspace Persistence
+### Локальное хранение рабочего пространства
 
-Per-user device persistence:
+Хранение на устройстве для каждого пользователя:
 
 ```text
 aveli_<userId>.sqlite
 +
-visit-photo files
+файлы фотографий визитов
 +
-secure session/access state
+защищённое состояние сессии и доступа
 ```
 
-SQLite/files — current source of truth professional workspace data.
+SQLite и файлы — текущий источник истины для данных профессионального рабочего пространства.
 
-Secure storage хранит authentication/access client state отдельно от workspace DB.
+Защищённое хранилище хранит клиентское состояние аутентификации и доступа отдельно от базы данных рабочего пространства.
 
-Canonical:
+Каноническое описание:
 
 [`../../database/local/`](../../database/local/)
 
-### Server Persistence
+### Серверное хранение
 
 PostgreSQL хранит:
 
@@ -78,86 +78,86 @@ subscriptions
 subscription_events
 ```
 
-Canonical:
+Каноническое описание:
 
 [`../../database/server/`](../../database/server/)
 
 ### RevenueCat
 
-External subscription abstraction.
+Внешняя абстракция подписки.
 
-Responsibilities:
+Ответственность:
 
 ```text
-offerings
-mobile purchase / restore
-provider customer state
-server subscriber evidence
-webhook events
+предложения
+покупка / восстановление на мобильном клиенте
+состояние пользователя у провайдера
+подтверждение состояния подписчика для сервера
+события вебхука
 ```
 
-RevenueCat не решает Aveli workspace access напрямую.
+RevenueCat не принимает прямого решения о доступе к рабочему пространству Aveli.
 
-Canonical:
+Каноническое описание:
 
 [`../../integrations/revenuecat/`](../../integrations/revenuecat/)
 
-### Mobile Stores
+### Мобильные магазины приложений
 
-Apple App Store / Google Play владеют store-side billing lifecycle.
+Apple App Store / Google Play владеют жизненным циклом биллинга на стороне магазина.
 
 Aveli взаимодействует с ними прежде всего через RevenueCat.
 
-Canonical:
+Каноническое описание:
 
 - [`../../integrations/app-store/`](../../integrations/app-store/)
 - [`../../integrations/google-play/`](../../integrations/google-play/)
 
-### Device / External Services
+### Устройство / внешние сервисы
 
-Supporting boundaries:
+Вспомогательные границы:
 
 ```text
-contacts
-local notifications
-camera/gallery
-exchange rate API
-share/file picker/SMS/browser
+контакты
+локальные уведомления
+камера / галерея
+API курсов валют
+системное меню «Поделиться» / выбор файла / SMS / браузер
 ```
 
-Canonical:
+Каноническое описание:
 
 [`../../integrations/`](../../integrations/)
 
-## Component Relationship Summary
+## Сводка связей компонентов
 
 ```text
-User
+Пользователь
  ↓
-Mobile
- ├── Local SQLite / Files
- ├── Secure Storage
- ├── OS / Device Integrations
- ├── RevenueCat SDK
- └── Backend API
+Мобильный клиент
+ ├── SQLite / локальные файлы
+ ├── защищённое хранилище
+ ├── интеграции с ОС / устройством
+ ├── SDK RevenueCat
+ └── API бэкенда
         ├── PostgreSQL
-        └── RevenueCat REST / Webhook
+        └── REST RevenueCat / вебхук
                ↕
-        Apple / Google Stores
+        Магазины Apple / Google
 ```
 
-## Dependency Direction
+## Направление зависимостей
 
-Professional workspace может работать локально.
+Профессиональное рабочее пространство может работать локально.
 
-Account/access flows периодически зависят от backend authority.
+Сценарии учётной записи и доступа периодически зависят от решения бэкенда.
 
-Billing зависит от external provider/store evidence.
+Биллинг зависит от внешних подтверждений провайдера и магазина приложений.
 
-Поэтому Aveli имеет разные availability characteristics для:
+Поэтому разные части Aveli имеют разные характеристики доступности:
 
 ```text
-daily workspace
-vs
-identity/access/billing
+ежедневное рабочее пространство
+и отдельно
+идентификация / доступ / биллинг
 ```

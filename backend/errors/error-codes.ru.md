@@ -1,21 +1,21 @@
-# Backend Error Codes
+# Коды ошибок бэкенда
 
-| Code | Meaning / Current Usage |
+| Код | Значение / текущее использование |
 |---|---|
-| `AUTH_EMAIL_ALREADY_EXISTS` | Registration email уже занят. |
-| `AUTH_INVALID_CREDENTIALS` | Unified failed login result. |
-| `AUTH_SESSION_EXPIRED` | Refresh token/session invalid, rotated, revoked или expired. |
-| `AUTH_USER_DISABLED` | Account disabled/deleted/unavailable для authenticated operation. |
-| `AUTH_VALIDATION_FAILED` | DTO или generic validation failure. |
-| `AUTH_NOT_IMPLEMENTED` | Declared auth stub не реализован. |
-| `BILLING_SYNC_FAILED` | RevenueCat state нельзя безопасно reconcile при sync. |
-| `WEBHOOK_AUTH_REQUIRED` | Required RevenueCat webhook auth configuration отсутствует. |
-| `ACCESS_*` | Reserved namespace; access denial сейчас использует `AccessStatusView.reason`. |
-| `SUBSCRIPTION_*` | Reserved namespace. |
+| `AUTH_EMAIL_ALREADY_EXISTS` | Электронная почта уже занята другим аккаунтом. |
+| `AUTH_INVALID_CREDENTIALS` | Единый результат неуспешного входа. |
+| `AUTH_SESSION_EXPIRED` | Токен обновления или сессия недействительны, уже ротированы, отозваны либо истекли. |
+| `AUTH_USER_DISABLED` | Аккаунт отключён, удалён или недоступен для аутентифицированной операции. |
+| `AUTH_VALIDATION_FAILED` | Ошибка DTO или общая ошибка валидации. |
+| `AUTH_NOT_IMPLEMENTED` | Объявленная заглушка аутентификации ещё не реализована. |
+| `BILLING_SYNC_FAILED` | Состояние RevenueCat нельзя безопасно сверить во время синхронизации. |
+| `WEBHOOK_AUTH_REQUIRED` | Отсутствует обязательная конфигурация аутентификации вебхука RevenueCat. |
+| `ACCESS_*` | Зарезервированное пространство имён; сейчас отказ в доступе выражается через `AccessStatusView.reason`. |
+| `SUBSCRIPTION_*` | Зарезервированное пространство имён. |
 
-## Internal Error
+## Внутренняя ошибка
 
-Unexpected server failure:
+Неожиданные серверные ошибки сериализуются как:
 
 ```json
 {
@@ -24,8 +24,8 @@ Unexpected server failure:
 }
 ```
 
-## Important Product Boundary
+## Важная продуктовая граница
 
-Workspace access denial обычно не является `ACCESS_*` HTTP error.
+Отказ в доступе к рабочему пространству обычно не представляется ошибкой HTTP `ACCESS_*`.
 
-Canonical denial: HTTP 200 `AccessStatusView`.
+Канонический отказ в доступе — HTTP 200 с `AccessStatusView`.

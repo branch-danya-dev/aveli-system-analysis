@@ -1,21 +1,21 @@
 # Flutter
 
-> Mobile UI/runtime framework Aveli client.
+> Фреймворк пользовательского интерфейса и выполнения мобильного клиента Aveli.
 
-## Role
+## Роль
 
-Flutter владеет application rendering, widget lifecycle, platform integration surface и composition mobile experience.
+Flutter обеспечивает отрисовку приложения, жизненный цикл виджетов, платформенные точки интеграции и композицию мобильного интерфейса.
 
-## Verified Context
+## Подтверждённый контекст
 
-Aveli `0.2.2+4` использует Dart SDK `^3.7.0`; Flutter SDK не pinned в `pubspec.yaml`.
+Aveli `0.2.2+4` использует Dart SDK `^3.7.0`; версия Flutter SDK в `pubspec.yaml` не зафиксирована.
 
-App — feature-first с thin `app/` shell и shared `core/`.
+Приложение организовано по возможностям (`feature-first`) с тонкой оболочкой `app/` и общим слоем `core/`.
 
-## Replaceability
+## Заменяемость
 
-**Low.** Замена Flutter означает full client rewrite: UI, routing, platform services, state integration, local persistence bindings и tests.
+**Низкая.** Замена Flutter означает полную переработку клиента: интерфейса, маршрутизации, платформенных сервисов, управления состоянием, привязок локального хранилища и тестов.
 
-## Boundary
+## Граница
 
-Product behavior остается canonical вне framework. Flutter-specific implementation принадлежит `frontend/`.
+Продуктовое поведение остаётся каноническим вне фреймворка. Реализация, специфичная для Flutter, принадлежит `frontend/`.

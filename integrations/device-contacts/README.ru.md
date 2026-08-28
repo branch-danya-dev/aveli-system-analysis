@@ -1,6 +1,6 @@
-# Device Contacts Integration
+# Интеграция с контактами устройства
 
-> Read-only import из OS address book в Aveli local client records.
+> Импорт только для чтения из адресной книги операционной системы в локальные записи клиентов Aveli.
 
 ## Навигация
 

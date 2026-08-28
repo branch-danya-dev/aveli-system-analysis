@@ -1,21 +1,21 @@
-# RevenueCat Integration
+# Интеграция с RevenueCat
 
-> Cross-component subscription integration между Aveli Mobile, Aveli Backend, RevenueCat и mobile stores.
+> Межкомпонентная интеграция подписки между мобильным Aveli, бэкендом Aveli, RevenueCat и магазинами приложений.
 
 ## Назначение
 
-RevenueCat — store-subscription abstraction layer Aveli.
+RevenueCat — слой абстракции Aveli над подписками магазинов приложений.
 
 Он поддерживает:
 
-- mobile offerings;
-- purchase;
-- restore;
-- customer identity;
-- server subscriber lookup;
-- webhook-driven lifecycle reconciliation.
+- предложения для мобильного клиента;
+- покупка;
+- восстановление;
+- идентификация пользователя;
+- серверный поиск сведений о подписчике;
+- сверка жизненного цикла по событиям вебхука.
 
-RevenueCat **не** является final Aveli workspace-access authority.
+RevenueCat **не** является окончательным источником решения о доступе к рабочему пространству Aveli.
 
 ## Навигация
 
@@ -25,7 +25,7 @@ RevenueCat **не** является final Aveli workspace-access authority.
 - [`identity-mapping.ru.md`](identity-mapping.ru.md)
 - [`subscription-flow.puml`](subscription-flow.puml)
 
-Component-local behavior:
+Поведение внутри компонентов:
 
 - [`../../frontend/billing/`](../../frontend/billing/)
 - [`../../backend/billing/`](../../backend/billing/)

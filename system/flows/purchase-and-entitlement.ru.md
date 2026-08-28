@@ -1,82 +1,84 @@
-# Purchase, Subscription, and Workspace Entitlement
+# Покупка, подписка и право доступа к рабочему пространству
 
-## End-to-End Purchase Flow
+## Сквозной сценарий покупки
 
 ```text
-User opens Paywall
+Пользователь открывает экран подписки
     ↓
-Flutter loads RevenueCat offerings
+Flutter загружает предложения RevenueCat
     ↓
-User completes store purchase
+Пользователь завершает покупку в магазине
     ↓
-RevenueCat returns CustomerInfo
+RevenueCat возвращает CustomerInfo
     ↓
-Flutter calls POST /v1/billing/sync
+Flutter вызывает POST /v1/billing/sync
     ↓
-Backend queries RevenueCat subscriber state
+Бэкенд запрашивает состояние подписчика RevenueCat
     ↓
-Backend normalizes subscription
+Бэкенд нормализует состояние подписки
     ↓
-Backend resolves effective access
+Бэкенд определяет итоговый доступ
     ↓
 AccessStatusView
     ↓
-Frontend stores snapshot
+Фронтенд сохраняет снимок состояния
     ↓
-Access Gate opens workspace if allowed
+При разрешённом доступе открывается рабочее пространство
 ```
 
-## Why Two Verification Steps Exist
+## Зачем нужны два уровня проверки
 
-Mobile purchase result подтверждает provider/store result, увиденный mobile billing SDK.
+Результат мобильной покупки подтверждает, что SDK биллинга получил результат от магазина или провайдера.
 
-Но сам по себе он не становится final Aveli entitlement decision.
+Но сам по себе этот результат не становится окончательным решением Aveli о доступе к рабочему пространству.
 
-Backend независимо reconciles provider state по authenticated Aveli user id.
+Бэкенд отдельно сверяет состояние провайдера с аутентифицированным идентификатором пользователя Aveli.
 
-## Webhook Path
+## Путь вебхука
 
-Separate asynchronous path:
+Существует отдельный асинхронный путь:
 
 ```text
-RevenueCat webhook
+Вебхук RevenueCat
     ↓
-Aveli Backend
+бэкенд Aveli
     ↓
-event idempotency
+проверка идемпотентности события
     ↓
-RevenueCat REST reconciliation
+сверка через REST RevenueCat
     ↓
-subscription snapshot
+снимок состояния подписки
 ```
 
-Webhook event type не мутирует workspace access logic напрямую.
+Тип события вебхука не выдаёт и не отзывает доступ напрямую. Сначала бэкенд выполняет сверку с RevenueCat и обновляет нормализованное состояние подписки.
 
-## Provider vs Product Authority
+## Полномочия провайдера и продукта
 
 ```text
-Store / RevenueCat
-→ provider billing evidence
+Магазин / RevenueCat
+→ подтверждение состояния биллинга провайдера
 
-Aveli Backend
-→ Aveli workspace access decision
+Бэкенд Aveli
+→ решение о доступе к рабочему пространству Aveli
 ```
 
-## Subscription Is One Access Source
+Магазин и RevenueCat подтверждают состояние биллинга. Решение о доступе к рабочему пространству принимает Aveli.
 
-Active subscription оценивается в общем access model:
+## Подписка — один из источников доступа
+
+Активная подписка оценивается внутри общей модели доступа:
 
 ```text
-lifetime
-manual
-subscription
-trial
+бессрочный доступ
+ручное право доступа
+подписка
+пробный период
 ```
 
-Canonical integration:
+Каноническая документация интеграции:
 
 [`../../integrations/revenuecat/`](../../integrations/revenuecat/)
 
-Canonical backend billing:
+Каноническая документация биллинга бэкенда:
 
 [`../../backend/billing/`](../../backend/billing/)

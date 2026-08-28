@@ -1,76 +1,76 @@
-# Billing API Contracts
+# Контракты API биллинга
 
 ## `POST /v1/billing/sync`
 
-Purpose:
+Назначение:
 
-Reconcile RevenueCat subscription state для authenticated backend user и вернуть updated effective access state.
+Сверить состояние подписки RevenueCat для аутентифицированного пользователя бэкенда и вернуть обновлённое итоговое состояние доступа.
 
-Auth:
+Аутентификация:
 
 ```http
 Authorization: Bearer <accessToken>
 ```
 
-Request body:
+Тело запроса:
 
 ```text
-empty
+пусто
 ```
 
-Ключевое trust rule:
+Важное правило доверия:
 
-> Client не передает entitlement status.
+> Клиент не передаёт авторитетное состояние подписки.
 
-Backend получает RevenueCat identity из JWT `sub` и делает server-side lookup.
+Бэкенд получает идентификатор RevenueCat из JWT `sub` и сам запрашивает RevenueCat с сервера.
 
-Success:
+Успешный ответ:
 
 ```text
 200 OK
 ```
 
-Response:
+Тело ответа:
 
 ```text
 AccessStatusView
 ```
 
-Canonical schema:
+Каноническая схема:
 
 [`../access/contracts.ru.md`](../access/contracts.ru.md)
 
-Failure:
+Ошибка:
 
 ```text
 502 BILLING_SYNC_FAILED
 ```
 
-если RevenueCat state нельзя проверить.
+если состояние RevenueCat нельзя подтвердить.
 
 ## `POST /v1/webhooks/revenuecat`
 
-Purpose:
+Назначение:
 
-Принимать RevenueCat subscription lifecycle events для reconciliation.
+Получать события жизненного цикла подписки RevenueCat для последующей сверки.
 
-Auth:
+Аутентификация:
 
-Request `Authorization` header должен точно равняться configured:
+Заголовок `Authorization` должен точно совпадать с настроенным значением:
 
 ```text
 REVENUECAT_WEBHOOK_AUTH
 ```
 
-Это не JWT bearer authentication.
+Это не аутентификация клиента по схеме JWT Bearer.
 
-Body:
+Тело:
 
 ```text
-arbitrary RevenueCat webhook JSON
+произвольный JSON вебхука RevenueCat
 ```
 
-Success:
+Успешный ответ:
 
 ```json
 {
@@ -78,20 +78,20 @@ Success:
 }
 ```
 
-Webhook processing idempotent через persisted `external_event_id`.
+Обработка вебхука идемпотентна благодаря сохранённому `external_event_id`.
 
-Webhook event type не является final access decision. Backend reconciles customer через RevenueCat REST.
+Тип события вебхука не используется как окончательное решение о доступе. Бэкенд дополнительно сверяет состояние пользователя через RevenueCat REST.
 
-## Webhook Configuration Failure
+## Ошибка конфигурации вебхука
 
-Error:
+Зарезервированная и реализованная ошибка:
 
 ```text
 WEBHOOK_AUTH_REQUIRED
 ```
 
-когда required webhook auth configuration отсутствует.
+возникает, если обязательная конфигурация аутентификации вебхука отсутствует.
 
-Internal processing:
+Внутренняя обработка:
 
 [`../../billing/webhook-processing.ru.md`](../../billing/webhook-processing.ru.md)

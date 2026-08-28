@@ -1,9 +1,9 @@
-# Server PostgreSQL Schema
+# Схема PostgreSQL на сервере
 
-> Physical database schema backend-owned данных Aveli.
+> Физическая схема данных Aveli, принадлежащих бэкенду.
 
 ## Навигация
 
-- [`schema.ru.md`](schema.ru.md) — tables, relationships и product-critical persistence rules.
-- [`enums.ru.md`](enums.ru.md) — PostgreSQL/Prisma enum values.
-- [`schema.puml`](schema.puml) — physical ER diagram.
+- [`schema.ru.md`](schema.ru.md) — таблицы, связи и критичные для продукта правила хранения.
+- [`enums.ru.md`](enums.ru.md) — значения перечислений PostgreSQL/Prisma.
+- [`schema.puml`](schema.puml) — физическая диаграмма «сущность — связь».

@@ -1,6 +1,6 @@
-# Router Redirect Policy
+# Политика перенаправлений маршрутизатора
 
-Single `GoRouter.redirect` централизует auth + access navigation.
+Единый `GoRouter.redirect` централизует навигацию по состояниям аутентификации и доступа.
 
 Он слушает:
 
@@ -9,27 +9,27 @@ authControllerProvider
 accessControllerProvider
 ```
 
-## Decision Summary
+## Сводка решений
 
 ```text
-standalone mode
-→ skip auth/access gate → workspace
+автономный режим
+→ пропустить аутентификацию и проверку доступа → рабочее пространство
 
-unsigned
+пользователь не вошёл
 → /welcome
-  except public auth routes
+  кроме публичных маршрутов аутентификации
 
-signed in
+пользователь вошёл
 → resolveAccessGateDecision
 ```
 
-Access decisions:
+Решения по доступу:
 
-| Decision | Router behavior |
+| Решение | Поведение маршрутизатора |
 |---|---|
-| `allowed` | Workspace; redirect away from auth/access-gate. |
-| `blocked` | `/access-gate`; paywall allowed. |
+| `allowed` | Рабочее пространство доступно; переход с экранов аутентификации и проверки доступа. |
+| `blocked` | `/access-gate`; экран оплаты доступен. |
 | `needsNetwork` | `/access-gate`. |
-| `loading` | Access-gate при выходе из auth context. |
+| `loading` | Экран проверки доступа вне контекста аутентификации. |
 
-Access Gate — route-level policy, не duplicated wrapper вокруг каждого feature screen.
+Проверка доступа централизована на уровне маршрутов и не дублируется отдельной обёрткой вокруг каждого экрана.

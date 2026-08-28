@@ -1,25 +1,25 @@
-# Frontend Security Controls
+# Меры безопасности фронтенда
 
-## Verified Controls
+## Подтверждённые меры
 
-| Concern | Current behavior |
+| Аспект | Текущее поведение |
 |---|---|
-| Release API transport gate | Release build rejects non-HTTPS API base. |
-| Release host safety | Loopback/emulator API hosts rejected in release. |
-| Standalone bypass | `AVELI_STANDALONE` rejected release gate. |
-| Session credentials | Stored in `flutter_secure_storage`. |
-| Access snapshot | Stored secure storage per user. |
-| Local workspace isolation | Per-user `aveli_<userId>.sqlite`. |
-| Visit-photo isolation | Per-user file root. |
-| RevenueCat keys | Только public mobile SDK keys в client config. |
-| Backend secrets | Не входят в client configuration. |
-| Token logging | Нет deliberate token `debugPrint` в verified auth path. |
-| Logout | Cancels reminders, clears secure access/session state, closes DB. |
-| Profile delete | Removes local DB/photos/snapshot/session data. |
+| Проверка транспорта API для релиза | Релизная сборка отклоняет базовый адрес API без HTTPS. |
+| Безопасность адреса API | Адреса обратной петли и эмулятора отклоняются в релизной сборке. |
+| Обход через автономный режим | `AVELI_STANDALONE` отклоняется проверкой релизной конфигурации. |
+| Данные сессии | Хранятся в `flutter_secure_storage`. |
+| Снимок состояния доступа | Хранится в защищённом хранилище отдельно для каждого пользователя. |
+| Изоляция локального рабочего пространства | Отдельный `aveli_<userId>.sqlite` для каждого пользователя. |
+| Изоляция фотографий визитов | Отдельный корневой каталог файлов для каждого пользователя. |
+| Ключи RevenueCat | В конфигурации клиента находятся только публичные ключи мобильного SDK. |
+| Секреты бэкенда | Не входят в конфигурацию клиента. |
+| Журналирование токенов | В подтверждённом сценарии аутентификации нет намеренного `debugPrint` токенов. |
+| Выход | Отменяет напоминания, очищает защищённые данные доступа и сессии, закрывает БД. |
+| Удаление профиля | Удаляет локальную БД, фотографии, снимок доступа и данные сессии. |
 
-## Release Configuration
+## Релизная конфигурация
 
-Current client dart-defines:
+Текущие параметры `dart-define` клиента:
 
 ```text
 AVELI_API_BASE
@@ -30,32 +30,32 @@ REVENUECAT_ANDROID_API_KEY
 REVENUECAT_ENTITLEMENT_ID
 ```
 
-Default development API base может быть:
+Базовый адрес API по умолчанию в среде разработки может быть:
 
 ```text
 http://10.0.2.2:3000
 ```
 
-но release gate требует ship-safe HTTPS configuration.
+но проверка релизной конфигурации требует безопасной для выпуска конфигурации HTTPS.
 
-## Trust Boundary
+## Граница доверия
 
 ```text
-Client UI state
+Состояние интерфейса клиента
      ≠
-server authorization
+серверное разрешение
 ```
 
-Workspace unlock зависит от server-produced `AccessState` или previously verified secure snapshot в пределах policy.
+Открытие рабочего пространства зависит от полученного от сервера `AccessState` либо от ранее проверенного защищённого снимка состояния в пределах действующей политики.
 
-RevenueCat mobile `CustomerInfo` не final entitlement authority.
+Мобильный `CustomerInfo` RevenueCat не является окончательным источником решения о доступе.
 
-## Open Security Review Items
+## Открытые вопросы проверки безопасности
 
-Current evidence не устанавливает:
+Текущие подтверждения не позволяют установить:
 
-- certificate pinning;
-- root/jailbreak detection;
-- Android backup behavior для SQLite/files.
+- закрепление сертификата;
+- обнаружение прав суперпользователя или признаков джейлбрейка;
+- поведение резервного копирования SQLite и файлов на Android.
 
-Эти пункты остаются open.
+Эти пункты остаются неподтверждёнными.

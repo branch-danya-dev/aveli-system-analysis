@@ -1,95 +1,95 @@
-# Backend Security Controls
+# Меры безопасности бэкенда
 
-## Implemented Controls
+## Реализованные меры
 
-| Concern | Verified Implementation |
+| Аспект | Подтверждённая реализация |
 |---|---|
-| Password storage | Argon2id hash. |
-| Refresh-token storage | Только SHA-256 hash. |
-| Refresh rotation | Old session revokes on use. |
-| Refresh reuse | Reuse revoked token revokes все active user sessions. |
-| Timing leakage | Dummy hash для missing-user failed login. |
-| Access JWT | JWT bearer token + account-status validation. |
-| HTTP headers | `helmet`. |
-| Body validation | Whitelist + reject unknown fields. |
-| Rate limiting | Global + auth-route throttles. |
-| Webhook auth | Exact shared-secret Authorization header. |
-| RevenueCat secret | Server-only REST credential. |
-| Billing trust | Client не может self-declare authoritative entitlement. |
-| Soft delete | Account status deleted + rewrite normalized email. |
+| Хранение паролей | хеш Argon2id. |
+| Хранение токена обновления | Только хеш SHA-256. |
+| Ротация токена обновления | Старая сессия отзывается при использовании. |
+| Повторное использование токена | Повторное использование отозванного токена отзывает все активные сессии пользователя. |
+| Утечка по времени входа | Для отсутствующего пользователя проверяется фиктивный хэш. |
+| JWT доступа | Bearer JWT + проверка состояния аккаунта. |
+| заголовки HTTP | `helmet`. |
+| Валидация тела | Разрешающий список полей + отклонение неизвестных полей. |
+| Ограничение частоты | Глобальный лимит + отдельные лимиты маршрутов аутентификации. |
+| Аутентификация вебхука | Точное значение общего секрета в `Authorization`. |
+| Секрет RevenueCat | Серверные учётные данные REST. |
+| Доверие к биллингу | Клиент не может сам объявить право доступа авторитетным. |
+| Мягкое удаление | Статус аккаунта переводится в `deleted`, нормализованный адрес электронной почты переписывается. |
 
-## Rate Limiting
+## Ограничение частоты запросов
 
-Global:
+Глобально:
 
 ```text
-120 requests / 60 seconds / IP
+120 запросов / 60 секунд / IP
 ```
 
-Auth-specific:
+Маршруты аутентификации:
 
-| Endpoint | Limit |
+| Эндпоинт | Лимит |
 |---|---:|
-| register | 10/min |
-| login | 20/min |
-| refresh | 30/min |
-| forgot-password | 5/min |
-| reset-password | 5/min |
-| delete account | 5/min |
+| Регистрация | 10/мин |
+| Вход | 20/мин |
+| Обновление сессии | 30/мин |
+| Восстановление пароля | 5/мин |
+| Сброс пароля | 5/мин |
+| Удаление аккаунта | 5/мин |
 
-## JWT Account Validation
+## Проверка аккаунта при аутентификации JWT
 
-Authenticated requests не полагаются только на token signature/expiry.
+Аутентифицированный запрос не полагается только на подпись и срок действия токена.
 
-`JwtStrategy` проверяет current backend account:
+`JwtStrategy` дополнительно проверяет:
 
 ```text
 status = active
 ```
 
-## Billing Trust Boundary
+## Граница доверия биллинга
 
 ```text
-Client purchase state
+Состояние покупки на клиенте
       ↓
-not final authority
+не является окончательным источником
 
-Server RevenueCat REST verification
+Проверка RevenueCat REST на сервере
       ↓
-normalized subscription state
+нормализованная подписка
       ↓
-common access decision
+общее решение о доступе
 ```
 
-RevenueCat secret API key остается server-only.
+Секретный ключ API RevenueCat остаётся только на сервере.
 
-## Webhook Trust Boundary
+## Граница доверия вебхука
 
-Webhook request должен передать exact configured authorization header.
+Запрос вебхука должен содержать точное настроенное значение заголовка авторизации.
 
-Webhook payload — external input.
+Полезная нагрузка вебхука считается внешними входными данными.
 
-Event не выдает access напрямую; выполняется RevenueCat REST reconciliation.
+Само событие не выдаёт доступ напрямую: бэкенд сверяет состояние через RevenueCat REST.
 
-## Transport
+## Защита канала
 
-Production client communication должна использовать HTTPS.
+Обмен продакшен-клиента с сервером должен использовать HTTPS.
 
-Source description указывает production HTTPS gate на client side; TLS termination/deployment enforcement belongs to operations и здесь не придумывается.
+В имеющемся описании реализации подтверждена проверка HTTPS на стороне клиента. Детали терминации TLS и контроля на уровне развёртывания относятся к инфраструктуре и здесь не придумываются.
 
-## Not Implemented
+## Не реализовано
 
-Current backend не предоставляет:
+Текущий бэкенд не предоставляет:
 
-- working email verification;
-- working password reset;
+- рабочую проверку электронной почты;
+- рабочий сброс пароля;
 - 2FA;
-- admin HTTP API;
-- audit-log UI.
+- административный HTTP API;
+- пользовательский интерфейс журнала аудита.
 
-## Secrets
+Эти ограничения остаются явными.
 
-Backend-only environment secrets:
+## Серверные секреты
 
 ```text
 JWT_ACCESS_SECRET
@@ -98,4 +98,4 @@ REVENUECAT_SECRET_API_KEY
 REVENUECAT_WEBHOOK_AUTH
 ```
 
-Exact secret-management platform/rotation procedure source не описывает.
+Текущие подтверждения не устанавливают конкретную платформу управления секретами и процедуру их ротации.

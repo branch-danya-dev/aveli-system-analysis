@@ -1,23 +1,23 @@
 # `payments`
 
-> Одна physical payment row на appointment.
+> Не более одной физической строки оплаты на одну запись клиента.
 
-| Column | Type | NULL | Meaning |
+| Столбец | Тип | NULL | Назначение |
 |---|---|---|---|
-| `id` | TEXT | NO | PK. |
-| `appointment_id` | TEXT | NO | FK → `appointments.id`; UNIQUE; ON DELETE CASCADE. |
+| `id` | TEXT | NO | Первичный ключ. |
+| `appointment_id` | TEXT | NO | Внешний ключ → `appointments.id`; `UNIQUE`; `ON DELETE CASCADE`. |
 | `amount` | INTEGER | NO | Сумма к оплате в целых единицах. |
-| `amount_paid` | INTEGER | NO | Оплаченная сумма; default 0; v6. |
+| `amount_paid` | INTEGER | NO | Оплаченная сумма; по умолчанию 0; добавлена в v6. |
 | `status` | TEXT | NO | `PaymentStatus`. |
-| `method` | TEXT | YES | `PaymentMethod`; v3. |
-| `created_at` | DATETIME | NO | Создание. |
-| `paid_at` | DATETIME | YES | Время полной/частичной оплаты; v6. |
+| `method` | TEXT | YES | `PaymentMethod`; добавлен в v3. |
+| `created_at` | DATETIME | NO | Время создания. |
+| `paid_at` | DATETIME | YES | Время полной или частичной оплаты; добавлено в v6. |
 
-## Invariant
+## Инвариант
 
-`UNIQUE(appointment_id)` гарантирует максимум одну payment row на appointment.
+`UNIQUE(appointment_id)` гарантирует не более одной строки оплаты для одной записи.
 
-Partial payment хранится в той же строке:
+Частичная оплата хранится в этой же строке:
 
 ```text
 amount
@@ -25,4 +25,4 @@ amount_paid
 status = partial
 ```
 
-`appointments.payment_status` — намеренная агрегированная копия для UI-oriented reads.
+`appointments.payment_status` — намеренная агрегированная копия состояния оплаты для чтения интерфейсом.

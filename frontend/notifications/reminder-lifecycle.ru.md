@@ -1,6 +1,6 @@
-# Visit Reminder Lifecycle
+# Жизненный цикл напоминаний о визитах
 
-## Technology
+## Технология
 
 ```text
 flutter_local_notifications
@@ -8,49 +8,49 @@ timezone
 flutter_timezone
 ```
 
-Scheduler:
+Планировщик:
 
 ```text
 LocalVisitReminderScheduler
 ```
 
-Initialization lazy через `ensureInitialized()`.
+Инициализация выполняется лениво через `ensureInitialized()`.
 
-## Configuration
+## Конфигурация
 
-Android channel:
+Канал Android:
 
 ```text
 aveli_visit_reminders_sakura
 ```
 
-Default lead:
+Интервал по умолчанию:
 
 ```text
 1 hour before startsAt
 ```
 
-Payload:
+Полезная нагрузка:
 
 ```text
 appointmentId
 ```
 
-Notification id derived из appointment id через FNV-style hash.
+Идентификатор уведомления вычисляется из идентификатора записи через хеш в стиле FNV.
 
-## Lifecycle
+## Жизненный цикл
 
-- create/reschedule → schedule/update reminder;
-- complete/cancel/delete → cancel reminder;
-- app shell startup/resume → rebuild upcoming reminders;
-- logout → cancel all reminders.
+- создание или перенос записи → создать либо обновить напоминание;
+- завершение, отмена или удаление → отменить напоминание;
+- запуск оболочки приложения или возврат на передний план → перестроить будущие напоминания;
+- выход → отменить все напоминания.
 
-Startup rebuild использует `VisitReminderService.syncUpcoming`: cancelAll + reschedule upcoming.
+При запуске `VisitReminderService.syncUpcoming` сначала отменяет все напоминания, а затем заново планирует актуальные будущие.
 
-## Navigation
+## Навигация
 
-Cold-start notification launch details → `pendingReminderAppointmentIdProvider` → `AppShell` → `/appointments/:id`.
+При холодном запуске из уведомления переход выполняется через `pendingReminderAppointmentIdProvider` → `AppShell` → `/appointments/:id`.
 
-## Open Question
+## Открытый вопрос
 
-Explicit reboot-time rescheduling без следующего app resume current source evidence не подтверждает.
+Явное восстановление расписания уведомлений сразу после перезагрузки устройства текущими исходными материалами не подтверждено; гарантированный путь проходит через следующий запуск или возврат приложения.

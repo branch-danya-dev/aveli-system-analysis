@@ -1,6 +1,6 @@
-# RevenueCat Identity Mapping
+# Сопоставление идентификаторов RevenueCat
 
-## Canonical Chain
+## Каноническая цепочка
 
 ```text
 PostgreSQL users.id (UUID)
@@ -14,44 +14,44 @@ PostgreSQL users.id (UUID)
   → subscriptions.user_id
 ```
 
-Aveli server UUID — cross-system identity anchor.
+Серверный UUID Aveli — основной межсистемный идентификатор пользователя.
 
-## Login Timing
+## Момент авторизации
 
-RevenueCat login выполняется после activation authenticated user workspace.
+Авторизация RevenueCat выполняется после аутентификации пользователя и активации его рабочего пространства.
 
-## Logout / Account Switch
+## Выход и смена учётной записи
 
-Current client:
+Текущий клиент:
 
 ```text
 RevenueCat logOut
   ↓
-clear Aveli session
+очистить сессию Aveli
   ↓
-close current DB
+закрыть текущую БД
   ↓
-new Aveli login
+новый вход в Aveli
   ↓
 RevenueCat logIn(newUserId)
 ```
 
-## Server Protection
+## Серверная защита
 
-Billing sync всегда использует authenticated JWT `userId` для RevenueCat lookup.
+Синхронизация биллинга всегда использует `userId` из аутентифицированного JWT для поиска пользователя в RevenueCat.
 
-Client не может выбрать другой RevenueCat account id для sync endpoint.
+Клиент не может передать другой идентификатор учётной записи RevenueCat в конечную точку синхронизации.
 
-## Webhook Protection
+## Защита вебхука
 
-`app_user_id` должен соответствовать expected UUID format до reconciliation.
+`app_user_id` должен соответствовать ожидаемому формату UUID до сверки состояния.
 
-## Open Provider Semantics
+## Неподтверждённая семантика провайдера
 
-Repository не подтверждает:
+Репозиторий не подтверждает:
 
-- RevenueCat anonymous-to-identified merge details;
-- dashboard alias/transfer behavior;
-- provider-side customer transfer rules.
+- детали объединения анонимного и идентифицированного пользователя RevenueCat;
+- поведение псевдонимов и переноса в панели RevenueCat;
+- правила переноса пользователя на стороне провайдера.
 
-Они остаются OPEN до RevenueCat dashboard evidence.
+Они остаются неподтверждёнными до получения данных из панели RevenueCat.

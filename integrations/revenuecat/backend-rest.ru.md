@@ -1,8 +1,8 @@
-# RevenueCat — Backend REST Boundary
+# RevenueCat — граница REST API бэкенда
 
-## Gateway
+## Шлюз
 
-Backend files:
+Файлы бэкенда:
 
 ```text
 backend/src/billing/revenuecat/revenuecat.gateway.ts
@@ -10,59 +10,59 @@ backend/src/billing/revenuecat/revenuecat.mapper.ts
 backend/src/billing/subscription-sync.service.ts
 ```
 
-## Endpoint
+## Конечная точка
 
-Base:
+Базовый адрес:
 
 ```text
 REVENUECAT_API_BASE
-default: https://api.revenuecat.com
+по умолчанию: https://api.revenuecat.com
 ```
 
-Lookup:
+Запрос:
 
 ```http
 GET /v1/subscribers/{app_user_id}
 Authorization: Bearer <REVENUECAT_SECRET_API_KEY>
 ```
 
-`app_user_id` — authenticated Aveli user UUID.
+`app_user_id` — UUID аутентифицированного пользователя Aveli.
 
-Client не передает отдельный RevenueCat id в billing sync.
+Клиент не передаёт отдельный идентификатор RevenueCat при синхронизации биллинга.
 
-## Result Classification
+## Классификация результата
 
-| RevenueCat result | Backend meaning |
+| Результат RevenueCat | Значение для бэкенда |
 |---|---|
-| HTTP 200 | `ok` → map subscriber в normalized snapshot. |
+| HTTP 200 | `ok` → преобразовать данные подписчика в нормализованный снимок. |
 | HTTP 404 | `not_found`. |
-| missing secret / network error / other non-OK | `unavailable`. |
+| отсутствует секрет / ошибка сети / другой ответ со статусом, отличным от OK | `unavailable`. |
 
-Verified implementation не имеет explicit gateway retry и explicit fetch timeout.
+В подтверждённой реализации нет явной повторной попытки шлюза и явно заданного тайм-аута запроса.
 
-## Entitlement
+## Право доступа
 
-Mapper читает:
+Преобразователь читает:
 
 ```text
 subscriber.entitlements[support]
 ```
 
-Canonical entitlement:
+Каноническое право доступа:
 
 ```text
 support
 ```
 
-## Reconciliation
+## Сверка состояния
 
 ### `ok`
 
-Map provider state + upsert normalized subscription state.
+Преобразовать состояние провайдера и обновить либо создать нормализованную запись подписки.
 
 ### `not_found`
 
-Upsert:
+Операция обновления или вставки:
 
 ```text
 status = expired
@@ -70,22 +70,22 @@ status = expired
 
 ### `unavailable`
 
-Fail closed:
+При отказе доступ не расширяется:
 
 ```text
 502 BILLING_SYNC_FAILED
 ```
 
-Новый upsert не выполняется.
+Новая операция обновления или вставки не выполняется.
 
-Prior persisted subscription row может остаться в PostgreSQL до successful reconciliation; failed sync не сообщает его как freshly verified.
+Ранее сохранённая строка подписки может оставаться в PostgreSQL до успешной сверки; неудачная синхронизация не помечает её как заново подтверждённую.
 
-## Authority Boundary
+## Граница полномочий
 
-RevenueCat REST дает provider subscription evidence.
+REST API RevenueCat предоставляет подтверждение состояния подписки со стороны провайдера.
 
-Aveli backend после reconciliation выполняет common access decision.
+После сверки бэкенд Aveli выполняет общий алгоритм определения доступа.
 
-Backend-local implementation:
+Локальная реализация бэкенда:
 
 [`../../backend/billing/subscription-sync.ru.md`](../../backend/billing/subscription-sync.ru.md)

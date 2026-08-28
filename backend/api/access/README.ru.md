@@ -1,11 +1,11 @@
-# Access API
+# API доступа
 
-> Canonical HTTP contract effective workspace-access state.
+> Канонический контракт HTTP итогового состояния доступа к рабочему пространству.
 
-## Навигация
+Основной контракт:
 
-- [`contracts.ru.md`](contracts.ru.md)
+[`contracts.ru.md`](contracts.ru.md)
 
-Internal decision algorithm:
+Внутренний алгоритм определения доступа:
 
-[`../../access/`](../../access/)
+[`../../access/access-resolution.ru.md`](../../access/access-resolution.ru.md)

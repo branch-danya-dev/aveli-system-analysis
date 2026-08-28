@@ -1,12 +1,12 @@
-# Server Persistence
+# Серверное хранение
 
-> Проверенный PostgreSQL persistence, принадлежащий Aveli backend.
+> Проверенная модель хранения PostgreSQL, принадлежащая бэкенду Aveli.
 
 ## Назначение
 
-`server/` описывает physical persistence для identity, sessions, access grants, subscription state и subscription-event processing.
+`server/` описывает физическое хранение идентификации, сессий, прав доступа, состояния подписки и событий подписки.
 
-Текущие physical tables:
+Текущие физические таблицы:
 
 ```text
 users
@@ -16,18 +16,18 @@ subscriptions
 subscription_events
 ```
 
-Backend не хранит professional workspace clients, services, appointments, payments, notes или photos.
+Бэкенд не хранит клиентов, услуги, записи, оплаты, заметки или фотографии профессионального рабочего пространства.
 
 ## Навигация
 
 | Область | Ответственность |
 |---|---|
-| `schema/` | PostgreSQL physical schema и relationships. |
-| `entities/` | Table-level documentation. |
-| `constraints/` | Cross-table и product-critical database invariants. |
-| `migrations/` | История Prisma/PostgreSQL migrations. |
+| `schema/` | Физическая схема PostgreSQL и связи. |
+| `entities/` | Описание таблиц. |
+| `constraints/` | Межтабличные и критичные для продукта инварианты базы данных. |
+| `migrations/` | История миграций Prisma/PostgreSQL. |
 
-## Проверенные implementation sources
+## Проверенные источники реализации
 
 - `backend/prisma/schema.prisma`
 - `backend/prisma/migrations/`

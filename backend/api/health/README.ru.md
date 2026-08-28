@@ -1,7 +1,5 @@
-# Health API
+# API проверки состояния
 
-> Unversioned liveness и readiness contracts.
+> Неверсионируемые контракты проверки доступности процесса и готовности сервиса.
 
-## Навигация
-
-- [`contracts.ru.md`](contracts.ru.md)
+Подробности: [`contracts.ru.md`](contracts.ru.md)

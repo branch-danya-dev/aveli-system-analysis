@@ -1,6 +1,6 @@
-# Frontend Security
+# Безопасность фронтенда
 
-> Client-side trust, release, secret, persistence и account-isolation controls.
+> Клиентские меры доверия, релизной безопасности, хранения секретов, сохранности данных и изоляции учётных записей.
 
 ## Навигация
 

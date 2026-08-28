@@ -1,20 +1,20 @@
-# RevenueCat — Mobile SDK Boundary
+# RevenueCat — граница мобильного SDK
 
-## Technology
+## Технология
 
 ```text
 purchases_flutter 10.9.1
 ```
 
-Main client class:
+Основной клиентский класс:
 
 ```text
 RevenueCatPurchaseService
 ```
 
-## Initialization
+## Инициализация
 
-RevenueCat configuration lazy.
+RevenueCat настраивается лениво.
 
 `ensureConfigured()` вызывается при первом:
 
@@ -26,15 +26,15 @@ restore
 refreshCustomerInfo
 ```
 
-Cold-start bootstrap не выполняет eager initialization.
+При холодном запуске начальная инициализация не выполняет предварительную настройку RevenueCat.
 
-Если обе platform public keys пусты, frontend использует:
+Если публичные ключи обеих платформ не заданы, фронтенд использует:
 
 ```text
 NoopPurchaseService
 ```
 
-## Public Configuration
+## Публичная конфигурация
 
 ```text
 REVENUECAT_IOS_API_KEY
@@ -42,78 +42,78 @@ REVENUECAT_ANDROID_API_KEY
 REVENUECAT_ENTITLEMENT_ID
 ```
 
-Default entitlement:
+Право доступа по умолчанию:
 
 ```text
 support
 ```
 
-Mobile SDK keys — public application configuration, не backend secrets.
+Ключи мобильного SDK — публичная конфигурация приложения, а не секреты бэкенда.
 
-## Offerings and Products
+## Предложения и продукты
 
-Production product ids не hardcoded во Flutter.
+Идентификаторы производственных продуктов не зашиты во Flutter.
 
-Client загружает:
+Клиент загружает:
 
 ```text
 Purchases.getOfferings()
 → current.availablePackages
 ```
 
-Monthly/annual presentation выводится из RevenueCat package/product metadata.
+Отображение месячного и годового вариантов формируется из метаданных пакета и продукта RevenueCat.
 
-Authoritative store price отображается из provider product data:
+Актуальная цена магазина отображается из данных продукта, полученных от провайдера:
 
 ```text
 storeProduct.priceString
 storeProduct.price
 ```
 
-## Purchase Flow
+## Сценарий покупки
 
 ```text
-Paywall
+Экран подписки
   ↓
 Purchases.purchase(...)
   ↓
-CustomerInfo / purchase outcome
+CustomerInfo / результат покупки
   ↓
 AccessController.syncBilling
   ↓
 POST /v1/billing/sync
   ↓
-Backend AccessStatusView
+серверный AccessStatusView
 ```
 
-RevenueCat client entitlement state сам по себе не unlocks workspace.
+Клиентское состояние права доступа RevenueCat само по себе не открывает рабочее пространство.
 
-## Restore Flow
+## Сценарий восстановления
 
 ```text
 Purchases.restorePurchases()
   ↓
 syncBilling
   ↓
-backend access state
+серверное состояние доступа
 ```
 
-## Resume Behavior
+## Поведение при возврате приложения
 
-Global `addCustomerInfoUpdateListener` отсутствует.
+Глобальный `addCustomerInfoUpdateListener` не используется.
 
-На app resume frontend явно refreshes RevenueCat customer info и затем refreshes/synchronizes access.
+При возвращении приложения на передний план фронтенд явно обновляет данные пользователя RevenueCat, а затем обновляет или синхронизирует доступ.
 
-## Verified Outcome States
+## Подтверждённые состояния результата
 
 ```text
-success
-cancelled
-pending
-error
-unavailable
+успех
+отменено (`cancelled`)
+ожидание (`pending`)
+ошибка
+недоступно
 ```
 
-Component implementation:
+Реализация компонента:
 
 [`../../frontend/billing/purchase-flow.ru.md`](../../frontend/billing/purchase-flow.ru.md)

@@ -1,4 +1,4 @@
-# Server Entities
+# Серверные сущности
 
 - [`users.ru.md`](users.ru.md)
 - [`auth_sessions.ru.md`](auth_sessions.ru.md)

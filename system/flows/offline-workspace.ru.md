@@ -1,73 +1,75 @@
-# Offline Workspace Operation
+# Работа рабочего пространства без сети
 
-## Principle
+## Принцип
 
 Aveli разделяет:
 
 ```text
-workspace availability
-from
-continuous backend availability
+доступность рабочего пространства
+отделена от
+постоянной доступности бэкенда
 ```
 
-Normal professional work использует local persistence.
+Обычная профессиональная работа опирается на локальное хранение и не требует постоянной доступности бэкенда.
 
-## Local Operations
+## Локальные операции
 
-При открытом workspace normal operations используют:
+При открытом рабочем пространстве обычные операции используют:
 
 ```text
 SQLite
-local files
-local reminders
-local settings
+локальные файлы
+локальные напоминания
+локальные настройки
 ```
 
-без continuous sync professional data в backend.
+без постоянной синхронизации профессиональных данных с бэкендом.
 
-## Access Trust
+## Доверие к состоянию доступа
 
-Client может сохранять verified `AccessState` в secure storage.
+Клиент может сохранять проверенный `AccessState` в защищённом хранилище.
 
-При unavailable backend/network:
+Если бэкенд или сеть недоступны:
 
 ```text
-valid trusted snapshot
-→ workspace доступен в пределах policy
+действующий доверенный снимок
+→ рабочее пространство доступно в пределах политики
 
-missing / expired verification
-→ needsNetwork
+проверка отсутствует / устарела
+→ требуется сеть (`needsNetwork`)
 ```
 
-Server `nextVerificationRequiredAt` preferred.
+Если сервер вернул `nextVerificationRequiredAt`, этот срок имеет приоритет.
 
-Current client также содержит 72-hour default policy fallback.
+В текущем клиенте также существует резервное значение по умолчанию — 72 часа, когда явный серверный срок отсутствует и политика допускает такую проверку.
 
-Это implementation default, не permanent business constant.
+Это деталь реализации, а не постоянная бизнес-константа.
 
-## Network Recovery
+## Восстановление после появления сети
 
-Recovery:
+Повторная проверка может запускаться через:
 
 ```text
-user retry
-app resume
-billing sync
-access refresh
+повторная попытка пользователя
+возврат приложения в активное состояние
+сверка биллинга
+обновление доступа
 ```
 
-## Critical Separation
+## Критическое разделение
 
 ```text
-Network unavailable
+Сеть недоступна
 ≠
-professional workspace erased
+профессиональное рабочее пространство удалено
 
-Access verification expired
+Срок проверки доступа истёк
 ≠
-professional workspace erased
+профессиональное рабочее пространство удалено
 ```
 
-Canonical:
+Недоступность сети или истечение срока проверки доступа не удаляют профессиональные данные.
+
+Каноническое описание клиентского поведения:
 
 [`../../frontend/offline/`](../../frontend/offline/)

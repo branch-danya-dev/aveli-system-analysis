@@ -1,14 +1,30 @@
-# Backend Stack
+# Стек бэкенда
 
-> Canonical runtime technology knowledge Aveli backend.
+> Каноническое описание технологий, используемых бэкендом Aveli.
 
-| Technology | Role | Canonical |
+## Текущий стек
+
+| Технология | Роль | Каноническое описание |
 |---|---|---|
-| NestJS 11.x | Application/module/HTTP framework | [`nestjs/`](nestjs/) |
-| REST/JSON | HTTP style | [`rest-api/`](rest-api/) |
-| JWT + passport-jwt | Access-token auth | [`jwt/`](jwt/) |
-| Argon2id | Password hashing | [`argon2id/`](argon2id/) |
-| Prisma 6.19 | Backend data-access/migration | [`prisma/`](prisma/) |
-| PostgreSQL | Server storage engine | [`../../database/stack/postgresql/`](../../database/stack/postgresql/) |
+| NestJS 11.x | Фреймворк приложения, модулей и HTTP | [`nestjs/`](nestjs/) |
+| REST/JSON | Архитектурный стиль интерфейса HTTP | [`rest-api/`](rest-api/) |
+| JWT + passport-jwt | Аутентификация по токену доступа | [`jwt/`](jwt/) |
+| Argon2id | Хэширование паролей | [`argon2id/`](argon2id/) |
+| Prisma 6.19 | Доступ к данным и миграции бэкенда | [`prisma/`](prisma/) |
+| PostgreSQL | Серверный движок хранения | [`../../database/stack/postgresql/`](../../database/stack/postgresql/) |
 
-Prisma canonical в backend; PostgreSQL canonical в database.
+Вспомогательные библиотеки, например `class-validator`, `@nestjs/throttler` и `helmet`, описываются в тех разделах, где важно их конкретное поведение.
+
+## Граница владения
+
+```text
+Prisma
+→ доступ к данным во время выполнения бэкенда
+→ backend/stack/prisma/
+
+PostgreSQL
+→ физический движок хранения
+→ database/stack/postgresql/
+```
+
+Так технология доступа к данным не смешивается с владением самой СУБД.

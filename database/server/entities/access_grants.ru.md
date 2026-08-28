@@ -1,21 +1,21 @@
 # `access_grants`
 
-> Persisted non-subscription access grants.
+> Сохранённые права доступа, не связанные напрямую с подпиской.
 
-| Field | Type | Meaning |
+| Поле | Тип | Назначение |
 |---|---|---|
-| `id` | UUID PK | Идентификатор grant. |
-| `user_id` | UUID FK | Owning user; ON DELETE CASCADE. |
-| `type` | AccessGrantType | `trial`, `lifetime`, `manual_temporary`. |
-| `source` | AccessGrantSource | Источник grant: `registration`, `admin`, `support`. |
-| `starts_at` | TIMESTAMPTZ | Начало validity window. |
-| `ends_at` | TIMESTAMPTZ nullable | Конец validity; NULL только для lifetime. |
-| `revoked_at` | TIMESTAMPTZ nullable | Время досрочного revoke. |
+| `id` | UUID PK | Идентификатор права доступа. |
+| `user_id` | UUID FK | Пользователь-владелец; ON DELETE CASCADE. |
+| `type` | `AccessGrantType` | `trial`, `lifetime`, `manual_temporary`. |
+| `source` | `AccessGrantSource` | Источник: `registration`, `admin`, `support`. |
+| `starts_at` | TIMESTAMPTZ | Начало срока действия. |
+| `ends_at` | TIMESTAMPTZ, допускает NULL | Конец срока действия; NULL только для пожизненного доступа. |
+| `revoked_at` | TIMESTAMPTZ, допускает NULL | Время досрочного отзыва. |
 | `created_at` | TIMESTAMPTZ | Время создания. |
-| `created_by` | TEXT nullable | Admin identifier / причина создания. |
-| `note` | TEXT nullable | Дополнительный комментарий. |
+| `created_by` | TEXT, допускает NULL | Идентификатор администратора или причина создания. |
+| `note` | TEXT, допускает NULL | Дополнительный комментарий. |
 
-## Constraints
+## Ограничения
 
 ```text
 ends_at IS NULL OR ends_at > starts_at
@@ -23,7 +23,7 @@ lifetime               → ends_at IS NULL
 trial/manual_temporary → ends_at IS NOT NULL
 ```
 
-Partial UNIQUE index:
+Частичный уникальный индекс:
 
 ```sql
 CREATE UNIQUE INDEX access_grants_one_registration_trial_per_user
@@ -31,7 +31,7 @@ CREATE UNIQUE INDEX access_grants_one_registration_trial_per_user
   WHERE type = 'trial' AND source = 'registration';
 ```
 
-Он не позволяет создать вторую registration-trial row для того же user даже после revoke.
+Он не позволяет создать второй регистрационный пробный период для того же пользователя даже после отзыва предыдущего.
 
 ## Индексы
 
@@ -40,11 +40,11 @@ user_id
 (type, source)
 ```
 
-Partial UNIQUE registration-trial index описан отдельно выше.
+Частичный уникальный индекс регистрационного пробного периода описан отдельно выше.
 
-## Создание Registration Trial
+## Создание регистрационного пробного периода
 
-Текущая implementation создает registration trial при `register`:
+Текущая реализация создаёт регистрационный пробный период при `register`:
 
 ```text
 startsAt = now
@@ -52,7 +52,7 @@ endsAt   = now + TRIAL_DAYS
 note     = 'registration trial'
 ```
 
-`TRIAL_DAYS` задается environment configuration и сейчас имеет default 30 дней.
+`TRIAL_DAYS` задаётся через конфигурацию окружения и сейчас по умолчанию равен 30 дням.
 
 ## Связанная документация
 

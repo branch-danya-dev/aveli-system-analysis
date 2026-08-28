@@ -1,14 +1,14 @@
-# Aveli — Release Readiness
+# Aveli — готовность к релизу
 
-> Cross-system production-release constraints, сохраненные из legacy security/release documentation.
+> Межсистемные ограничения производственного релиза, сохранённые из прежней документации по безопасности и выпуску.
 
 ## Назначение
 
-Документ дает **единый system-level release-readiness view** для mobile client, backend, databases и billing integration.
+Документ даёт **единое системное представление готовности к релизу** для мобильного клиента, бэкенда, баз данных и биллинговой интеграции.
 
-Он не заменяет component-specific configuration/security documentation.
+Он не заменяет документацию по конфигурации и безопасности отдельных компонентов.
 
-Canonical implementation owners:
+Канонические владельцы реализации:
 
 - [`../../frontend/security/`](../../frontend/security/)
 - [`../../backend/security/`](../../backend/security/)
@@ -16,37 +16,37 @@ Canonical implementation owners:
 - [`../../database/`](../../database/)
 - [`../../integrations/`](../../integrations/)
 
-Задача — убедиться, что individually correct components также aligned как одна production system.
+Задача — убедиться, что корректные по отдельности компоненты согласованы как единая производственная система.
 
 ---
 
-## Release Principle
+## Принцип релиза
 
 ```text
-Development Configuration
+Конфигурация разработки
         ↓
-Release Validation
+Проверка релиза
         ↓
-Production-Safe Configuration
+Безопасная производственная конфигурация
 ```
 
-Production build не должен зависеть от development-only behavior.
+Производственная сборка не должна зависеть от поведения, предназначенного только для разработки.
 
-Unsafe mandatory configuration должна fail до shipping, а не становиться runtime failure у пользователя.
+Некорректная обязательная конфигурация должна блокировать выпуск до доставки пользователю, а не превращаться в отказ во время работы.
 
 ---
 
-## 1. Mobile API Configuration
+## 1. Конфигурация API мобильного клиента
 
-Production client communication должен использовать valid HTTPS backend endpoint.
+Производственный клиент должен обращаться к корректной конечной точке HTTPS бэкенда.
 
-Expected:
+Ожидается:
 
 ```text
 https://...
 ```
 
-Release configuration должна reject development endpoints:
+Релизная конфигурация должна отклонять адреса среды разработки:
 
 ```text
 http://...
@@ -55,55 +55,55 @@ localhost
 10.0.2.2
 ```
 
-Production не должен зависеть от emulator/loopback routing.
+Производственная версия не должна зависеть от адресов эмулятора или локального сетевого контура.
 
-Canonical:
+Каноническое описание клиентской защиты:
 
 [`../../frontend/security/`](../../frontend/security/)
 
 ---
 
-## 2. Standalone Mode
+## 2. Автономный режим разработки
 
-Development-only standalone behavior:
+Режим:
 
 ```text
 AVELI_STANDALONE
 ```
 
-не должен быть enabled в production.
+предназначен только для разработки и не должен быть включён в производственной версии.
 
-Expected:
+Ожидается:
 
 ```text
-Release Build
+Релизная сборка
      ↓
-AVELI_STANDALONE = disabled
+AVELI_STANDALONE = отключён
 ```
 
-Если standalone enabled для production release, validation должна fail.
+Если этот режим включён для производственного релиза, проверка конфигурации должна завершаться ошибкой.
 
 ---
 
-## 3. Debug Seed
+## 3. Демонстрационные данные
 
-Development/demo seed:
+Настройка:
 
 ```text
 AVELI_DEBUG_SEED
 ```
 
-не должен silently initialize demo workspace data в production.
+не должна незаметно создавать демонстрационные данные рабочего пространства в производственной версии.
 
-Production release config держит debug/demo seed disabled.
+Производственная конфигурация должна отключать отладочное заполнение данными.
 
 ---
 
-## 4. RevenueCat Mobile Configuration
+## 4. Мобильная конфигурация RevenueCat
 
-Production billing требует correct public SDK configuration target platform.
+Производственный биллинг требует корректной публичной конфигурации SDK целевой платформы.
 
-Current client settings:
+Текущие параметры клиента:
 
 ```text
 REVENUECAT_ANDROID_API_KEY
@@ -111,304 +111,306 @@ REVENUECAT_IOS_API_KEY
 REVENUECAT_ENTITLEMENT_ID
 ```
 
-Expected entitlement:
+Ожидаемое право доступа:
 
 ```text
 support
 ```
 
-Public RevenueCat mobile keys могут находиться в mobile client.
+Публичные мобильные ключи RevenueCat могут находиться в мобильном клиенте.
 
-RevenueCat server secrets — нет.
+Серверные секреты RevenueCat в клиент попадать не должны.
 
-Canonical:
+Каноническая интеграция:
 
 [`../../integrations/revenuecat/`](../../integrations/revenuecat/)
 
 ---
 
-## 5. Backend Secrets
+## 5. Секреты бэкенда
 
-Server-only configuration:
+К конфигурации только на стороне сервера относятся:
 
 ```text
-database credentials
-JWT signing secrets
-RevenueCat server credentials
-webhook authentication secrets
-other server integration secrets
+учётные данные базы данных
+секреты подписи JWT
+серверные учётные данные RevenueCat
+секрет аутентификации вебхука
+другие секреты серверных интеграций
 ```
 
-Values должны приходить из backend runtime environment, а не mobile build config или hardcoded public source.
+Эти значения должны поступать из окружения бэкенда во время выполнения, а не из конфигурации мобильной сборки и не из жёстко заданных значений в публичном репозитории.
 
 ---
 
-## 6. Client Build-Time Configuration
+## 6. Параметры клиентской сборки
 
-Release-relevant client settings:
+Настройки клиента, значимые для релиза:
 
-| Setting | Purpose |
+| Настройка | Назначение |
 |---|---|
-| `AVELI_API_BASE` | Backend API URL. |
-| `REVENUECAT_ANDROID_API_KEY` | Android RevenueCat public SDK key. |
-| `REVENUECAT_IOS_API_KEY` | iOS RevenueCat public SDK key. |
-| `REVENUECAT_ENTITLEMENT_ID` | Expected RevenueCat entitlement. |
-| `AVELI_STANDALONE` | Development-only standalone mode. |
-| `AVELI_DEBUG_SEED` | Development/demo seed behavior. |
+| `AVELI_API_BASE` | URL API бэкенда. |
+| `REVENUECAT_ANDROID_API_KEY` | Публичный ключ SDK RevenueCat для Android. |
+| `REVENUECAT_IOS_API_KEY` | Публичный ключ SDK RevenueCat для iOS. |
+| `REVENUECAT_ENTITLEMENT_ID` | Ожидаемое право доступа RevenueCat. |
+| `AVELI_STANDALONE` | Автономный режим только для разработки. |
+| `AVELI_DEBUG_SEED` | Отладочное заполнение демонстрационными данными. |
 
-Production behavior должно определяться explicit production config, а не accidental development defaults.
+Производственное поведение должно определяться явной конфигурацией для производственной среды, а не случайно унаследованными настройками разработки.
 
 ---
 
-## 7. Release Configuration Gate
+## 7. Проверка релизной конфигурации
 
-Release gate проверяет production-critical conditions:
+Проверка должна контролировать критичные для производственной версии условия:
 
 ```text
-API uses HTTPS
+API использует HTTPS
         +
-API is not emulator / loopback
+API не указывает на эмулятор или loopback-адрес
         +
-Standalone mode disabled
+автономный режим отключён
         +
-Required billing configuration present
+необходимая конфигурация биллинга задана
 ```
 
-Mandatory release-safety failures должны stop release process.
+Ошибки, делающие релиз небезопасным или неработоспособным, должны останавливать процесс выпуска.
 
 ---
 
-## 8. Validation Pipeline
+## 8. Конвейер проверки
 
-Legacy release model ожидает automated validation.
+Предыдущая модель релиза предполагает автоматизированную проверку.
 
-Conceptually:
+Концептуально:
 
 ```text
-Source
+Исходный код
   ↓
-Analyze
+Статический анализ
   ↓
-Tests
+Тесты
   ↓
-Release Configuration Gate
+Проверка конфигурации релиза
   ↓
-Build / Ship
+Сборка / выпуск
 ```
 
-Exact current CI implementation нужно отдельно verify во время final polish.
+Точную текущую реализацию CI необходимо подтверждать отдельно для конкретного релиза.
 
-Этот документ сохраняет required release behavior, а не утверждает без evidence, что каждая pipeline step уже существует.
+Этот документ фиксирует требуемое поведение выпуска, но без подтверждений не утверждает, что каждый шаг конвейера уже реализован.
 
 ---
 
-## 9. Android Release
+## 9. Релиз Android
 
-Production package:
+Идентификатор производственного пакета:
 
 ```text
 com.aveli.aveli
 ```
 
-Release signing требует production signing configuration.
+Для производственной сборки требуется корректная конфигурация подписи.
 
-Signing credentials должны оставаться вне normal public source control.
+Учётные данные подписи должны находиться вне обычного публичного репозитория исходного кода.
 
-Typical local/CI setup может использовать:
+Типичная локальная или настройка CI может использовать:
 
 ```text
 key.properties
 ```
 
-для references на credentials, а не embed secret values в tracked source.
+для ссылок на учётные данные, а не для встраивания секретных значений в отслеживаемые исходники.
 
-Canonical:
+Канонические сведения о платформе:
 
 [`../../integrations/google-play/`](../../integrations/google-play/)
 
 ---
 
-## 10. iOS Release
+## 10. Релиз iOS
 
-Production iOS release требует production-safe:
+Производственный релиз iOS требует корректной конфигурации:
 
 ```text
-bundle configuration
-signing identity
-provisioning configuration
-RevenueCat iOS public key
-HTTPS API endpoint
+конфигурация пакета приложения
+идентификатор подписи
+конфигурация профилей подготовки
+публичный ключ RevenueCat для iOS
+конечная точка API по HTTPS
 ```
 
-Development endpoints не должны попадать в production scheme/config.
+Адреса среды разработки не должны попадать в производственную схему или конфигурацию сборки.
 
-Canonical:
+Канонические сведения о платформе:
 
 [`../../integrations/app-store/`](../../integrations/app-store/)
 
 ---
 
-## 11. Backend Release Environment
+## 11. Производственное окружение бэкенда
 
-Production backend требует runtime config:
+Для производственной работы бэкенду требуются:
 
 ```text
-PostgreSQL connection
-authentication/JWT secrets
-RevenueCat server credentials
-webhook authentication
-production environment variables
+подключение PostgreSQL
+секреты аутентификации и JWT
+серверные учётные данные RevenueCat
+аутентификация вебхука
+переменные производственной среды
 ```
 
-Backend не должен зависеть от hardcoded repository credentials.
+Бэкенд не должен зависеть от учётных данных, жёстко записанных в репозитории.
 
 ---
 
-## 12. PostgreSQL / Prisma Migrations
+## 12. Миграции PostgreSQL и Prisma
 
-Backend schema changes применяются deliberately во время deployment.
+Изменения серверной схемы должны применяться управляемо во время развёртывания.
 
 ```text
-Application Version
+Версия приложения
        ↓
-Required Prisma Migrations
+Необходимые миграции Prisma
        ↓
-Production PostgreSQL
+Производственная PostgreSQL
        ↓
-Backend Start / Serve
+Запуск бэкенда
 ```
 
-Deployed schema должен быть compatible с backend version.
+Развёрнутая схема должна быть совместима с выпускаемой версией бэкенда.
 
-Canonical:
+Канонический владелец миграций:
 
 [`../../database/server/migrations/`](../../database/server/migrations/)
 
 ---
 
-## 13. Local Drift / SQLite Migrations
+## 13. Локальные миграции Drift и SQLite
 
-Mobile update должен сохранять existing professional workspace data.
+Обновление мобильного приложения должно сохранять существующие профессиональные данные пользователя.
 
-Migration safety включает:
+Проверка миграций должна учитывать сохранность:
 
 ```text
-clients
-appointments
-services
-payments
-visit history
+клиенты
+записи
+услуги
+оплаты
+история визитов
 ```
 
-Release не должен заставлять user recreate workspace из-за client DB migration.
+Релиз не должен заставлять пользователя заново создавать рабочее пространство из-за миграции клиентской базы данных.
 
-Canonical:
+Канонический владелец миграций:
 
 [`../../database/local/migrations/`](../../database/local/migrations/)
 
 ---
 
-## 14. Billing Readiness
+## 14. Готовность биллинга
 
-Production subscription access зависит от alignment:
+Производственный доступ по подписке зависит от согласованности нескольких уровней:
 
 ```text
-Store Products
+Продукты магазина
       ↓
-RevenueCat Offerings
+Предложения RevenueCat
       ↓
-support Entitlement
+Право доступа `support`
       ↓
-Aveli Backend Mapping
+Сопоставление на бэкенде Aveli
       ↓
-Client Access Model
+Модель доступа клиента
 ```
 
-Mismatch может дать опасный case:
+Рассогласование может привести к опасному сценарию:
 
 ```text
-Store purchase succeeds
+Покупка в магазине успешна
         ↓
-Aveli access not granted
+Доступ Aveli не предоставлен
 ```
 
-Поэтому billing readiness — **cross-system release concern**, а не только mobile/store configuration.
+Поэтому готовность биллинга — **межсистемный вопрос релиза**, а не только настройка мобильного клиента или магазина.
 
-Production store product ids/base plans должны подтверждаться provider-dashboard evidence, а не test fixtures.
+Идентификаторы продуктов и базовых планов производственной среды должны подтверждаться данными панели провайдера, а не тестовыми фикстурами.
 
 ---
 
-## 15. Environment Separation
+## 15. Разделение сред
 
-Expected:
+Ожидаемая модель:
 
 ```text
-Development
-├── emulator/local API
-├── debug seed
-└── optional standalone
+Разработка
+├── эмулятор / локальный API
+├── тестовое заполнение
+└── необязательный автономный режим
 
-Production
-├── HTTPS API
-├── real billing configuration
-├── production signing
-└── no development bypasses
+Производственная среда
+├── API по HTTPS
+├── реальная конфигурация биллинга
+├── производственная подпись
+└── без обходных механизмов разработки
 ```
 
-Development flexibility не должна превращаться в production ambiguity.
+Гибкость среды разработки не должна превращаться в неопределённость производственной конфигурации.
 
 ---
 
-## 16. Failure Strategy
+## 16. Стратегия обработки ошибочной конфигурации
 
-Preferred:
+Предпочтительно:
 
 ```text
-Invalid Production Configuration
+Некорректная производственная конфигурация
             ↓
-Validation / Build Failure
+Ошибка проверки / сборки
 ```
 
-Avoid:
+Следует избегать:
 
 ```text
-Invalid Production Configuration
+Некорректная производственная конфигурация
             ↓
-Ship
+Выпуск
             ↓
-User discovers runtime failure
+Пользователь сталкивается с ошибкой во время работы
 ```
+
+То есть ошибка обязательной производственной конфигурации должна обнаруживаться до выпуска.
 
 ---
 
-## Release Checklist
+## Чек-лист релиза
 
-Перед production release проверить:
+Перед выпуском производственной версии необходимо проверить:
 
-- production API endpoint использует HTTPS;
-- loopback/emulator API addresses отсутствуют;
-- standalone mode disabled;
-- debug seed disabled;
-- correct platform RevenueCat public config присутствует;
-- entitlement mapping aligned с `support`;
-- backend secrets server-side only;
-- backend runtime environment complete;
-- required PostgreSQL/Prisma migrations готовы/применяются deployment process;
-- Drift/SQLite migrations preserve existing workspace data;
-- Android release signing valid;
-- iOS production signing/provisioning valid;
-- store products, RevenueCat offerings, backend mapping и client Access Gate aligned;
-- required automated validation/tests pass;
-- release configuration gate passes.
+- адрес API производственной среды использует HTTPS;
+- отсутствуют адреса эмулятора и локального контура;
+- `AVELI_STANDALONE` отключён;
+- `AVELI_DEBUG_SEED` отключён;
+- присутствует корректная публичная конфигурация RevenueCat для целевой платформы;
+- сопоставление права доступа остаётся согласовано со значением `support`;
+- серверные секреты остаются только на стороне бэкенда;
+- производственное окружение бэкенда заполнено обязательными параметрами;
+- необходимые миграции PostgreSQL/Prisma готовы и применяются в процессе развёртывания;
+- миграции Drift/SQLite сохраняют существующие данные рабочего пространства;
+- конфигурация подписи Android корректна;
+- конфигурация подписи и профилей подготовки iOS корректна;
+- продукты магазина, предложения RevenueCat, серверное сопоставление и клиентский контур проверки доступа согласованы;
+- необходимые автоматизированные проверки и тесты для выпускаемой версии проходят;
+- проверка релизной конфигурации проходит успешно.
 
 ---
 
-## Final Principle
+## Итоговый принцип
 
 ```text
-Development flexibility
-        must not become
-Production uncertainty
+Гибкость разработки
+        не должна превращаться в
+Неопределённость в производственной среде
 ```
 
-Release readiness system-level, потому что identity, billing, access, persistence и client config должны быть согласованы в момент shipping.
+Готовность к релизу является системным вопросом, потому что идентичность, биллинг, доступ, хранение и конфигурация клиента должны быть согласованы к моменту выпуска.

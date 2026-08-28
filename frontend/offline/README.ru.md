@@ -1,6 +1,6 @@
-# Frontend Offline Behavior
+# Поведение фронтенда без сети
 
-> Client behavior при unavailable или unstable backend/network.
+> Поведение клиента при недоступном или нестабильном бэкенде и сетевом соединении.
 
 ## Навигация
 

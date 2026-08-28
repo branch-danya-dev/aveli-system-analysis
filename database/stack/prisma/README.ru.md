@@ -1,94 +1,94 @@
 # Prisma
 
-> Schema-first ORM, typed database client и migration layer NestJS backend.
+> ORM с описанием схемы, типизированный клиент базы данных и механизм миграций бэкенда NestJS.
 
-## Role
+## Роль
 
-Prisma связывает NestJS services с PostgreSQL:
+Prisma связывает сервисы NestJS с PostgreSQL:
 
 ```text
-NestJS services
+Сервисы NestJS
       ↓
     Prisma
       ↓
  PostgreSQL
 ```
 
-## Current Usage
+## Текущее использование
 
-Backend использует Prisma для:
+Бэкенд использует Prisma для:
 
-- `schema.prisma` как source определения models;
-- typed database access;
-- versioned SQL migrations;
-- enums и relational models;
-- transactions;
-- direct service-level database access через `PrismaService`.
+- `schema.prisma` как источника описания моделей;
+- типизированного доступа к базе данных;
+- версионируемых миграций SQL;
+- перечислений и реляционных моделей;
+- транзакций;
+- прямого доступа к базе данных из сервисов через `PrismaService`.
 
-Типичный usage прямой:
+Типичное использование:
 
 ```text
 this.prisma.accessGrant.findMany(...)
 this.prisma.$transaction(...)
 ```
 
-Отдельного repository abstraction вокруг Prisma в текущем backend нет.
+Отдельного слоя репозиториев вокруг Prisma в текущем бэкенде нет.
 
-Raw SQL используется как исключение, а не основной access path.
+Необработанный SQL используется как исключение, а не как основной способ доступа.
 
-## Почему подходит Aveli
+## Почему Prisma подходит Aveli
 
-Aveli имеет сравнительно небольшой relational backend, где главные engineering needs:
+Aveli имеет сравнительно небольшой реляционный бэкенд, для которого важны:
 
-- schema clarity;
-- typed access;
-- repeatable migrations;
-- low boilerplate;
-- straightforward integration с NestJS services.
+- прозрачная схема;
+- типизированный доступ;
+- воспроизводимые миграции;
+- небольшой объём шаблонного кода;
+- простая интеграция с сервисами NestJS.
 
-Prisma закрывает эти требования без большого custom data-access layer.
+Prisma закрывает эти требования без большого самописного слоя доступа к данным.
 
-## Alternatives
+## Альтернативы
 
-Сопоставимые alternatives:
+Сопоставимые варианты:
 
 - TypeORM;
 - Drizzle;
 - Kysely + `pg`;
-- raw `pg`.
+- прямое использование `pg`.
 
-В repository пока нет historical ADR, подтверждающего их formal evaluation.
+В репозитории нет исторического ADR, подтверждающего формальную оценку этих альтернатив.
 
-## Dependencies
+## Зависимости
 
 Prisma зависит от:
 
-- PostgreSQL schema;
-- Prisma migrations;
-- NestJS services, использующих `PrismaService`;
-- tests/mocks, связанных с Prisma calls.
+- схемы PostgreSQL;
+- миграций Prisma;
+- сервисов NestJS, использующих `PrismaService`;
+- тестов и моков, связанных с вызовами Prisma.
 
-Canonical physical data model:
+Каноническая физическая модель данных:
 
 [`../../server/`](../../server/)
 
-## Replaceability
+## Заменяемость
 
-**Replaceability: medium.**
+**Средняя.**
 
-Замена Prisma при сохранении PostgreSQL и стабильных API contracts в основном затронет backend data-access layer.
+Замена Prisma при сохранении PostgreSQL и стабильных контрактов API в основном затронет серверный слой доступа к данным.
 
 Ожидаемые последствия:
 
-- rewrite direct `this.prisma.*` service calls;
-- conversion migration management;
-- adaptation Prisma-specific tests и mocks;
-- сохранение database constraints и API behavior.
+- переписывание прямых вызовов `this.prisma.*` в сервисах;
+- изменение управления миграциями;
+- адаптация тестов и моков, завязанных на Prisma;
+- сохранение ограничений базы данных и поведения API.
 
-Flutter не должен измениться, если backend API contracts останутся стабильными.
+Flutter не должен измениться, если контракты API бэкенда останутся стабильными.
 
-## Important Boundary
+## Важная граница
 
-Prisma — implementation technology.
+Prisma — технология реализации.
 
-Она не является частью public API contract и не должна проникать в business documentation.
+Она не является частью публичного контракта API и не должна проникать в бизнес-документацию.

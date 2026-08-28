@@ -1,90 +1,75 @@
-# Subscription Synchronization
+# Синхронизация подписки
 
-> Backend reconciliation authenticated Aveli account с RevenueCat REST state.
+> Серверная сверка аутентифицированного аккаунта Aveli с состоянием RevenueCat REST.
 
-## Trigger
+## Запуск
 
-Canonical endpoint:
+Канонический эндпоинт:
 
 ```text
 POST /v1/billing/sync
 ```
 
-Normal client вызывает его после purchase или restore через RevenueCat SDK.
+Обычный клиент вызывает его после покупки или восстановления покупки через RevenueCat SDK.
 
-## Trust Model
+## Модель доверия
 
-Client не отправляет authoritative entitlement state.
+Клиент не передаёт авторитетное состояние права доступа.
 
 Вместо этого:
 
 ```text
-JWT sub
+поле JWT `sub`
    ↓
-server userId
+серверный userId
    ↓
-RevenueCat REST
+REST API RevenueCat
 GET /v1/subscribers/{userId}
 ```
 
-Backend независимо проверяет subscription evidence.
+Бэкенд самостоятельно подтверждает подписку у провайдера.
 
-## Flow
+## Сценарий
 
 ```text
-authenticated userId
+аутентифицированный userId
       ↓
-RevenueCat subscriber lookup
+запросить подписчика в RevenueCat
       ↓
-map entitlements.support
+получить entitlements.support
       ↓
-normalize SubscriptionStatus
+нормализовать SubscriptionStatus
       ↓
-upsert subscriptions(user_id, entitlement_id)
+создать или обновить subscriptions(user_id, entitlement_id)
       ↓
-run common access resolution
+выполнить общее определение доступа
       ↓
-return AccessStatusView
+вернуть AccessStatusView
 ```
 
-## RevenueCat Result Handling
+## Обработка результата RevenueCat
 
-| RevenueCat result | Backend behavior |
+| Результат RevenueCat | Поведение бэкенда |
 |---|---|
-| `ok` | Upsert normalized snapshot и resolve access. |
-| `not_found` | Upsert `status=expired`, затем resolve access. |
-| `unavailable` | Fail closed: `502 BILLING_SYNC_FAILED`. |
+| `ok` | Создать или обновить нормализованный снимок и определить доступ. |
+| `not_found` | Записать `status=expired`, затем определить доступ. |
+| `unavailable` | Завершить запрос ошибкой `502 BILLING_SYNC_FAILED`; новый снимок не записывать. |
 
-## Fail-Closed Semantics
+Если RevenueCat недоступен, ранее сохранённая строка подписки может остаться в PostgreSQL до следующей успешной сверки. Однако результат текущей неуспешной синхронизации не выдаёт это старое состояние за заново подтверждённое.
 
-`unavailable` не считается successful sync.
+Это отличается от клиентского офлайн-периода, где используется ранее проверенный снимок состояния в защищённом хранилище.
 
-Implementation description прямо указывает: unverified stale active result не должен оставаться результатом этой sync attempt.
+## Право доступа RevenueCat
+
+Канонический идентификатор:
 
 ```text
-RevenueCat unavailable
-      ↓
-verification not possible
-      ↓
-do not report successful synchronized entitlement
-      ↓
-502 BILLING_SYNC_FAILED
+support
 ```
 
-Это отличается от client offline grace, где используется previously verified secure snapshot.
+## Связанные документы
 
-## Entitlement
-
-Canonical entitlement id: `support`.
-
-## Persistence
-
-[`../../database/server/entities/subscriptions.ru.md`](../../database/server/entities/subscriptions.ru.md)
-
-## Access Integration
-
-После successful reconciliation backend возвращает тот же access contract, что `GET /v1/access`.
-
-Canonical decision:
-
-[`../access/access-resolution.ru.md`](../access/access-resolution.ru.md)
+- [`revenuecat-mapping.ru.md`](revenuecat-mapping.ru.md)
+- [`../access/access-resolution.ru.md`](../access/access-resolution.ru.md)
+- [`../api/billing/`](../api/billing/)
+- [`../../integrations/revenuecat/`](../../integrations/revenuecat/)

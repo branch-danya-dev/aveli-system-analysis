@@ -1,56 +1,56 @@
-# Workspace Device / External Integrations
+# Интеграции рабочего пространства с устройством и внешними сервисами
 
-## Contacts
+## Контакты
 
-Technology:
+Технология:
 
 ```text
 flutter_contacts 2.3.1
 ```
 
-Client запрашивает read permission и импортирует:
+Клиент запрашивает разрешение на чтение и импортирует:
 
 ```text
-name
-phone
+имя
+телефон
 deviceContactId
 ```
 
-Duplicates фильтруются по device-contact id или normalized phone.
+Дубликаты фильтруются по идентификатору контакта устройства или нормализованному номеру телефона.
 
-Client никогда не пишет изменения обратно в device contacts.
+Клиент никогда не пишет изменения обратно в контакты устройства.
 
-## Visit Photos
+## Фотографии визитов
 
-Technology:
+Технология:
 
 ```text
 image_picker 1.1.2
 ```
 
-Selected media копируется в Aveli visit-photo file tree и referenced из Drift metadata.
+Выбранный медиафайл копируется в файловую структуру фотографий визитов Aveli и связывается с метаданными Drift.
 
-## Exchange Rate
+## Курсы валют
 
-Repository:
+Репозиторий:
 
 ```text
 OpenErExchangeRateRepository
 ```
 
-External API:
+Внешний API:
 
 ```text
 https://open.er-api.com/v6/latest/{base}
 ```
 
-Cache:
+Кэш:
 
 ```text
 app_settings.exchangeRateCacheV1
-TTL = 24 hours
+TTL = 24 часа
 ```
 
-Используется при profile currency change для conversion amounts.
+Используется при изменении валюты профиля для пересчёта сумм.
 
-Failure → `ExchangeRateException` и UI fallback/manual guidance.
+При ошибке возникает `ExchangeRateException`, а интерфейс предлагает запасной или ручной сценарий.

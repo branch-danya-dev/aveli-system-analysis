@@ -1,76 +1,76 @@
-# Logout and Profile Deletion
+# Выход из аккаунта и удаление профиля
 
-## Why These Flows Must Stay Separate
+## Почему эти сценарии разделены
 
-Оба flow завершают current authenticated context, но persistence consequences разные.
+Оба сценария завершают текущий аутентифицированный контекст, но по-разному влияют на постоянные данные.
 
-## Logout
+## Выход из аккаунта
 
 ```text
-User logout
+Выход пользователя
     ↓
-cancel local visit reminders
+отменить локальные напоминания о визитах
     ↓
-clear current access snapshot
+удалить текущий снимок доступа
     ↓
 RevenueCat logOut
     ↓
-revoke backend refresh session / clear credentials
+отозвать серверную сессию / очистить учётные данные
     ↓
-close current local DB
+закрыть текущую локальную БД
     ↓
-return to auth flow
+вернуться к аутентификации
 ```
 
-Preserved:
+При выходе сохраняются:
 
 ```text
-SQLite workspace file
-visit photos
-professional history
+файл рабочего пространства SQLite
+фотографии визитов
+профессиональная история
 ```
 
-## Profile Delete
+## Удаление профиля
 
 ```text
 DELETE /v1/auth/me
     ↓
-backend account soft-delete
+мягкое удаление аккаунта на бэкенде
     ↓
-revoke sessions + grants
+отзыв сессий и прав доступа
     ↓
-client deletes local user photo tree
+клиент удаляет локальные фотографии пользователя
     ↓
-client deletes local SQLite data
+клиент удаляет локальные данные SQLite
     ↓
-clear snapshot/session state
+очистка снимка доступа и состояния сессии
 ```
 
-Это intentionally destructive client cleanup.
+Удаление профиля — намеренно разрушительный сценарий очистки локальных данных пользователя.
 
-## System-Level Invariant
+## Системный инвариант
 
 ```text
-logout
+выход
 ≠
-delete workspace
+удаление рабочего пространства
 ```
 
 и:
 
 ```text
-access expiry
+окончание доступа
 ≠
-delete workspace
+удаление рабочего пространства
 ```
 
 но:
 
 ```text
-explicit profile delete
-→ may delete local workspace data
+явное удаление профиля
+→ может удалить локальные данные рабочего пространства
 ```
 
-Canonical:
+Каноническое описание жизненного цикла клиента:
 
 [`../../frontend/auth/session-lifecycle.ru.md`](../../frontend/auth/session-lifecycle.ru.md)

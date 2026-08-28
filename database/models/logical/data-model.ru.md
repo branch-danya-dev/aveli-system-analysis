@@ -1,312 +1,312 @@
-# Aveli — Logical Data Model
+# Aveli — логическая модель данных
 
-> Technology-independent logical representation информации, которую Aveli должна сохранять.
+> Технологически независимое логическое представление информации, которую должна сохранять Aveli.
 
 ---
 
 ## Назначение
 
-Logical model уточняет conceptual domain до attributes, identifiers, relationships и cardinalities, необходимых текущему product behavior.
+Логическая модель уточняет концептуальный домен до атрибутов, идентификаторов, связей и кардинальностей, необходимых для текущего поведения продукта.
 
-Она учитывает проверенную physical persistence model, но не привязана к SQLite, PostgreSQL, Drift, Prisma или конкретным SQL types.
+Она учитывает подтверждённую физическую модель хранения, но не привязана к SQLite, PostgreSQL, Drift, Prisma или конкретным типам SQL.
 
 ---
 
 ## Статус модели
 
-Документ теперь является **verified baseline logical model**.
+Документ является **проверенной базовой логической моделью**.
 
-Physical persistence подтвердила:
+Физическая реализация хранения подтверждает:
 
-- максимум одну physical payment row на appointment;
-- partial payment внутри этой строки;
-- хранение start и end timestamps appointment;
-- price snapshot appointment;
-- aggregated payment status appointment;
-- service return interval;
-- ссылки visit-photo metadata на appointment и client;
-- physical key-value persistence workspace settings;
-- отдельное persistence access grants и subscription state на backend.
+- не более одной физической записи об оплате на одну запись клиента;
+- частичную оплату внутри этой же записи;
+- хранение времени начала и окончания записи;
+- снимок цены услуги в записи;
+- агрегированное состояние оплаты записи;
+- интервал повторного обращения для услуги;
+- связи метаданных фотографий визита с записью и клиентом;
+- физическое хранение настроек рабочего пространства в формате «ключ — значение»;
+- отдельное хранение прав доступа и состояния подписки на бэкенде.
 
 ---
 
-# Identity & Access Domain
+# Домен идентификации и доступа
 
-## Account
+## Аккаунт
 
-Logical attributes:
+Логические атрибуты:
 
-| Attribute | Meaning |
+| Атрибут | Назначение |
 |---|---|
-| `id` | Stable account identifier. |
-| `email` | Sign-in identity при email authentication. |
-| `status` | Account lifecycle state, где требуется. |
+| `id` | Стабильный идентификатор аккаунта. |
+| `email` | Идентификатор для входа при аутентификации по электронной почте. |
+| `status` | Состояние жизненного цикла аккаунта, где оно требуется. |
 
 ```text
-Account 1 → 0..* Session
-Account 1 → 0..* Access Source
-Account 1 → 0..* Subscription State
+Аккаунт 1 → 0..* Сессия
+Аккаунт 1 → 0..* Источник доступа
+Аккаунт 1 → 0..* Состояние подписки
 ```
 
-Professional workspace entities остаются вне backend account ownership domain.
+Сущности профессионального рабочего пространства остаются вне домена владения серверного аккаунта.
 
 ---
 
-## Session
+## Сессия
 
-| Attribute | Meaning |
+| Атрибут | Назначение |
 |---|---|
-| `id` | Stable session identifier. |
-| `accountId` | Owning Account. |
-| `validUntil` | Session validity boundary. |
-| `state` | Session lifecycle state. |
-| `deviceContext` | Optional device/platform context. |
+| `id` | Стабильный идентификатор сессии. |
+| `accountId` | Аккаунт-владелец. |
+| `validUntil` | Граница срока действия сессии. |
+| `state` | Состояние жизненного цикла сессии. |
+| `deviceContext` | Необязательный контекст устройства или платформы. |
 
-Token hashes и storage mechanics относятся к physical/backend layer.
+Хэши токенов и механика их хранения относятся к физическому уровню бэкенда.
 
 ---
 
-## Access Source
+## Источник доступа
 
-| Attribute | Meaning |
+| Атрибут | Назначение |
 |---|---|
-| `id` | Stable source identifier. |
-| `accountId` | Account-владелец. |
-| `type` | Lifetime / Manual Grant / Trial / другой source. |
-| `source` | Origin grant, где применимо. |
-| `startsAt` | Начало validity. |
-| `expiresAt` | Конец validity. |
-| `revokedAt` | Early revocation. |
+| `id` | Стабильный идентификатор источника. |
+| `accountId` | Аккаунт-владелец. |
+| `type` | Бессрочный доступ / ручное право / пробный период / другой источник. |
+| `source` | Происхождение права, где применимо. |
+| `startsAt` | Начало срока действия. |
+| `expiresAt` | Окончание срока действия. |
+| `revokedAt` | Досрочный отзыв. |
 
-Effective `Access` остается derived concept, а не обязательной persisted entity.
+Итоговый `Access` остаётся вычисляемым понятием, а не обязательной сохраняемой сущностью.
 
 ---
 
-## Subscription State
+## Состояние подписки
 
-| Attribute | Meaning |
+| Атрибут | Назначение |
 |---|---|
-| `id` | Stable subscription-state identifier. |
-| `accountId` | Related Account. |
-| `product` | Store product reference. |
-| `entitlement` | Logical entitlement. |
-| `status` | Current subscription state. |
-| `autoRenew` | Auto-renew state. |
-| `validUntil` | Validity boundary. |
-| `lastVerifiedAt` | Последняя provider verification. |
+| `id` | Стабильный идентификатор состояния подписки. |
+| `accountId` | Связанный аккаунт. |
+| `product` | Ссылка на продукт магазина приложений. |
+| `entitlement` | Логическое право доступа. |
+| `status` | Текущее состояние подписки. |
+| `autoRenew` | Состояние автоматического продления. |
+| `validUntil` | Граница срока действия. |
+| `lastVerifiedAt` | Время последней проверки у провайдера. |
 
-Raw provider payloads не входят в logical subscription model.
+Исходные данные провайдера не входят в логическую модель подписки.
 
 ---
 
-## Subscription Event
+## Событие подписки
 
-| Attribute | Meaning |
+| Атрибут | Назначение |
 |---|---|
-| `id` | Stable event identifier. |
-| `subscriptionId` | Related Subscription State, где определено. |
-| `accountId` | Related Account, где определено. |
-| `externalEventId` | External idempotency identifier. |
-| `eventType` | Provider event type. |
-| `payload` | Raw provider event content. |
+| `id` | Стабильный идентификатор события. |
+| `subscriptionId` | Связанное состояние подписки, где оно определено. |
+| `accountId` | Связанный аккаунт, где он определён. |
+| `externalEventId` | Внешний идентификатор идемпотентности. |
+| `eventType` | Тип события провайдера. |
+| `payload` | Исходное содержимое события провайдера. |
 | `receivedAt` | Время получения. |
 | `processedAt` | Время обработки. |
 | `processingError` | Ошибка обработки. |
 
 ---
 
-# Professional Workspace Domain
+# Домен профессионального рабочего пространства
 
-## Client
+## Клиент
 
-| Attribute | Meaning |
+| Атрибут | Назначение |
 |---|---|
-| `id` | Stable client identifier. |
-| `name` | Display name. |
-| `phone` | Phone/contact value. |
-| `social` | Social/messenger contact. |
-| `deviceContactId` | Imported device-contact reference. |
-| `tags` | Classification metadata. |
-| `archivedAt` | Archive timestamp. |
-| `createdAt` | Creation timestamp. |
+| `id` | Стабильный идентификатор клиента. |
+| `name` | Отображаемое имя. |
+| `phone` | Номер телефона или другое контактное значение. |
+| `social` | Контакт в социальной сети или мессенджере. |
+| `deviceContactId` | Ссылка на импортированный контакт устройства. |
+| `tags` | Метаданные классификации. |
+| `archivedAt` | Время архивации. |
+| `createdAt` | Время создания. |
 
 ```text
-Client 1 → 0..* Appointment
+Клиент 1 → 0..* Запись
 ```
 
 ---
 
-## Service
+## Услуга
 
-| Attribute | Meaning |
+| Атрибут | Назначение |
 |---|---|
-| `id` | Stable service identifier. |
-| `name` | Service name. |
-| `duration` | Expected duration. |
-| `price` | Current default service price. |
-| `returnInterval` | Return interval, где настроен. |
+| `id` | Стабильный идентификатор услуги. |
+| `name` | Название услуги. |
+| `duration` | Ожидаемая длительность. |
+| `price` | Текущая базовая цена услуги. |
+| `returnInterval` | Интервал повторного обращения, если он настроен. |
 
 ```text
-Service 1 → 0..* Appointment
+Услуга 1 → 0..* Запись
 ```
 
 ---
 
-## Appointment
+## Запись
 
-| Attribute | Meaning |
+| Атрибут | Назначение |
 |---|---|
-| `id` | Stable appointment identifier. |
-| `clientId` | Related Client. |
-| `serviceId` | Related Service. |
-| `startsAt` | Planned start. |
-| `endsAt` | Planned end. |
-| `priceSnapshot` | Цена, сохраненная независимо от последующих изменений Service. |
-| `status` | Appointment lifecycle state. |
-| `paymentStatus` | Aggregated payment state. |
-| `createdAt` | Creation timestamp. |
-| `updatedAt` | Update timestamp. |
+| `id` | Стабильный идентификатор записи. |
+| `clientId` | Связанный клиент. |
+| `serviceId` | Связанная услуга. |
+| `startsAt` | Плановое начало. |
+| `endsAt` | Плановое окончание. |
+| `priceSnapshot` | Цена, сохранённая независимо от последующих изменений услуги. |
+| `status` | Состояние жизненного цикла записи. |
+| `paymentStatus` | Агрегированное состояние оплаты. |
+| `createdAt` | Время создания. |
+| `updatedAt` | Время обновления. |
 
-Relationships:
+Связи:
 
 ```text
-Client      1 → 0..* Appointment
-Service     1 → 0..* Appointment
-Appointment 1 → 0..* Visit Note
-Appointment 1 → 0..* Visit Photo
-Appointment 1 → 0..1 Payment
+Клиент  1 → 0..* Запись
+Услуга  1 → 0..* Запись
+Запись  1 → 0..* Заметка визита
+Запись  1 → 0..* Фотография визита
+Запись  1 → 0..1 Оплата
 ```
 
-`Appointment 1 → 0..1 Payment` теперь подтвержден physical UNIQUE constraint.
+Связь `Appointment 1 → 0..1 Payment` подтверждена физическим ограничением `UNIQUE`.
 
-Conceptual `Visit` остается valid domain concept, хотя persistence хранит visit-related data через appointment-associated records.
-
----
-
-## Visit Note
-
-| Attribute | Meaning |
-|---|---|
-| `id` | Stable note identifier. |
-| `appointmentId` | Appointment/visit context. |
-| `body` | Note content. |
-| `createdAt` | Creation timestamp. |
+Концептуальный `Visit` остаётся корректным доменным понятием, хотя физическое хранение представляет связанные с визитом данные через записи, ассоциированные с `Appointment`.
 
 ---
 
-## Visit Photo
+## Заметка визита
 
-| Attribute | Meaning |
+| Атрибут | Назначение |
 |---|---|
-| `id` | Stable photo metadata identifier. |
-| `appointmentId` | Appointment/visit context. |
-| `clientId` | Related Client. |
-| `mediaReference` | Logical reference на stored file. |
-| `type` | Before / after / general. |
-| `createdAt` | Creation timestamp. |
-
-Physical file path остается в physical persistence layer.
+| `id` | Стабильный идентификатор заметки. |
+| `appointmentId` | Контекст записи или визита. |
+| `body` | Содержимое заметки. |
+| `createdAt` | Время создания. |
 
 ---
 
-## Payment
+## Фотография визита
 
-| Attribute | Meaning |
+| Атрибут | Назначение |
 |---|---|
-| `id` | Stable payment identifier. |
-| `appointmentId` | Related Appointment. |
-| `amount` | Amount due. |
+| `id` | Стабильный идентификатор метаданных фотографии. |
+| `appointmentId` | Контекст записи или визита. |
+| `clientId` | Связанный клиент. |
+| `mediaReference` | Логическая ссылка на сохранённый файл. |
+| `type` | `before` / `after` / `general`. |
+| `createdAt` | Время создания. |
+
+Физический путь к файлу остаётся частью физической модели хранения.
+
+---
+
+## Оплата
+
+| Атрибут | Назначение |
+|---|---|
+| `id` | Стабильный идентификатор оплаты. |
+| `appointmentId` | Связанная запись. |
+| `amount` | Сумма к оплате. |
 | `amountPaid` | Уже оплаченная сумма. |
-| `status` | Unpaid / partial / paid. |
-| `method` | Payment method. |
-| `createdAt` | Creation timestamp. |
-| `paidAt` | Full/partial payment timestamp. |
+| `status` | `unpaid` / `partial` / `paid`. |
+| `method` | Способ оплаты. |
+| `createdAt` | Время создания. |
+| `paidAt` | Время полной или частичной оплаты. |
 
-Verified cardinality:
+Подтверждённая кардинальность:
 
 ```text
-Appointment 1 → 0..1 Payment
+Запись 1 → 0..1 Оплата
 ```
 
-Partial payment хранится внутри одной Payment record, а не несколькими rows.
+Частичная оплата хранится в одной записи `Payment`, а не в нескольких строках.
 
 ---
 
-## Workspace Settings
+## Настройки рабочего пространства
 
-Logical groups:
+Логические группы настроек:
 
-- specialist profile values;
-- working currency;
-- locale;
-- appearance/theme;
-- working schedule;
-- reminders;
-- supported local/public-profile state;
-- exchange-rate cache.
+- значения профиля специалиста;
+- рабочая валюта;
+- локаль;
+- оформление и тема;
+- рабочее расписание;
+- напоминания;
+- поддерживаемое локальное состояние публичного профиля;
+- кэш курса валют.
 
-Это logical grouping, а не требование одной normalized physical entity.
+Это логическая группировка, а не требование хранить всё в одной нормализованной физической сущности.
 
 ---
 
-# Logical Relationships
+# Логические связи
 
 ```text
-IDENTITY & ACCESS
+ИДЕНТИФИКАЦИЯ И ДОСТУП
 
-Account
- ├── 0..* Session
- ├── 0..* Access Source
- ├── 0..* Subscription State
- └── 0..* Subscription Event
+Аккаунт
+ ├── 0..* Сессия
+ ├── 0..* Источник доступа
+ ├── 0..* Состояние подписки
+ └── 0..* Событие подписки
 
-Effective Access
-    ↑ derived from Access Source + Subscription State
+Итоговый доступ
+    ↑ вычисляется из источников доступа и состояния подписки
     │
-    └── controls workspace availability
+    └── определяет доступность рабочего пространства
 
 
-PROFESSIONAL WORKSPACE
+ПРОФЕССИОНАЛЬНОЕ РАБОЧЕЕ ПРОСТРАНСТВО
 
-Client
+Клиент
   1
-  └── 0..* Appointment
+  └── 0..* Запись
 
-Service
+Услуга
   1
-  └── 0..* Appointment
+  └── 0..* Запись
 
-Appointment
+Запись
   1
-  ├── 0..* Visit Note
-  ├── 0..* Visit Photo
-  └── 0..1 Payment
+  ├── 0..* Заметка визита
+  ├── 0..* Фотография визита
+  └── 0..1 Оплата
 
-Workspace Settings
-  └── affects local workspace/application behavior
+Настройки рабочего пространства
+  └── влияют на локальное поведение приложения
 ```
 
 ---
 
-# Open / Classification Questions
+# Открытые вопросы классификации
 
-Physical implementation выявила concepts, которые нужно классифицировать до продвижения в business layer:
+Физическая реализация выявила понятия, которые требуется классифицировать до переноса в бизнес-слой:
 
-- `confirmed` appointment status;
-- business significance `returnInterval`;
-- profile public slug / public listing;
-- local phone/email verification flags;
-- local account lifecycle setting;
-- exchange-rate cache persistence;
-- backend `disabled` / `deleted` account states;
-- subscription states `past_due`, `grace_period`, `revoked`, `trialing`.
+- статус записи `confirmed`;
+- бизнес-значение `returnInterval`;
+- публичный идентификатор профиля (`slug`) и признак публикации;
+- локальные признаки проверки телефона и электронной почты;
+- локальная настройка жизненного цикла аккаунта;
+- хранение кэша курса валют;
+- серверные состояния аккаунта `disabled` / `deleted`;
+- состояния подписки `past_due`, `grace_period`, `revoked`, `trialing`.
 
 Классификация:
 
 ```text
-current product requirement
-implementation support state
-legacy/future capability
+текущее требование продукта
+вспомогательное состояние реализации
+наследуемая или будущая возможность
 ```
 
 ---

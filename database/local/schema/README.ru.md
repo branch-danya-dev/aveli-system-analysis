@@ -1,20 +1,20 @@
-# Local SQLite Schema
+# Схема локального SQLite
 
-> Physical schema текущей per-user workspace database Aveli.
+> Физическая схема текущей пользовательской базы данных рабочего пространства Aveli.
 
-Текущая schema version: **11**
+Текущая версия схемы: **11**.
 
-Runtime database rule:
+Правило базы данных во время выполнения:
 
 ```text
 PRAGMA foreign_keys = ON
 ```
 
-## Baseline Status
+## Статус базовой модели
 
-Schema сверена с предоставленным persistence description.
+Схема сверена с предоставленным описанием физического хранения.
 
-Остается одно известное source naming discrepancy для Service duration fields:
+Остаётся одно известное расхождение в именовании полей длительности услуги:
 
 ```text
 duration_minutes / return_interval_minutes
@@ -22,10 +22,10 @@ vs
 duration / return_interval
 ```
 
-До прямой проверки Drift declarations используется detailed table definition: `duration`, `return_interval`.
+До прямой проверки объявлений Drift используется детальное описание таблицы: `duration`, `return_interval`.
 
 ## Навигация
 
-- [`schema.ru.md`](schema.ru.md) — tables, relationships, denormalization, indexes.
-- [`enums.ru.md`](enums.ru.md) — persisted local enum values.
-- [`schema.puml`](schema.puml) — physical ER diagram.
+- [`schema.ru.md`](schema.ru.md) — таблицы, связи, денормализация и индексы.
+- [`enums.ru.md`](enums.ru.md) — значения перечислений, сохраняемые в локальной БД.
+- [`schema.puml`](schema.puml) — физическая диаграмма «сущность — связь».

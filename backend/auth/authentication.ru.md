@@ -1,172 +1,179 @@
-# Aveli Backend — Authentication
+# Бэкенд Aveli — аутентификация
 
-> Проверенное backend behavior для registration, sign-in, refresh, logout и account self-service.
+> Проверенное поведение бэкенда при регистрации, входе, обновлении сессии, выходе и операциях с собственным аккаунтом.
 
-## Authentication Boundary
+## Граница аутентификации
 
-Authentication устанавливает account identity и не решает workspace entitlement.
+Аутентификация устанавливает идентичность аккаунта. Она не решает, есть ли у пользователя доступ к рабочему пространству.
 
 ```text
-Credentials / Session
+Учётные данные / сессия
         ↓
-Authentication
+Аутентификация
         ↓
-Authenticated user
+Аутентифицированный пользователь
         ↓
-Access Resolution
+Определение доступа
         ↓
-Granted / Denied
+Доступ разрешён / запрещён
 ```
 
-## Registration
+## Регистрация
 
-Endpoint:
+Эндпоинт:
 
 ```text
 POST /v1/auth/register
 ```
 
-Проверенный high-level flow:
+Подтверждённый высокоуровневый сценарий:
 
 ```text
-validate DTO
+проверить DTO
     ↓
-normalize email
+нормализовать адрес электронной почты
     ↓
-create users row
+создать пользователя в users
     ↓
-create one registration trial
+создать один регистрационный пробный период
     ↓
-create auth_sessions row
+создать сессию в auth_sessions
     ↓
-issue access + refresh tokens
+выдать токен доступа и токен обновления
 ```
 
-Source description подтверждает эти side effects, но **не утверждает явно**, что весь registration flow выполняется внутри одной database transaction.
+Имеющиеся данные подтверждают эти побочные эффекты, но **не утверждают явно**, что весь сценарий регистрации выполняется внутри одной транзакции базы данных.
 
-Registration trial:
+Регистрационный пробный период:
 
 ```text
 type   = trial
 source = registration
-endsAt = now + TRIAL_DAYS
+endsAt = текущее время + TRIAL_DAYS
 ```
 
-Current default: `TRIAL_DAYS = 30`.
+Текущее значение по умолчанию: `TRIAL_DAYS = 30`.
 
-Duplicate registration email: `409 AUTH_EMAIL_ALREADY_EXISTS`.
+Повторная регистрация занятой электронной почты: `409 AUTH_EMAIL_ALREADY_EXISTS`.
 
-## Sign-In
+## Вход
 
-`POST /v1/auth/login` нормализует/resolves email, проверяет Argon2id password hash, создает refresh session, выдает access + refresh tokens, обновляет `users.last_login_at` и не создает новый registration trial.
+`POST /v1/auth/login`:
 
-Public invalid-credential result:
+1. нормализует и находит электронную почту;
+2. проверяет хэш пароля Argon2id;
+3. создаёт сессию обновления;
+4. выдаёт токены доступа и обновления;
+5. обновляет `users.last_login_at`;
+6. не создаёт новый регистрационный пробный период.
+
+Публичный результат неверных учётных данных:
 
 ```text
 401 AUTH_INVALID_CREDENTIALS
 ```
 
-Для missing-user login используется dummy hash, уменьшающий timing leakage.
+Для входа несуществующего пользователя используется фиктивный хэш, чтобы уменьшить утечку по времени выполнения.
 
-## Access Token
+## Токен доступа
 
-Verified Aveli usage:
+Подтверждённая конфигурация Aveli:
 
 ```text
-format: JWT
-claims: { sub: userId, email }
+формат: JWT
+поля токена: { sub: userId, email }
 TTL: JWT_ACCESS_TTL
-default: 15m
+по умолчанию: 15m
 ```
 
-При каждом JWT-authenticated request backend дополнительно требует:
+При каждом запросе с JWT бэкенд дополнительно требует:
 
 ```text
 users.status = active
 ```
 
-Canonical JWT technology rationale:
+Обоснование технологии JWT:
 
 [`../stack/jwt/`](../stack/jwt/)
 
-## Refresh Credential
+## Токен обновления
 
-Refresh token не JWT.
-
-```text
-48 random bytes
-→ base64url opaque token
-→ SHA-256 hash stored server-side
-```
-
-Default refresh-session TTL:
+Токен обновления не является JWT.
 
 ```text
-JWT_REFRESH_TTL_DAYS = 60 days
+48 случайных байт
+→ непрозрачная строка base64url
+→ на сервере хранится SHA-256-хэш
 ```
 
-## Refresh Rotation
-
-Endpoint: `POST /v1/auth/refresh`
+Срок жизни сессии обновления по умолчанию:
 
 ```text
-present refresh token
-        ↓
-hash + resolve session
-        ↓
-validate user/session
-        ↓
-revoke old session
-        ↓
-create new session
-        ↓
-issue new access + refresh pair
+JWT_REFRESH_TTL_DAYS = 60 дней
 ```
 
-Reuse revoked refresh token приводит к family invalidation:
+## Ротация токена обновления
+
+Эндпоинт: `POST /v1/auth/refresh`
 
 ```text
-reused revoked token
+получить токен обновления
         ↓
-revoke all active sessions for that user
+посчитать хеш и найти сессию
+        ↓
+проверить пользователя и сессию
+        ↓
+отозвать старую сессию
+        ↓
+создать новую сессию
+        ↓
+выдать новую пару токенов
 ```
 
-## Logout
+Повторное использование уже отозванного токена обновления аннулирует все активные сессии пользователя:
 
-`POST /v1/auth/logout` находит session по refresh-token hash и revokes ее. Operation идемпотентна.
+```text
+повторно использован отозванный токен
+        ↓
+отозвать все активные сессии пользователя
+```
 
-## Logout All
+## Выход
 
-`POST /v1/auth/logout-all` использует Bearer auth и revokes все user sessions, где `revoked_at IS NULL`.
+`POST /v1/auth/logout` находит сессию по хэшу токена обновления и отзывает её.
 
-## Current Account
+Операция идемпотентна.
 
-`GET /v1/auth/me` возвращает authenticated user view.
+## Выход со всех устройств
 
-## Account Soft Delete
+`POST /v1/auth/logout-all` использует аутентификацию по схеме Bearer и отзывает все сессии пользователя, у которых `revoked_at IS NULL`.
 
-`DELETE /v1/auth/me` выполняет verified database transaction:
+## Текущий аккаунт
 
-1. revoke all sessions;
-2. revoke all active access grants;
-3. set `users.status = deleted`;
-4. rewrite `email_normalized` в `deleted:<userId>:<oldEmail>`.
+`GET /v1/auth/me` возвращает представление аутентифицированного пользователя.
 
-Rewrite освобождает normalized email для будущей registration.
+## Мягкое удаление аккаунта
 
-Operation не удаляет device-local Drift workspace.
+`DELETE /v1/auth/me` выполняет подтверждённую транзакцию:
 
-### Endpoint Idempotency Note
+1. отозвать все сессии;
+2. отозвать все активные права доступа;
+3. установить `users.status = deleted`;
+4. переписать `email_normalized` в `deleted:<userId>:<oldEmail>`.
 
-Source description говорит, что account deletion идемпотентен для уже deleted account. Одновременно `JwtStrategy` описан как допускающий только `users.status === active`.
+Перезапись освобождает нормализованный адрес электронной почты для возможной будущей регистрации.
 
-Поэтому **service-level idempotency и repeated HTTP delete behavior нужно сверить по controller/guard code до более сильной endpoint guarantee**.
+Эта операция не удаляет локальное рабочее пространство Drift на устройстве.
 
-Current API contract не обещает повторный HTTP delete после перевода account в `deleted`.
+### Идемпотентность эндпоинта
 
-## Not Implemented
+Описание реализации говорит, что внутренняя операция удаления аккаунта идемпотентна для уже удалённого аккаунта. Одновременно `JwtStrategy` допускает только `users.status === active`.
 
-Эти routes сейчас возвращают `501 AUTH_NOT_IMPLEMENTED`:
+Поэтому публичный контракт гарантирует один аутентифицированный запрос удаления, но не обещает, что повторный запрос HTTP после уже выполненного удаления будет обработан тем же образом.
+
+## Не реализовано
+
+Следующие маршруты сейчас возвращают `501 AUTH_NOT_IMPLEMENTED`:
 
 ```text
 POST /v1/auth/resend-verification
@@ -175,9 +182,9 @@ POST /v1/auth/forgot-password
 POST /v1/auth/reset-password
 ```
 
-Это contract stubs, а не working product capabilities.
+Это заглушки будущих контрактов, а не работающие возможности продукта.
 
-## Связанная документация
+## Связанные документы
 
 - [`session-lifecycle.ru.md`](session-lifecycle.ru.md)
 - [`../api/auth/`](../api/auth/)

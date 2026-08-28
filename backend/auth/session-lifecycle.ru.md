@@ -1,60 +1,60 @@
-# Aveli Backend — Session Lifecycle
+# Бэкенд Aveli — жизненный цикл сессии
 
-> Проверенный Aveli lifecycle JWT access authentication и persisted rotating refresh sessions.
+> Проверенный жизненный цикл токена JWT доступа и сохраняемых сервером сессий с ротацией токена обновления.
 
-## Ownership
+## Владение
 
-Canonical JWT technology knowledge находится в [`../stack/jwt/`](../stack/jwt/).
+Каноническое описание технологии JWT находится в [`../stack/jwt/`](../stack/jwt/).
 
-Этот документ владеет **Aveli-specific configuration и lifecycle**.
+Этот документ описывает **конфигурацию и жизненный цикл, специфичные для Aveli**.
 
-## Credential Pair
+## Пара учётных данных
 
 ```text
-JWT Access Token
+Токен доступа JWT
         +
-Opaque Refresh Token
+Непрозрачный токен обновления
 ```
 
-## Access Token
+## Токен доступа
 
-Verified configuration:
+Подтверждённая конфигурация:
 
 ```text
-claims: { sub: userId, email }
+поля токена: { sub: userId, email }
 TTL: JWT_ACCESS_TTL
-default: 15m
+по умолчанию: 15m
 ```
 
 `JwtStrategy` дополнительно проверяет `users.status === active`.
 
-## Refresh Token
+## Токен обновления
 
-Verified format:
+Подтверждённый формат:
 
 ```text
-48 random bytes
-base64url opaque string
+48 случайных байт
+непрозрачная строка base64url
 ```
 
-Persisted server value:
+На сервере сохраняется:
 
 ```text
 SHA-256(refreshToken)
 ```
 
-Plaintext refresh token не хранится в PostgreSQL.
+Сам токен обновления в открытом виде в PostgreSQL не хранится.
 
-Refresh-session TTL:
+Срок жизни сессии:
 
 ```text
 JWT_REFRESH_TTL_DAYS
-default: 60 days
+по умолчанию: 60 дней
 ```
 
-## Persisted Session State
+## Сохраняемое состояние сессии
 
-Canonical physical fields:
+Канонические физические поля:
 
 ```text
 id
@@ -69,63 +69,63 @@ expires_at
 revoked_at
 ```
 
-Physical ownership: [`../../database/server/entities/auth_sessions.ru.md`](../../database/server/entities/auth_sessions.ru.md).
+Физическое владение: [`../../database/server/entities/auth_sessions.ru.md`](../../database/server/entities/auth_sessions.ru.md).
 
-## Session States
-
-```text
-ACTIVE
-EXPIRED
-REVOKED
-```
-
-Rotation — operation, а не persistent state.
-
-## Rotation
+## Состояния сессии
 
 ```text
-Old active session
-      ↓
-Validate presented refresh credential
-      ↓
-Revoke old session
-      ↓
-Create new session
-      ↓
-Issue new token pair
+АКТИВНА
+ИСТЕКЛА
+ОТОЗВАНА
 ```
 
-## Reuse / Family Invalidation
+Ротация — операция, а не отдельное сохраняемое состояние.
+
+## Ротация
 
 ```text
-reused revoked token
+Старая активная сессия
       ↓
-revoke all active sessions of the user
+Проверить предъявленный токен обновления
       ↓
-require re-authentication
+Отозвать старую сессию
+      ↓
+Создать новую
+      ↓
+Выдать новую пару токенов
 ```
 
-## Logout / Logout All
+## Повторное использование и аннулирование семейства
 
-Single logout revokes session по supplied refresh-token hash.
+```text
+повторно использован отозванный токен
+      ↓
+отозвать все активные сессии пользователя
+      ↓
+потребовать повторную аутентификацию
+```
 
-`logout-all` revokes все non-revoked sessions current user.
+## Выход и выход со всех устройств
 
-## Account Deletion
+Обычный выход отзывает сессию, соответствующую переданному хэшу токена обновления.
 
-Soft deletion revokes все account sessions до перевода user в `deleted`.
+`logout-all` отзывает все неотозванные сессии текущего пользователя.
 
-## Open Details
+## Удаление аккаунта
 
-Current source description не указывает:
+При мягком удалении сначала отзываются все сессии аккаунта, после чего пользователь переводится в состояние `deleted`.
 
-- exact JWT signing algorithm;
-- device-session count limits;
-- server-side denylisting старых access JWT после refresh/logout.
+## Неуточнённые детали
 
-Эти детали намеренно остаются open.
+Текущие подтверждения не устанавливают:
 
-## Связанная документация
+- точный алгоритм подписи JWT;
+- ограничение количества сессий на устройствах;
+- серверный список блокировки старых токенов JWT доступа после обновления сессии или выхода.
+
+Эти детали намеренно не придумываются.
+
+## Связанные документы
 
 - [`authentication.ru.md`](authentication.ru.md)
 - [`../api/auth/`](../api/auth/)

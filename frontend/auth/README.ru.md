@@ -1,6 +1,6 @@
-# Frontend Authentication
+# Аутентификация во фронтенде
 
-> Client-side session lifecycle, secure token persistence и local workspace activation.
+> Клиентский жизненный цикл сессии, защищённое хранение токенов и активация локального рабочего пространства.
 
 ## Навигация
 

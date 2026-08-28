@@ -1,6 +1,6 @@
-# Exchange Rate Integration
+# Интеграция с сервисом курсов валют
 
-> Third-party currency-rate lookup для local profile currency conversion.
+> Сторонний источник курсов валют для пересчёта значений в локальном профиле.
 
 ## Навигация
 

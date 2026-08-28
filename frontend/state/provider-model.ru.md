@@ -1,47 +1,47 @@
-# Riverpod Provider Model
+# Модель провайдеров Riverpod
 
-## Container
+## Контейнер
 
-Aveli вручную создает `ProviderContainer` в `main.dart` и exposes его через `UncontrolledProviderScope`.
+Aveli вручную создаёт `ProviderContainer` в `main.dart` и передаёт его через `UncontrolledProviderScope`.
 
-## Cross-Cutting Providers
+## Общие провайдеры
 
-| Provider | Role |
+| Провайдер | Роль |
 |---|---|
-| `localDatabaseManagerProvider` | Per-user DB open/close. |
-| `appDatabaseProvider` | Active `AppDatabase`. |
-| `authControllerProvider` | Session + workspace activation. |
-| `accessControllerProvider` | Server access + snapshot. |
-| `accessVerificationPolicyProvider` | Offline trust policy. |
-| `accessSnapshotStoreProvider` | Secure snapshot persistence. |
-| `networkAvailableProvider` | Connectivity stream. |
-| `appRouterProvider` | Router и redirect. |
-| `appBootstrapControllerProvider` | Cold-start state. |
-| `purchaseServiceProvider` | RevenueCat или no-op purchase service. |
-| `visitReminderSchedulerProvider` | OS reminder scheduler. |
-| `scheduleConfigProvider` | Working schedule. |
-| `themeManagerProvider` / `appLocaleProvider` | UI preferences. |
+| `localDatabaseManagerProvider` | Открытие и закрытие БД конкретного пользователя. |
+| `appDatabaseProvider` | Активная `AppDatabase`. |
+| `authControllerProvider` | Сессия и активация рабочего пространства. |
+| `accessControllerProvider` | Серверное состояние доступа и его снимок. |
+| `accessVerificationPolicyProvider` | Политика доверия при работе без сети. |
+| `accessSnapshotStoreProvider` | Безопасное хранение снимка состояния доступа. |
+| `networkAvailableProvider` | Поток состояния подключения. |
+| `appRouterProvider` | Маршрутизатор и перенаправления. |
+| `appBootstrapControllerProvider` | Состояние холодного запуска приложения. |
+| `purchaseServiceProvider` | RevenueCat либо заглушка сервиса покупок. |
+| `visitReminderSchedulerProvider` | Планировщик системных напоминаний. |
+| `scheduleConfigProvider` | Рабочее расписание. |
+| `themeManagerProvider` / `appLocaleProvider` | Настройки интерфейса. |
 
-## Lifetime
+## Время жизни
 
-Большинство repository providers long-lived.
+Большинство провайдеров репозиториев живут на протяжении всей активной сессии.
 
-Verified `autoDispose` example:
+Подтверждённый пример `autoDispose`:
 
 ```text
 paywallOfferingsProvider
 ```
 
-## Dependency Direction
+## Направление зависимостей
 
 ```text
-Presentation
-    ↓ watch/read
-Provider / Controller
+Представление
+    ↓ наблюдение / чтение
+Провайдер / контроллер
     ↓
-Repository / Use Case
+Репозиторий / сценарий
     ↓
-Infrastructure
+Инфраструктура
 ```
 
-Provider wiring не должен переопределять business rules; он composes implementation dependencies.
+Связывание провайдеров не должно переопределять бизнес-правила; оно лишь объединяет зависимости реализации.

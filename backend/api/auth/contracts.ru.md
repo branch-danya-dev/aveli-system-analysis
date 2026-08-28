@@ -1,29 +1,52 @@
-# Auth API Contracts
+# Контракты API аутентификации
 
-> Canonical HTTP behavior Aveli authentication/account endpoints.
+> Каноническое поведение HTTP эндпоинтов аутентификации и аккаунта Aveli.
 
-## Endpoints
+## Общий ответ аутентификации
 
-| Method | Path | Auth | Success | Notes |
+```json
+{
+  "user": { "id": "uuid", "email": "master@example.com", "emailVerified": false },
+  "accessToken": "...",
+  "refreshToken": "..."
+}
+```
+
+## Эндпоинты
+
+| Метод | Путь | Аутентификация | Успех | Примечания |
 |---|---|---|---|---|
-| POST | `/v1/auth/register` | none | `201` auth response | validation; 10/min |
-| POST | `/v1/auth/login` | none | `200` auth response | invalid credentials; 20/min |
-| POST | `/v1/auth/refresh` | refresh token | `200` rotated response | expired/disabled; 30/min |
-| POST | `/v1/auth/logout` | refresh token | `{ "ok": true }` | idempotent session revocation |
-| POST | `/v1/auth/logout-all` | Bearer | `{ "ok": true }` | 401/403 |
-| GET | `/v1/auth/me` | Bearer | `AuthUser` | 401/403 |
-| DELETE | `/v1/auth/me` | Bearer | `{ "ok": true }` | soft delete; 5/min |
+| POST | `/v1/auth/register` | нет | `201`, ответ аутентификации | валидация; `409 AUTH_EMAIL_ALREADY_EXISTS`; 10/мин |
+| POST | `/v1/auth/login` | нет | `200`, ответ аутентификации | `401 AUTH_INVALID_CREDENTIALS`; 20/мин |
+| POST | `/v1/auth/refresh` | токен обновления | `200`, новая пара токенов | `401 AUTH_SESSION_EXPIRED`, `403 AUTH_USER_DISABLED`; 30/мин |
+| POST | `/v1/auth/logout` | токен обновления | `{ "ok": true }` | идемпотентный отзыв соответствующей сессии |
+| POST | `/v1/auth/logout-all` | Bearer | `{ "ok": true }` | 401 / `403 AUTH_USER_DISABLED` |
+| GET | `/v1/auth/me` | Bearer | `AuthUser` | 401 / `403 AUTH_USER_DISABLED` |
+| DELETE | `/v1/auth/me` | Bearer | `{ "ok": true }` | мягкое удаление аккаунта; 5/мин |
 
-## Delete Contract Boundary
+## Граница контракта удаления
 
-Guaranteed public contract — один authenticated profile deletion request. Repeated HTTP delete после successful deletion не guaranteed, потому что subsequent Bearer auth уже может не принимать deleted user.
+Публичный контракт гарантирует один аутентифицированный запрос на удаление профиля.
 
-## 501 Contract Stubs
+Внутренняя логика сервиса описана как идемпотентная для уже удалённого аккаунта, однако аутентификация по схеме Bearer принимает только активного пользователя. Поэтому второй запрос HTTP `DELETE /v1/auth/me` после успешного удаления **не входит в гарантированный публичный контракт**.
 
-`resend-verification`, `verify-email`, `forgot-password`, `reset-password` возвращают `501 AUTH_NOT_IMPLEMENTED` и не являются current shipped end-to-end capability.
+Клиент не должен рассчитывать на идемпотентность повторного запроса HTTP после удаления.
 
-## 429
+Бэкенд не удаляет мобильное профессиональное рабочее пространство. Текущий фронтенд при явном удалении профиля выполняет собственную локальную очистку.
 
-Rate limits verified, exact dedicated `429` body не established и не invented.
+## Заглушки контрактов 501
 
-Canonical machine contract: [`../openapi.yaml`](../openapi.yaml)
+| Метод | Путь | Аутентификация |
+|---|---|---|
+| POST | `/v1/auth/resend-verification` | Bearer |
+| POST | `/v1/auth/verify-email` | нет |
+| POST | `/v1/auth/forgot-password` | нет |
+| POST | `/v1/auth/reset-password` | нет |
+
+Они возвращают `501 AUTH_NOT_IMPLEMENTED` и не являются доступными сейчас сквозными возможностями продукта.
+
+## Ответ при превышении лимита запросов
+
+Лимиты маршрутов подтверждены реализацией, но отдельная каноническая структура тела ответа `429` текущими данными не установлена. Этот документ её не придумывает.
+
+Машиночитаемый контракт: [`../openapi.yaml`](../openapi.yaml)

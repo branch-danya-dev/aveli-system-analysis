@@ -1,27 +1,27 @@
-# Visit Photo Files
+# Файлы фотографий визитов
 
-> Physical binary-file persistence, связанный с metadata `visit_photos`.
+> Физическое файловое хранение, связанное с метаданными `visit_photos`.
 
-## Path Model
+## Модель пути
 
 ```text
 documents/visit_photos/<sanitizedUserId>/<appointmentId>/...
 ```
 
-SQLite row хранит metadata и `local_path`; байты изображения находятся вне SQLite.
+Строка SQLite хранит метаданные и `local_path`; байты изображения находятся вне SQLite.
 
-## Ownership
+## Владение
 
-Photo files следуют той же per-user workspace isolation rule, что и SQLite database.
+Файлы фотографий подчиняются той же пользовательской изоляции рабочего пространства, что и база SQLite.
 
 ## Удаление
 
-Delete appointment каскадом удаляет metadata rows через FK.
+Удаление записи каскадом удаляет строки метаданных через внешний ключ.
 
-Physical files чистятся отдельной repository/file-root логикой, а не SQLite.
+Физические файлы очищаются отдельной логикой репозитория и корневой папки файлов, а не механизмом SQLite.
 
-Поэтому одной DB referential integrity недостаточно, чтобы гарантировать отсутствие orphaned files.
+Поэтому одной ссылочной целостности БД недостаточно, чтобы гарантировать отсутствие потерянных файлов без метаданных.
 
-## Related
+## Связанная документация
 
 - [`../entities/visit_photos.ru.md`](../entities/visit_photos.ru.md)

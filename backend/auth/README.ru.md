@@ -1,42 +1,32 @@
-# Backend Authentication
+# Аутентификация бэкенда
 
-> Server-side identity и authenticated-session lifecycle.
+> Регистрация, вход, токены, серверные сессии, выход и жизненный цикл собственного аккаунта.
 
-## Назначение
-
-`auth/` описывает, как backend устанавливает **кто этот account**.
-
-Authentication намеренно отделена от access resolution.
+Аутентификация отвечает на вопрос:
 
 ```text
-Authentication
-    ↓
-Кто пользователь?
-
-Access
-    ↓
-Может ли пользователь открыть workspace?
+Кто этот пользователь?
 ```
 
-## Ответственность
+а не:
 
-Область владеет backend behavior для:
+```text
+Имеет ли он доступ к рабочему пространству?
+```
 
-- account registration;
-- credential validation;
-- sign-in;
-- authenticated session creation;
-- access-token issuance;
-- refresh-token rotation;
-- session expiration/revocation;
-- logout/revocation semantics.
+Доступ определяется отдельно в [`../access/`](../access/).
 
-## Навигация
+Область владеет:
+
+- проверкой учётных данных;
+- регистрацией аккаунта;
+- хэшированием паролей;
+- выдачей токена доступа;
+- созданием и ротацией сессий обновления;
+- выходом и отзывом сессий;
+- мягким удалением аккаунта.
+
+Основные документы:
 
 - [`authentication.ru.md`](authentication.ru.md)
 - [`session-lifecycle.ru.md`](session-lifecycle.ru.md)
-- [`auth-flow.puml`](auth-flow.puml)
-
-Access decision:
-
-[`../access/`](../access/)

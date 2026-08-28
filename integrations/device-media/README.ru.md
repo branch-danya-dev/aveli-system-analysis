@@ -1,6 +1,6 @@
-# Device Media Integration
+# Интеграция с медиафайлами устройства
 
-> Camera/gallery input boundary для Aveli visit photos.
+> Граница получения фотографий визитов Aveli из камеры и галереи устройства.
 
 ## Навигация
 

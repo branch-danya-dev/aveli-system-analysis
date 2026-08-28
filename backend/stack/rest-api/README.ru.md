@@ -1,27 +1,44 @@
 # REST API
 
-> HTTP interface style Aveli backend.
+> Стиль интерфейса HTTP бэкенда Aveli.
 
-## Role
+## Роль
 
-REST/JSON — external interface style для authentication, account self-service, access state, billing reconciliation, webhook ingress и health/readiness.
+REST/JSON используется для:
+
+- аутентификации;
+- операций пользователя с собственным аккаунтом;
+- получения состояния доступа;
+- сверки биллинга;
+- приёма вебхуков;
+- проверок доступности и готовности сервиса.
 
 ## Почему подходит
 
-Public surface небольшой и request/response oriented, потребляется в основном Flutter плюс RevenueCat webhooks. REST дает conventional HTTP semantics, простые JSON contracts, удобное mobile-client consumption и прямое OpenAPI representation.
+Публичный интерфейс Aveli небольшой и построен вокруг запросов и ответов. Основные потребители — клиент на Flutter и RevenueCat через вебхуки.
 
-## Canonical vs Contextual Knowledge
+REST даёт привычную семантику HTTP, простые контракты JSON, удобное использование мобильным клиентом и прямое описание через OpenAPI.
 
-Этот документ владеет general REST interface decision. Concrete paths, bodies, statuses, errors и authentication requirements canonical в [`../../api/`](../../api/).
+## Каноническое и контекстное описание
 
-## Limitations
+Этот документ описывает выбор REST как общего стиля интерфейса.
 
-REST contracts требуют deliberate evolution paths, HTTP semantics и JSON shapes. `AuthTokensResponse` и `AccessStatusView` client-dependent, поэтому careless changes являются breaking.
+Конкретные маршруты, тела запросов и ответов, статусы, ошибки и требования к аутентификации находятся в [`../../api/`](../../api/).
 
-## Replaceability
+## Ограничения
 
-**Low to medium пока current client зависит от REST.** Новый primary interface style потребует coordinated changes во Flutter remote data sources, authentication transport, billing/access calls, tests и API documentation.
+Контракты REST требуют аккуратного развития маршрутов, семантики HTTP и структур JSON.
 
-## Alternatives
+`AuthTokensResponse` и `AccessStatusView` используются клиентом напрямую, поэтому неосторожное изменение этих структур ломает совместимость.
 
-Potential alternatives: GraphQL, gRPC для controlled service-to-service interfaces или другой RPC-style HTTP contract. Historical ADR с formal evaluation отсутствует.
+## Заменяемость
+
+**Низкая или средняя, пока текущий клиент зависит от REST.**
+
+Переход на другой основной интерфейс потребует согласованных изменений источников данных Flutter, передачи аутентификации, вызовов биллинга и доступа, тестов и документации API.
+
+## Альтернативы
+
+Возможны GraphQL, gRPC для контролируемых межсервисных интерфейсов или другой подобный RPC контракт HTTP.
+
+Исторического ADR с формальной оценкой альтернатив нет.

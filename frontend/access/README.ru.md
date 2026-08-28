@@ -1,6 +1,6 @@
-# Frontend Access Gate
+# Контур проверки доступа на фронтенде
 
-> Client representation server access, secure snapshot persistence, offline verification policy и route-level workspace gating.
+> Клиентское представление серверного доступа, защищённое хранение снимка состояния, политика офлайн-проверки и маршрутизация на уровне рабочего пространства.
 
 ## Навигация
 

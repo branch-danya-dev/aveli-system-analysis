@@ -1,47 +1,52 @@
-# Backend
+# Бэкенд
 
-> Canonical documentation Aveli account/access backend.
+> Каноническая документация бэкенда Aveli, отвечающего за аккаунт и доступ.
 
 ## Статус
 
-**Baseline: Stable**
+**Стабильный базовый уровень**
 
-Backend docs reconciled с verified NestJS implementation evidence, API contracts, persistence, access logic, billing integration и final review.
+Документация согласована с проверенной реализацией NestJS, контрактами API, моделью хранения, логикой доступа, биллингом и итоговой общесистемной проверкой.
 
-## Responsibility
+## Ответственность
+
+Бэкенд владеет:
 
 ```text
-account identity
-authentication
-refresh sessions
-trial / manual / lifetime grants
-normalized subscription state
-effective online workspace access
-billing reconciliation
-RevenueCat webhook processing
+идентичностью аккаунта
+аутентификацией
+сессиями обновления
+пробным периодом
+ручными и бессрочными правами доступа
+нормализованным состоянием подписки
+итоговым решением об онлайн-доступе
+сверкой биллинга
+обработкой вебхуков RevenueCat
 ```
 
-Professional workspace backend не stores/synchronizes.
+Бэкенд **не хранит и не синхронизирует** профессиональное рабочее пространство специалиста.
 
-## Areas
+## Области
 
-| Area | Responsibility |
+| Область | Ответственность |
 |---|---|
-| `architecture/` | Backend boundary. |
-| `stack/` | Runtime technologies. |
-| `api/` | HTTP/OpenAPI. |
-| `auth/` | Session lifecycle. |
-| `access/` | Effective access. |
-| `billing/` | Reconciliation. |
-| `errors/` | Error taxonomy. |
-| `security/` | Security controls. |
-| `configuration/` | Runtime config. |
-| `admin/` | Admin CLI. |
+| `architecture/` | Граница ответственности и доверия бэкенда. |
+| `stack/` | Технологии бэкенда. |
+| `api/` | Канонические контракты HTTP и OpenAPI. |
+| `auth/` | Регистрация, вход и жизненный цикл сессии. |
+| `access/` | Определение итогового доступа. |
+| `billing/` | Сверка RevenueCat и состояние подписки. |
+| `errors/` | Система кодов ошибок. |
+| `security/` | Реализованные серверные меры безопасности. |
+| `configuration/` | Переменные окружения и конфигурация. |
+| `admin/` | Административный CLI вне HTTP API. |
 
-501 auth routes — future contract stubs, не current shipped capability.
+Маршруты аутентификации, возвращающие 501, являются заглушками будущих контрактов, а не доступными сейчас возможностями продукта.
 
-Canonical API: [`api/openapi.yaml`](api/openapi.yaml)
+Канонический API: [`api/openapi.yaml`](api/openapi.yaml)
 
-## Documentation Rules
+Владение данными: [`../database/architecture/data-ownership.ru.md`](../database/architecture/data-ownership.ru.md)
+
+## Правила документации
 
 [`../rules.ru.md`](../rules.ru.md)

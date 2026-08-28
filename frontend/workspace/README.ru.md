@@ -1,27 +1,27 @@
-# Professional Workspace
+# Профессиональное рабочее пространство
 
-> Frontend feature map device-owned operational workspace.
+> Карта возможностей локального рабочего пространства, которым управляет мобильный клиент.
 
-## Ownership
+## Владение
 
-Workspace entities остаются device-owned и сохраняются через Drift/SQLite и local files.
+Сущности рабочего пространства остаются под управлением устройства и сохраняются через Drift/SQLite и локальные файлы.
 
-Canonical schema:
+Каноническая схема:
 
 [`../../database/local/`](../../database/local/)
 
-## Feature Map
+## Карта возможностей
 
-| Feature | Main client responsibility |
+| Возможность | Основная ответственность клиента |
 |---|---|
-| Clients | CRM records, archive/delete/import behavior. |
-| Services | Service catalog editing. |
-| Appointments | Booking, reschedule, completion/cancellation, visit data. |
-| Today / Calendar | Reactive schedule projections и navigation. |
-| Payments | Outstanding payments и finance views. |
-| Visit Notes / Photos | Visit documentation и local media. |
-| Settings / Profile | Local profile/preferences, import/export, currency. |
-| Schedule | Working-hours model и slot validation. |
+| Клиенты | Карточки клиентов, архивирование, удаление и импорт. |
+| Услуги | Редактирование каталога услуг. |
+| Записи | Создание и перенос записи, завершение или отмена, данные визита. |
+| Сегодня / Календарь | Реактивное представление расписания и навигация. |
+| Оплаты | Неоплаченные суммы и финансовые представления. |
+| Заметки / фотографии визита | Документация визита и локальные медиафайлы. |
+| Настройки / профиль | Локальный профиль и настройки, импорт, экспорт и валюта. |
+| Расписание | Модель рабочих часов и проверка временных слотов. |
 
 ## Навигация
 

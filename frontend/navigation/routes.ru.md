@@ -1,8 +1,8 @@
-# Route Model
+# Модель маршрутов
 
-## Router
+## Маршрутизатор
 
-Canonical implementation:
+Каноническая реализация:
 
 ```text
 lib/app/router.dart
@@ -11,42 +11,42 @@ GoRouter
 initialLocation = /bootstrap
 ```
 
-## Verified Routes
+## Подтверждённые маршруты
 
-| Path | Purpose |
+| Путь | Назначение |
 |---|---|
-| `/bootstrap` | Cold start. |
-| `/welcome` | Public entry. |
-| `/register` | Registration. |
-| `/sign-in` | Login. |
-| `/access-gate` | Blocked / network-required access state. |
-| `/paywall` | Purchase/change-plan host. |
-| `/` | Today workspace tab. |
-| `/calendar` | Calendar tab. |
-| `/clients` | Clients tab. |
-| `/clients/:id` | Client details. |
-| `/more` | More tab. |
-| `/more/services` | Services. |
-| `/more/unpaid` | Outstanding payments. |
-| `/more/finances` | Period finance. |
-| `/more/profile` | Profile. |
-| `/more/profile/subscription` | Subscription details. |
-| `/more/appearance` | Appearance. |
-| `/more/about` | About. |
-| `/appointments/:id` | Appointment details на root navigator. |
+| `/bootstrap` | Холодный запуск. |
+| `/welcome` | Публичная точка входа. |
+| `/register` | Регистрация. |
+| `/sign-in` | Вход. |
+| `/access-gate` | Доступ заблокирован или требуется проверка через сеть. |
+| `/paywall` | Покупка и изменение тарифного плана. |
+| `/` | Вкладка рабочего пространства «Сегодня». |
+| `/calendar` | Вкладка календаря. |
+| `/clients` | Вкладка клиентов. |
+| `/clients/:id` | Карточка клиента. |
+| `/more` | Вкладка «Ещё». |
+| `/more/services` | Услуги. |
+| `/more/unpaid` | Неоплаченные суммы. |
+| `/more/finances` | Финансы за период. |
+| `/more/profile` | Профиль. |
+| `/more/profile/subscription` | Сведения о подписке. |
+| `/more/appearance` | Оформление. |
+| `/more/about` | О приложении. |
+| `/appointments/:id` | Карточка записи через корневой навигатор. |
 
-Workspace использует `StatefulShellRoute` с четырьмя tabs.
+Рабочее пространство использует `StatefulShellRoute` с четырьмя вкладками.
 
-## Query Deep Links
+## Глубокие ссылки с параметрами запроса
 
 ```text
 /?date=YYYY-MM-DD
 /calendar?date=YYYY-MM-DD
 ```
 
-Router обновляет `selectedScheduleDayProvider`.
+Маршрутизатор обновляет `selectedScheduleDayProvider`.
 
-## Notification Navigation
+## Навигация из уведомлений
 
 ```text
 notification payload

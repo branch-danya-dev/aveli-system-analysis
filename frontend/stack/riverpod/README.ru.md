@@ -1,19 +1,19 @@
 # Riverpod
 
-> State-management и dependency-injection technology Aveli frontend.
+> Технология управления состоянием и внедрения зависимостей во фронтенде Aveli.
 
-## Verified Version
+## Подтверждённая версия
 
 `flutter_riverpod 2.6.1`
 
-## Role
+## Роль
 
-Riverpod предоставляет long-lived infrastructure providers, async controllers, stream/future state и dependency wiring между features/shared services.
+Riverpod предоставляет долгоживущие инфраструктурные провайдеры, асинхронные контроллеры, состояния потоков и будущих значений, а также связывает зависимости между возможностями приложения и общими сервисами.
 
-Manual `ProviderContainer` mounted через `UncontrolledProviderScope`.
+`ProviderContainer` создаётся вручную и подключается через `UncontrolledProviderScope`.
 
-Большинство repository providers long-lived; `paywallOfferingsProvider` — verified `FutureProvider.autoDispose` example.
+Большинство провайдеров репозиториев долгоживущие; `paywallOfferingsProvider` — подтверждённый пример `FutureProvider.autoDispose`.
 
-## Replaceability
+## Заменяемость
 
-**Medium.** Providers широко используются, но repository/domain boundaries уменьшают scope потенциальной замены.
+**Средняя.** Провайдеры используются широко, но границы репозиториев и доменного слоя уменьшают масштаб потенциальной замены.

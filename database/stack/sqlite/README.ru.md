@@ -1,81 +1,79 @@
 # SQLite
 
-> Local relational storage engine профессионального workspace Aveli.
+> Локальная реляционная система хранения профессионального рабочего пространства Aveli.
 
-## Role
+## Роль
 
-SQLite — physical database engine каждого local professional workspace пользователя.
+SQLite — физический движок базы данных для рабочего пространства каждого пользователя.
 
 ```text
-User
+Пользователь
   ↓
 aveli_<userId>.sqlite
   ↓
-clients / services / appointments / payments / notes / photo metadata / settings
+clients / services / appointments / payments / visit_notes / visit_photos / app_settings
 ```
 
-Database остается на устройстве и не синхронизируется с Aveli backend.
+База данных остаётся на устройстве и не синхронизируется с бэкендом Aveli.
 
-## Почему подходит Aveli
+## Почему SQLite подходит Aveli
 
-Workspace Aveli имеет relational, а не document-oriented model.
+Рабочее пространство Aveli имеет реляционную, а не документную модель.
 
-Текущая schema использует:
+Текущая схема использует:
 
-- foreign keys между appointments, clients и services;
-- `UNIQUE(appointment_id)` для одной payment row на appointment;
-- cascade behavior для visit-related records;
-- joins для Today, Calendar, client history и outstanding payments;
-- versioned schema с 11 migration versions;
-- переносимый per-user `.sqlite` file.
+- внешние ключи между `appointments`, `clients` и `services`;
+- `UNIQUE(appointment_id)` для одной строки оплаты на запись;
+- каскадное удаление связанных с визитом записей;
+- соединения таблиц для экранов «Сегодня» и «Календарь», истории клиента и задолженностей;
+- версионируемую схему с 11 версиями миграций;
+- отдельный переносимый `.sqlite`-файл для каждого пользователя.
 
-Поэтому важный architectural choice — не просто «SQLite вместо другого Flutter package».
+Поэтому архитектурный выбор здесь — не просто «SQLite вместо другого пакета Flutter».
 
-Это:
+Это выбор **реляционного хранения вместо документного или хранения «ключ — значение» для профессионального рабочего пространства**.
 
-> **relational persistence вместо document/key-value persistence для professional workspace.**
+## Почему не Hive / Isar
 
-## Почему не Hive / Isar для текущей модели
+Hive хорошо подходит для лёгкого состояния «ключ — значение» и кэшей, но рабочее пространство Aveli зависит от реляционных ограничений и соединений таблиц.
 
-Hive хорошо подходит для lightweight key-value state и cache, но workspace Aveli зависит от relational constraints и joins.
+Isar способен моделировать связанные данные, однако переход на него потребовал бы заменить существующие ограничения, миграции, реактивный доступ к данным и формат пользовательской базы.
 
-Isar может моделировать связанные данные, однако его внедрение потребует заменить существующие constraints, migrations, reactive data access и user database format.
+Это уже миграция модели хранения, а не простая замена библиотеки.
 
-Это migration storage model, а не простая замена library.
+## Зависимости
 
-## Dependencies
-
-Canonical physical usage:
+Каноническое физическое использование:
 
 - [`../../local/schema/`](../../local/schema/)
 - [`../../local/entities/`](../../local/entities/)
 - [`../../local/migrations/`](../../local/migrations/)
 
-Consumer technology:
+Технология доступа к данным:
 
-- [`../drift/`](../drift/)
+- [`../../../frontend/stack/drift/`](../../../frontend/stack/drift/)
 
-## Replaceability
+## Заменяемость
 
-**Replaceability: medium на уровне engine/file format, но низкий приоритет замены для текущего продукта.**
+**Средняя на уровне движка и формата файла, но с низким приоритетом замены для текущего продукта.**
 
 Замена SQLite затронет:
 
-- migration пользовательских данных;
-- relationships и constraints;
-- Calendar / Today query projections;
-- payment invariants;
-- import/export;
-- persistence tests.
+- миграцию пользовательских данных;
+- связи и ограничения;
+- проекции запросов «Календарь» и «Сегодня»;
+- инварианты оплат;
+- импорт и экспорт;
+- тесты хранения.
 
 Замена Drift при сохранении SQLite значительно дешевле, чем замена самого SQLite.
 
-## Alternatives
+## Альтернативы
 
 Релевантные альтернативы:
 
 - Isar;
 - Hive;
-- другой SQLite access layer, например `sqflite`.
+- другой слой доступа к SQLite, например `sqflite`.
 
-В репозитории пока нет formal historical ADR, подтверждающего, что они были формально рассмотрены до implementation.
+В репозитории нет исторического ADR, подтверждающего формальное сравнение этих альтернатив до начала реализации.

@@ -1,146 +1,146 @@
-# Aveli — Functional Requirements
+# Aveli — Функциональные требования
 
-<p align="center"><a href="functional-requirements.md">English</a> · <a href="functional-requirements.ru.md"><b>Русский</b></a></p>
+<p align="center"><a href="functional-requirements.md">Английский</a> · <a href="functional-requirements.ru.md"><b>Русский</b></a></p>
 
-> Observable product capabilities в current Aveli scope.
+> Наблюдаемые возможности продукта в текущих границах Aveli.
 
 ## Статус
 
-**Baseline: Stable**
+**Стабильный базовый уровень**
 
-## Account and Authentication
-
-| ID | Требование |
-|---|---|
-| FR-001 | Позволять новому user создать account. |
-| FR-002 | Позволять existing user выполнить sign in. |
-| FR-003 | Восстанавливать authenticated session, когда current refresh session можно trusted. |
-| FR-004 | Позволять user выполнить logout. |
-| FR-005 | Использовать active authenticated user для выбора professional workspace. |
-
-## Trial and Access
+## Аккаунт и аутентификация
 
 | ID | Требование |
 |---|---|
-| FR-006 | Давать newly created account один 30-day trial. |
-| FR-007 | Сохранять original account trial через logout, reinstall и local workspace reset. |
-| FR-008 | Определять, может ли current authenticated user открыть workspace. |
-| FR-009 | Поддерживать lifetime, manual, subscription и trial access sources. |
-| FR-010 | Не позволять workspace entry без valid access source. |
-| FR-011 | Применять access к workspace целиком, а не feature-level paywalls. |
-| FR-012 | Сохранять professional workspace data при access expiry. |
-| FR-013 | Возвращать existing workspace после restore valid access. |
+| FR-001 | Позволять новому пользователю создать аккаунт. |
+| FR-002 | Позволять существующему пользователю войти в аккаунт. |
+| FR-003 | Восстанавливать аутентифицированную сессию, если текущая сессия обновления по-прежнему действительна. |
+| FR-004 | Позволять пользователю выйти из аккаунта. |
+| FR-005 | Использовать активного аутентифицированного пользователя для выбора профессионального рабочего пространства. |
 
-## Subscription
+## Пробный период и доступ
 
 | ID | Требование |
 |---|---|
-| FR-014 | Запускать supported monthly/yearly subscription purchase flows. |
-| FR-015 | Restore existing purchase. |
-| FR-016 | Reconcile provider subscription state с Aveli access state. |
-| FR-017 | Давать subscription-based workspace access после valid reconciled subscription. |
-| FR-018 | Считать monthly/yearly plans одинаковым logical access level. |
-| FR-019 | Показывать current platform/provider subscription pricing. |
+| FR-006 | Предоставлять новому аккаунту один 30-дневный пробный период. |
+| FR-007 | Сохранять исходный пробный период аккаунта после выхода, переустановки приложения и сброса локального рабочего пространства. |
+| FR-008 | Определять, может ли текущий аутентифицированный пользователь открыть рабочее пространство. |
+| FR-009 | Поддерживать бессрочный доступ, ручные права доступа, подписку и пробный период как источники доступа. |
+| FR-010 | Не разрешать вход в рабочее пространство, если ни один источник доступа не действует. |
+| FR-011 | Применять доступ ко всему рабочему пространству, а не к отдельным платным функциям. |
+| FR-012 | Сохранять профессиональные данные после окончания доступа. |
+| FR-013 | Снова предоставлять существующее рабочее пространство после восстановления действующего доступа. |
 
-## Clients
-
-| ID | Требование |
-|---|---|
-| FR-020 | Создавать client. |
-| FR-021 | Обновлять client information. |
-| FR-022 | Archive/restore client. |
-| FR-023 | Удалять client только если lifecycle rules разрешают и appointment history не требует сохранения client. |
-| FR-024 | Browse/search client directory. |
-| FR-025 | Открывать client profile и professional history. |
-| FR-026 | Создавать/enrich Aveli client из device contact при permission. |
-
-## Services
+## Подписка
 
 | ID | Требование |
 |---|---|
-| FR-027 | Создавать и обновлять services. |
-| FR-028 | Хранить service information для planning, включая price и expected duration. |
-| FR-029 | Удалять service только если это не инвалидирует existing appointment history; отдельный service-deactivation state отсутствует. |
+| FR-014 | Запускать поддерживаемые сценарии покупки месячной и годовой подписки. |
+| FR-015 | Восстанавливать существующую покупку. |
+| FR-016 | Сверять состояние подписки у провайдера с состоянием доступа Aveli. |
+| FR-017 | Предоставлять доступ по подписке после подтверждения действующей подписки. |
+| FR-018 | Считать месячный и годовой планы одним уровнем доступа. |
+| FR-019 | Показывать актуальную цену подписки, полученную от платформы или провайдера. |
 
-## Appointments
-
-| ID | Требование |
-|---|---|
-| FR-030 | Создавать appointment. |
-| FR-031 | Требовать client, date/time, service и другое planning information current workflow. |
-| FR-032 | Отклонять create/reschedule вне configured working schedule или при conflict с другим active scheduled appointment. |
-| FR-033 | Reschedule appointment. |
-| FR-034 | Cancel appointment. |
-| FR-035 | Mark appointment as no-show. |
-| FR-036 | Complete visit. |
-| FR-037 | Сохранять visit context: notes/photos. |
-| FR-038 | Отражать appointment lifecycle changes в Today/Calendar. |
-
-## Payments
+## Клиенты
 
 | ID | Требование |
 |---|---|
-| FR-039 | Записывать payment для work, valid for payment. |
-| FR-040 | Позволять completed visit оставаться unpaid/partial. |
-| FR-041 | Просматривать outstanding payments. |
-| FR-042 | Давать basic period finance из workspace payments. |
+| FR-020 | Создавать клиента. |
+| FR-021 | Изменять данные клиента. |
+| FR-022 | Архивировать и восстанавливать клиента. |
+| FR-023 | Удалять клиента только тогда, когда это допускают правила жизненного цикла и его не требуется сохранять для истории записей. |
+| FR-024 | Просматривать список клиентов и выполнять поиск. |
+| FR-025 | Открывать карточку клиента и просматривать доступную историю работы с ним. |
+| FR-026 | Создавать или дополнять клиента Aveli из контакта устройства после предоставления разрешения. |
 
-## Today and Calendar
-
-| ID | Требование |
-|---|---|
-| FR-043 | Предоставлять daily workspace view current day. |
-| FR-044 | Предоставлять calendar-based appointment navigation. |
-| FR-045 | Перемещаться между supported calendar dates. |
-| FR-046 | Поддерживать Today/Calendar projections consistent с appointment lifecycle. |
-
-## Reminders
+## Услуги
 
 | ID | Требование |
 |---|---|
-| FR-047 | Использовать reminders для supported appointments. |
-| FR-048 | Связывать reminder с appointment context. |
-| FR-049 | Деактивировать outgoing-user reminders на logout. |
-| FR-050 | Навигировать из valid reminder к related existing appointment. |
+| FR-027 | Создавать и изменять услуги. |
+| FR-028 | Хранить необходимые для планирования данные услуги, включая цену и ожидаемую длительность. |
+| FR-029 | Удалять услугу только тогда, когда это не нарушает историю существующих записей; отдельного состояния деактивации услуги в текущем продукте нет. |
 
-## Profile and Settings
-
-| ID | Требование |
-|---|---|
-| FR-051 | Управлять supported local profile information. |
-| FR-052 | Настраивать working schedule. |
-| FR-053 | Менять application language. |
-| FR-054 | Поддерживать Russian/English localization. |
-| FR-055 | Настраивать appearance preferences. |
-| FR-056 | Настраивать working currency. |
-| FR-057 | Export/import supported workspace data как user-mediated transfer; automatic merge divergent copies вне current stable contract. |
-
-## Professional Workspace Data
+## Записи
 
 | ID | Требование |
 |---|---|
-| FR-058 | Поддерживать professional workspace без continuous backend sync. |
-| FR-059 | Изолировать workspace information между authenticated users. |
-| FR-060 | Связывать visit media только с corresponding workspace. |
-| FR-061 | Сохранять workspace information на logout. |
-| FR-062 | Сохранять workspace information при access expiry. |
+| FR-030 | Создавать запись. |
+| FR-031 | Требовать клиента, дату и время, услугу и другие данные, необходимые текущему сценарию планирования. |
+| FR-032 | Отклонять создание или перенос записи, если она выходит за рабочее расписание либо конфликтует с другой активной записью. |
+| FR-033 | Переносить запись на другое время. |
+| FR-034 | Отменять запись. |
+| FR-035 | Отмечать неявку клиента. |
+| FR-036 | Завершать визит. |
+| FR-037 | Сохранять поддерживаемый контекст визита, включая заметки и фотографии. |
+| FR-038 | Отражать изменения жизненного цикла записи в представлениях «Сегодня» и «Календарь». |
 
-## Offline Behavior
+## Оплаты
 
 | ID | Требование |
 |---|---|
-| FR-063 | Продолжать normal workspace operations без permanent connectivity. |
-| FR-064 | Разрешать temporary offline access по previously verified access, если policy permits. |
-| FR-065 | Требовать renewed verification, когда offline policy больше не trusted previous verification. |
-| FR-066 | Требовать connectivity для current account/access/subscription verification. |
+| FR-039 | Фиксировать оплату для визита, который допускает оплату в текущем жизненном цикле. |
+| FR-040 | Позволять завершённому визиту оставаться неоплаченным или частично оплаченным. |
+| FR-041 | Показывать непогашенные задолженности. |
+| FR-042 | Предоставлять базовую финансовую информацию за период на основе сохранённых оплат. |
 
-## Requirement Boundary
+## Сегодня и календарь
 
-Functional requirements определяют product behavior, а не framework/schema choices.
+| ID | Требование |
+|---|---|
+| FR-043 | Предоставлять представление рабочего дня для текущей даты. |
+| FR-044 | Предоставлять навигацию по записям через календарь. |
+| FR-045 | Позволять переходить между поддерживаемыми датами календаря. |
+| FR-046 | Поддерживать согласованность представлений «Сегодня» и «Календарь» с изменениями записей. |
 
-Lifecycle clarifications canonical в [`business-rules.ru.md`](business-rules.ru.md). Low-level interval semantics, provider/store config, numeric performance targets и future automatic workspace merge здесь не придумываются.
+## Напоминания
 
-## Related Documentation
+| ID | Требование |
+|---|---|
+| FR-047 | Создавать напоминания для поддерживаемых записей. |
+| FR-048 | Связывать каждое напоминание с соответствующей записью. |
+| FR-049 | Отключать напоминания уходящего пользователя при выходе. |
+| FR-050 | Переходить из действующего напоминания к связанной существующей записи. |
+
+## Профиль и настройки
+
+| ID | Требование |
+|---|---|
+| FR-051 | Управлять поддерживаемыми локальными данными профиля. |
+| FR-052 | Настраивать рабочее расписание. |
+| FR-053 | Менять язык приложения. |
+| FR-054 | Поддерживать русскую и английскую локализацию. |
+| FR-055 | Настраивать поддерживаемые параметры оформления. |
+| FR-056 | Настраивать рабочую валюту для поддерживаемых функций продукта. |
+| FR-057 | Экспортировать и импортировать поддерживаемые данные как пользовательский перенос; автоматическое объединение расходящихся копий рабочего пространства не входит в текущий стабильный контракт. |
+
+## Данные профессионального рабочего пространства
+
+| ID | Требование |
+|---|---|
+| FR-058 | Обеспечивать работу с профессиональными данными без постоянной серверной синхронизации. |
+| FR-059 | Изолировать данные профессионального рабочего пространства разных аутентифицированных пользователей. |
+| FR-060 | Связывать пользовательские материалы визита только с соответствующим рабочим пространством. |
+| FR-061 | Сохранять постоянные данные профессионального рабочего пространства при выходе. |
+| FR-062 | Сохранять постоянные данные профессионального рабочего пространства после окончания доступа. |
+
+## Офлайн-режим
+
+| ID | Требование |
+|---|---|
+| FR-063 | Поддерживать обычную профессиональную работу без постоянного подключения к сети. |
+| FR-064 | Разрешать временный офлайн-доступ на основе ранее проверенного состояния, если это допускает политика. |
+| FR-065 | Требовать повторную проверку, когда прежнему подтверждению больше нельзя доверять по текущей офлайн-политике. |
+| FR-066 | Требовать подключение к сети для операций, которым необходимо актуальное состояние аккаунта, доступа или подписки. |
+
+## Граница требований
+
+Функциональные требования определяют **что должна уметь Aveli**, а не то, каким фреймворком, схемой или алгоритмом это реализовано.
+
+Подробные правила жизненного цикла находятся в [`business-rules.ru.md`](business-rules.ru.md). Точная низкоуровневая математика пересечения временных интервалов, настройки магазинов приложений, числовые показатели производительности и будущая логика объединения копий рабочего пространства не придумываются в этом документе.
+
+## Связанные документы
 
 - [`business-rules.ru.md`](business-rules.ru.md)
 - [`non-functional-requirements.ru.md`](non-functional-requirements.ru.md)

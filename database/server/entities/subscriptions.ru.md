@@ -1,27 +1,28 @@
 # `subscriptions`
 
-> RevenueCat entitlement-state snapshot, сохраняемый Aveli.
+> Снимок состояния права доступа RevenueCat, сохраняемый Aveli.
 
-| Field | Type | Default | Meaning |
+| Поле | Тип | По умолчанию | Назначение |
 |---|---|---|---|
-| `id` | UUID PK | — | Идентификатор subscription row. |
-| `user_id` | UUID FK | — | Owning user; ON DELETE CASCADE. |
-| `provider` | SubscriptionProvider | `revenuecat` | Subscription provider. |
-| `entitlement_id` | TEXT | `support` | Текущий logical RevenueCat entitlement. |
-| `product_id` | TEXT | — | Store product identifier. |
-| `store` | Store | `unknown` | `app_store`, `play_store` или `unknown`. |
-| `status` | SubscriptionStatus | — | Текущий provider-backed subscription state. |
-| `auto_renew` | BOOLEAN | — | Auto-renew state. |
-| `purchased_at` | TIMESTAMPTZ nullable | — | Время покупки. |
-| `current_period_start` | TIMESTAMPTZ nullable | — | Начало текущего period. |
-| `current_period_end` | TIMESTAMPTZ nullable | — | Конец текущего period. |
-| `provider_customer_id` | TEXT nullable | — | RevenueCat app user/customer identifier. |
-| `original_transaction_id` | TEXT nullable | — | Original store transaction identifier. |
-| `last_verified_at` | TIMESTAMPTZ nullable | — | Время последней verification. |
+| `id` | UUID PK | — | Идентификатор записи. |
+| `user_id` | UUID FK | — | Пользователь-владелец; ON DELETE CASCADE. |
+| `provider` | `SubscriptionProvider` | `revenuecat` | Провайдер подписки. |
+| `store` | `Store` | `unknown` | Магазин, связанный с подпиской. |
+| `product_id` | TEXT | — | Идентификатор продукта в магазине. |
+| `entitlement_id` | TEXT | — | Идентификатор права доступа RevenueCat. |
+| `status` | `SubscriptionStatus` | — | Текущее состояние подписки, полученное от провайдера. |
+| `auto_renew` | BOOLEAN | — | Состояние автоматического продления. |
+| `current_period_started_at` | TIMESTAMPTZ, допускает NULL | — | Начало текущего периода. |
+| `current_period_ends_at` | TIMESTAMPTZ, допускает NULL | — | Конец текущего периода. |
+| `grace_period_ends_at` | TIMESTAMPTZ, допускает NULL | — | Конец льготного периода. |
+| `cancelled_at` | TIMESTAMPTZ, допускает NULL | — | Время отмены. |
+| `revoked_at` | TIMESTAMPTZ, допускает NULL | — | Время отзыва. |
+| `original_transaction_id` | TEXT, допускает NULL | — | Исходный идентификатор транзакции магазина. |
+| `last_verified_at` | TIMESTAMPTZ, допускает NULL | — | Время последней проверки. |
 | `created_at` | TIMESTAMPTZ | — | Время создания. |
 | `updated_at` | TIMESTAMPTZ | — | Время обновления. |
 
-## Constraints
+## Ограничения
 
 UNIQUE:
 
@@ -29,7 +30,7 @@ UNIQUE:
 (user_id, entitlement_id)
 ```
 
-На одного user хранится одна subscription snapshot row на entitlement.
+Для одного пользователя хранится одна строка снимка подписки на каждое право доступа.
 
 ## Индексы
 
@@ -39,17 +40,17 @@ status
 entitlement_id
 ```
 
-## Trial Boundary
+## Граница пробного периода
 
-`trialing` может существовать как store/provider subscription status.
+`trialing` может существовать как состояние подписки в магазине или у провайдера.
 
-Aveli registration trial **не** хранится в этой table. Его persistence принадлежит `access_grants`.
+Регистрационный пробный период Aveli **не** хранится в этой таблице. Его хранение относится к `access_grants`.
 
-## Persistence Meaning
+## Назначение хранения
 
-Table является denormalized provider-state snapshot, а не event-sourcing storage.
+Таблица является денормализованным снимком состояния провайдера, а не хранилищем событий.
 
-Raw provider events хранятся отдельно в `subscription_events`.
+Исходные события провайдера хранятся отдельно в `subscription_events`.
 
 ## Связанная документация
 

@@ -1,22 +1,22 @@
-# Local SQLite Enumerations
+# Перечисления локального SQLite
 
-> Application enums, сохраняемые в local SQLite как TEXT значения enum `.name`.
+> Перечисления приложения, сохраняемые в SQLite как текстовые значения `.name`.
 
-| Enum | Persisted values |
+| Перечисление | Сохраняемые значения |
 |---|---|
 | `AppointmentStatus` | `scheduled`, `confirmed`, `completed`, `cancelled`, `noShow` |
 | `PaymentStatus` | `unpaid`, `partial`, `paid` |
 | `PaymentMethod` | `cash`, `card`, `transfer` |
 | `VisitPhotoType` | `before`, `after`, `general` |
 
-## Persistence Rule
+## Правило хранения
 
-Значения хранятся как TEXT через application enum name.
+Значения сохраняются как TEXT через имя значения перечисления в приложении.
 
-Поэтому rename enum value может стать persistence compatibility change и должен рассматриваться вместе с migration behavior.
+Поэтому переименование значения перечисления (`enum`) может стать изменением совместимости хранения и должно рассматриваться вместе с миграцией данных.
 
-## Product Classification Note
+## Замечание о продуктовой классификации
 
-Наличие persisted enum value не делает его автоматически canonical business state.
+Наличие значения перечисления (`enum`) в физической модели не делает его автоматически каноническим бизнес-состоянием.
 
-Например, `confirmed` существует в physical appointment persistence, но требует product-level classification до продвижения в business process documentation.
+Например, `confirmed` существует в физической модели записей, но его продуктовое значение должно быть классифицировано до включения в каноническую документацию бизнес-процессов.

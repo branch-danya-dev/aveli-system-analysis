@@ -1,19 +1,19 @@
 # `users`
 
-> Backend records пользовательской identity.
+> Серверные записи, представляющие учётные записи пользователей.
 
-| Field | Type | Meaning |
+| Поле | Тип | Назначение |
 |---|---|---|
 | `id` | UUID PK | Идентификатор пользователя. |
-| `email` | TEXT | Email в исходном пользовательском представлении. |
-| `email_normalized` | TEXT UNIQUE | Нормализованный email для sign-in: lowercase / trimmed. |
-| `password_hash` | TEXT | Argon2id hash пароля; plaintext не хранится. |
-| `email_verified_at` | TIMESTAMPTZ nullable | Время подтверждения email. |
-| `status` | UserStatus | Lifecycle state: `active`, `disabled`, `deleted`. |
+| `email` | TEXT | Адрес электронной почты в исходном пользовательском представлении. |
+| `email_normalized` | TEXT UNIQUE | Нормализованный адрес электронной почты для входа: в нижнем регистре, без внешних пробелов. |
+| `password_hash` | TEXT | Хеш пароля Argon2id; пароль в открытом виде не хранится. |
+| `email_verified_at` | TIMESTAMPTZ, допускает NULL | Время подтверждения адреса электронной почты. |
+| `status` | `UserStatus` | Состояние жизненного цикла: `active`, `disabled`, `deleted`. |
 | `created_at` | TIMESTAMPTZ | Время создания. |
 | `updated_at` | TIMESTAMPTZ | Время последнего обновления. |
-| `last_login_at` | TIMESTAMPTZ nullable | Время последнего успешного login. |
+| `last_login_at` | TIMESTAMPTZ, допускает NULL | Время последнего успешного входа. |
 
-## Related Documentation
+## Связанная документация
 
 - [`../schema/enums.ru.md`](../schema/enums.ru.md)

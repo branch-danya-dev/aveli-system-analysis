@@ -1,18 +1,18 @@
 # `visit_photos`
 
-> Metadata visit-photo files.
+> Метаданные файлов фотографий визита.
 
-| Column | Type | NULL | Meaning |
+| Столбец | Тип | NULL | Назначение |
 |---|---|---|---|
-| `id` | TEXT | NO | PK; UUID. |
-| `appointment_id` | TEXT | NO | FK → `appointments.id`; ON DELETE CASCADE. |
-| `client_id` | TEXT | NO | FK → `clients.id`; denormalized client reference. |
-| `local_path` | TEXT | NO | Абсолютный local file path. |
-| `type` | TEXT | NO | `VisitPhotoType`: before / after / general. |
-| `created_at` | DATETIME | NO | Создание. |
+| `id` | TEXT | NO | Первичный ключ; UUID. |
+| `appointment_id` | TEXT | NO | Внешний ключ → `appointments.id`; `ON DELETE CASCADE`. |
+| `client_id` | TEXT | NO | Внешний ключ → `clients.id`; денормализованная ссылка на клиента. |
+| `local_path` | TEXT | NO | Абсолютный путь к локальному файлу. |
+| `type` | TEXT | NO | `VisitPhotoType`: `before` / `after` / `general`. |
+| `created_at` | DATETIME | NO | Время создания. |
 
-## Physical File Boundary
+## Граница физического хранения
 
-Строка хранит metadata. Байты изображения находятся в device file storage.
+Строка хранит только метаданные. Байты изображения находятся в файловом хранилище устройства.
 
-`client_id` намеренно синхронизируется со связью appointment; в этой модели участвуют migrations v4, v7 и v8.
+`client_id` намеренно синхронизируется со связью записи с клиентом; в формировании этой модели участвуют миграции v4, v7 и v8.

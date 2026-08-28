@@ -1,133 +1,140 @@
-# Aveli — Acceptance Criteria
+# Aveli — Критерии приёмки
 
-<p align="center"><a href="acceptance-criteria.md">English</a> · <a href="acceptance-criteria.ru.md"><b>Русский</b></a></p>
+<p align="center"><a href="acceptance-criteria.md">Английский</a> · <a href="acceptance-criteria.ru.md"><b>Русский</b></a></p>
 
-> Observable product conditions для verification requirements/business rules.
+> Наблюдаемые условия, по которым проверяются требования и бизнес-правила.
 
 ## Статус
 
-**Baseline: Stable**
+**Стабильный базовый уровень**
 
-## Authentication
+## Аутентификация
 
-| ID | Acceptance Criterion |
+| ID | Критерий приёмки |
 |---|---|
-| AC-001 | Новый user может создать account и войти в authenticated state. |
-| AC-002 | Existing user может sign in с valid credentials. |
-| AC-003 | Invalid credentials не создают authenticated session. |
-| AC-004 | Logout завершает active authenticated state. |
-| AC-005 | Logout не удаляет professional workspace. |
+| AC-001 | Новый пользователь может создать аккаунт и перейти в аутентифицированное состояние. |
+| AC-002 | Существующий пользователь может войти с действующими учётными данными. |
+| AC-003 | Неверные учётные данные не создают аутентифицированную сессию. |
+| AC-004 | Выход завершает активное аутентифицированное состояние. |
+| AC-005 | Выход не удаляет профессиональное рабочее пространство. |
 
-## Trial and Access
+## Пробный период и доступ
 
-| ID | Acceptance Criterion |
+| ID | Критерий приёмки |
 |---|---|
-| AC-006 | New account получает один 30-day trial. |
-| AC-007 | Logout/sign-in не создаёт новый trial. |
-| AC-008 | Reinstall не создаёт новый trial. |
-| AC-009 | Valid access source позволяет workspace entry. |
-| AC-010 | Без valid access source workspace entry blocked. |
-| AC-011 | Valid access unlocks whole workspace. |
-| AC-012 | Access expiry preserves workspace information. |
-| AC-013 | Restored access возвращает preserved workspace. |
+| AC-006 | Новый аккаунт получает один 30-дневный пробный период. |
+| AC-007 | Выход и повторный вход не создают новый пробный период. |
+| AC-008 | Переустановка приложения не создаёт новый пробный период для того же аккаунта. |
+| AC-009 | Наличие хотя бы одного действующего источника доступа позволяет открыть рабочее пространство. |
+| AC-010 | При отсутствии действующего источника доступа рабочее пространство не открывается. |
+| AC-011 | Действующий доступ открывает рабочее пространство целиком. |
+| AC-012 | Окончание доступа не удаляет данные профессионального рабочего пространства. |
+| AC-013 | После восстановления действующего доступа ранее сохранённое рабочее пространство снова становится доступным. |
 
-## Subscription
+## Подписка
 
-| ID | Acceptance Criterion |
+| ID | Критерий приёмки |
 |---|---|
-| AC-014 | User может начать monthly/yearly purchase flow. |
-| AC-015 | Monthly/yearly subscriptions дают same logical access. |
-| AC-016 | Subscription state reconciles с Aveli access. |
-| AC-017 | Valid reconciled subscription grants access. |
-| AC-018 | Restore valid subscription restores access. |
-| AC-019 | Displayed subscription price matches provider/platform. |
-| AC-020 | Recurring billing/management location clearly presented. |
+| AC-014 | Пользователь может запустить поддерживаемый сценарий покупки месячной или годовой подписки. |
+| AC-015 | Месячная и годовая подписки предоставляют одинаковый уровень доступа. |
+| AC-016 | Состояние подписки можно сверить с состоянием доступа Aveli. |
+| AC-017 | Подтверждённая действующая подписка предоставляет доступ к рабочему пространству. |
+| AC-018 | Восстановление действующей подписки возвращает доступ. |
+| AC-019 | Показанная цена подписки соответствует цене платформы или провайдера. |
+| AC-020 | Пользователю ясно показаны возобновляемый характер подписки и место управления ею. |
 
-## Professional Workspace Data
+## Данные профессионального рабочего пространства
 
-| ID | Acceptance Criterion |
+| ID | Критерий приёмки |
 |---|---|
-| AC-021 | Workspace entities usable без continuous backend sync. |
-| AC-022 | Created data stays with active user workspace. |
-| AC-023 | One user data not shown in another workspace. |
-| AC-024 | Visit media not exposed across users. |
-| AC-025 | Logout closes context without deleting data. |
+| AC-021 | Сущности рабочего пространства остаются доступными без постоянной серверной синхронизации. |
+| AC-022 | Созданные данные остаются связанными с рабочим пространством активного пользователя. |
+| AC-023 | Данные одного пользователя не отображаются в активном рабочем пространстве другого. |
+| AC-024 | Материалы визитов не раскрываются между пользователями. |
+| AC-025 | Выход закрывает активный контекст рабочего пространства, не удаляя постоянные данные. |
 
-## Clients
+## Клиенты
 
-| ID | Acceptance Criterion |
+| ID | Критерий приёмки |
 |---|---|
-| AC-026 | Create client and find in directory. |
-| AC-027 | Update client and observe changes. |
-| AC-028 | Archive/restore client. |
-| AC-029 | Open client profile/history. |
-| AC-030 | Import permitted device contact without modifying source. |
+| AC-026 | Пользователь может создать клиента и найти его в списке. |
+| AC-027 | Пользователь может изменить клиента и увидеть обновлённые данные. |
+| AC-028 | Пользователь может архивировать и восстановить клиента. |
+| AC-029 | Пользователь может открыть карточку клиента и просмотреть историю работы с ним. |
+| AC-030 | Разрешённый контакт устройства можно импортировать без изменения исходного контакта. |
 
-## Appointments and Visits
+## Записи и визиты
 
-| ID | Acceptance Criterion |
+| ID | Критерий приёмки |
 |---|---|
-| AC-031 | Create appointment satisfying scheduling rules. |
-| AC-032 | Created appointment appears Today/Calendar. |
-| AC-033 | Create/reschedule violating working hours/conflict rejected. |
-| AC-034 | Reschedule appointment and see updated time. |
-| AC-035 | Cancel appointment and it is not active scheduled work. |
-| AC-036 | No-show distinguishable from cancelled/completed. |
-| AC-037 | Complete valid visit. |
-| AC-038 | Notes/photos attached to completed visit. |
+| AC-031 | Пользователь может создать запись, удовлетворяющую текущим правилам расписания. |
+| AC-032 | Созданная запись появляется в соответствующих представлениях «Сегодня» и «Календарь». |
+| AC-033 | Создание или перенос записи с нарушением рабочего времени или правил конфликтов отклоняется. |
+| AC-034 | После переноса записи новое время отображается в соответствующих представлениях. |
+| AC-035 | После отмены запись больше не считается активной запланированной работой. |
+| AC-036 | Неявка остаётся отличимой от отменённого и завершённого визита. |
+| AC-037 | Пользователь может завершить допустимый визит. |
+| AC-038 | Поддерживаемые заметки и фотографии остаются связанными с завершённым визитом. |
 
-## Payments
+## Оплаты
 
-| ID | Acceptance Criterion |
+| ID | Критерий приёмки |
 |---|---|
-| AC-039 | Record payment for valid payable visit. |
-| AC-040 | Completed visit can remain unpaid/partial. |
-| AC-041 | Outstanding amount visible until resolved. |
-| AC-042 | Period finance reflects workspace payments. |
+| AC-039 | Пользователь может зафиксировать оплату для визита, допускающего оплату. |
+| AC-040 | Завершённый визит может оставаться неоплаченным или частично оплаченным. |
+| AC-041 | Непогашенная сумма остаётся видимой до погашения. |
+| AC-042 | Финансовая сводка за период отражает данные оплат рабочего пространства. |
 
-## Reminders
+## Напоминания
 
-| ID | Acceptance Criterion |
+| ID | Критерий приёмки |
 |---|---|
-| AC-043 | Create/use reminder. |
-| AC-044 | Open reminder to existing appointment. |
-| AC-045 | Logout deactivates reminders. |
-| AC-046 | Account switching does not expose reminders. |
+| AC-043 | Пользователь может создать и получить поддерживаемое напоминание о записи. |
+| AC-044 | Действующее напоминание открывает соответствующую существующую запись. |
+| AC-045 | Выход деактивирует напоминания уходящего пользователя. |
+| AC-046 | После смены аккаунта напоминания предыдущего пользователя не раскрываются. |
 
-## Offline Access
+## Офлайн-доступ
 
-| ID | Acceptance Criterion |
+| ID | Критерий приёмки |
 |---|---|
-| AC-047 | Verified access permits offline use while policy trusts. |
-| AC-048 | Offline access bounded by policy. |
-| AC-049 | Expired verification requires renewal. |
-| AC-050 | Verification failure does not delete/corrupt workspace. |
+| AC-047 | Ранее проверенный доступ может разрешать офлайн-работу, пока политика считает подтверждение действующим. |
+| AC-048 | Офлайн-доступ ограничен политикой повторной проверки. |
+| AC-049 | После истечения срока доверия требуется новая проверка. |
+| AC-050 | Ошибка проверки доступа или сервера не удаляет и не повреждает данные рабочего пространства. |
 
-## Final Coverage Additions
+## Дополнительное покрытие
 
-| ID | Acceptance Criterion |
+| ID | Критерий приёмки |
 |---|---|
-| AC-056 | Valid stored refresh session restores auth and opens correct local workspace. |
-| AC-057 | User can create/update service and use price/duration in planning. |
-| AC-058 | Referenced service cannot be removed if it invalidates appointment history. |
-| AC-059 | Today shows current daily projection and reflects changes. |
-| AC-060 | Calendar changes selected date and shows corresponding appointments. |
-| AC-061 | Supported local settings can be changed and remain available according to current persistence. |
-| AC-062 | RU/EN localization can be selected without changing workspace ownership. |
-| AC-063 | Supported export/import works; automatic conflict merge is not claimed. |
-| AC-064 | One appointment cannot have two independent payment records; partial/full stays in one aggregate. |
+| AC-056 | Действующая сохранённая сессия обновления восстанавливает аутентификацию и открывает локальное рабочее пространство соответствующего пользователя. |
+| AC-057 | Пользователь может создать или изменить услугу и использовать её текущую цену и длительность при планировании записи. |
+| AC-058 | Услугу, на которую ссылаются существующие записи, нельзя удалить так, чтобы нарушить смысл истории. |
+| AC-059 | Представление «Сегодня» показывает записи текущего дня и отражает изменения их жизненного цикла. |
+| AC-060 | Переход на другую дату в календаре показывает записи выбранной даты. |
+| AC-061 | Поддерживаемые локальные настройки профиля, расписания, оформления и валюты можно изменить; они сохраняются согласно своей модели хранения. |
+| AC-062 | Русскую или английскую локализацию можно выбрать без изменения владения профессиональным рабочим пространством. |
+| AC-063 | Пользователь может создать поддерживаемый экспорт и выбрать или прочитать поддерживаемый файл импорта; автоматическое объединение конфликтующих копий не заявляется. |
+| AC-064 | В текущей модели у одной записи не может существовать две независимые записи об оплате; частичная и полная оплата отражаются в одном агрегате. |
 
-## Historical Identifier Note
+## Исторические идентификаторы
 
-`AC-051`–`AC-055` использовались earlier release-specific acceptance model и intentionally не переиспользуются.
+`AC-051`–`AC-055` использовались в более ранней структуре для релизных проверок. Они намеренно не переиспользуются.
 
-Technical release verification canonical в [`../../system/review/release-readiness.ru.md`](../../system/review/release-readiness.ru.md), [`../../frontend/testing/`](../../frontend/testing/), [`../../frontend/security/`](../../frontend/security/), [`../../backend/security/`](../../backend/security/).
+Техническая проверка готовности к релизу находится в:
 
-## Remaining Measurement Work
+- [`../../system/review/release-readiness.ru.md`](../../system/review/release-readiness.ru.md)
+- [`../../frontend/testing/`](../../frontend/testing/)
+- [`../../frontend/security/`](../../frontend/security/)
+- [`../../backend/security/`](../../backend/security/)
 
-Numeric performance targets и per-release store/device evidence классифицированы в [`../../system/review/open-questions.ru.md`](../../system/review/open-questions.ru.md).
+## Измеримые показатели
 
-## Related Documentation
+Числовые показатели производительности и подтверждения конкретной версии в магазинах приложений не становятся продуктовыми критериями приёмки, пока не определён базовый набор устройств, объём данных и контекст релиза.
+
+Их классификация находится в [`../../system/review/open-questions.ru.md`](../../system/review/open-questions.ru.md).
+
+## Связанные документы
 
 - [`business-rules.ru.md`](business-rules.ru.md)
 - [`functional-requirements.ru.md`](functional-requirements.ru.md)

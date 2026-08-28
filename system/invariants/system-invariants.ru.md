@@ -1,82 +1,82 @@
-# Aveli — System Invariants
+# Aveli — системные инварианты
 
-Эти invariants суммируют rules, смысл которых пересекает несколько system components.
+Эти инварианты объединяют правила, смысл которых пересекает несколько компонентов системы.
 
-## SI-001 — Workspace Data Ownership
+## SI-001 — Профессиональные данные принадлежат локальному рабочему пространству
 
-Professional workspace data остаются owned user-local workspace в current architecture.
+Данные профессионального рабочего пространства в текущей архитектуре принадлежат локальному пространству пользователя на устройстве.
 
-## SI-002 — Backend Access Authority
+## SI-002 — Бэкенд определяет доступ
 
-Backend остается authoritative online source workspace access.
+Бэкенд остаётся авторитетным сетевым источником решения о доступе к рабочему пространству.
 
-## SI-003 — Access Does Not Own Data
+## SI-003 — Доступ не владеет профессиональными данными
 
-Access denial/expiry не должны удалять professional workspace data.
+Запрет или истечение доступа не должны удалять данные профессионального рабочего пространства.
 
-## SI-004 — One Workspace Context per Authenticated User
+## SI-004 — Одно рабочее пространство для текущего аутентифицированного пользователя
 
-Active backend user id выбирает соответствующий local database и media namespace.
+Идентификатор активного пользователя бэкенда выбирает соответствующую локальную базу данных и пространство имён медиафайлов.
 
-Другой account не должен видеть чужой local workspace.
+Другая учётная запись не должна видеть чужое локальное рабочее пространство.
 
-## SI-005 — Purchase Is Not Direct Access
+## SI-005 — Покупка не означает прямой доступ
 
-Client-side store/RevenueCat purchase result должен пройти backend billing reconciliation до превращения в Aveli workspace access.
+Результат покупки в магазине или RevenueCat на клиенте должен пройти серверную сверку биллинга, прежде чем превратиться в решение Aveli о доступе к рабочему пространству.
 
-## SI-006 — Trial Is Account-Owned
+## SI-006 — Пробный период принадлежит учётной записи
 
-Registration trial backend/account-owned и не reset через reinstall или delete local workspace.
+Регистрационный пробный период хранится и контролируется бэкендом на уровне учётной записи. Переустановка приложения или удаление локального рабочего пространства не запускают его заново.
 
-## SI-007 — Local Work Does Not Require Continuous Workspace Sync
+## SI-007 — Локальная работа не требует постоянной синхронизации рабочего пространства
 
-Normal professional operations не требуют cloud copy clients/appointments/payments.
+Обычные профессиональные операции не требуют облачной копии клиентов, записей и оплат.
 
-## SI-008 — Logout Preserves Workspace
+## SI-008 — Выход сохраняет рабочее пространство
 
-Logout очищает active session/access context, но сохраняет local professional workspace.
+Обычный выход завершает сессию и очищает связанное с доступом клиентское состояние, но не удаляет профессиональные данные пользователя.
 
-## SI-009 — Explicit Profile Delete Is Different
+## SI-009 — Явное удаление профиля — отдельная операция
 
-Profile/account deletion может выполнять destructive local cleanup.
+Удаление профиля или учётной записи может включать безвозвратную очистку локальных данных.
 
-Его нельзя смешивать с logout/access expiry.
+Его нельзя смешивать с обычным выходом или истечением доступа.
 
-## SI-010 — External Failure Isolation
+## SI-010 — Локальные данные изолированы по пользователю
 
-Failure RevenueCat, exchange-rate API, contacts permission, notifications или temporary network не должен silently delete unrelated workspace data.
+SQLite, фотографии визитов и защищённый снимок состояния доступа используют идентификатор пользователя для разделения данных.
 
-## SI-011 — Device Contact Import Creates Aveli Data
+## SI-011 — Импорт контакта не меняет исходный контакт
 
-Imported contact information становится частью Aveli client record.
+Импортированная информация контакта становится частью отдельной записи клиента Aveli.
 
-Aveli не пишет изменения обратно в source contact.
+Aveli не записывает изменения обратно в исходный контакт устройства.
 
-## SI-012 — Webhook Is Evidence, Not Access Logic
+## SI-012 — Вебхук является подтверждением, а не прямой логикой доступа
 
-RevenueCat webhook event type не grants/revokes workspace access напрямую.
+Тип события вебхука RevenueCat не выдаёт и не отзывает доступ к рабочему пространству напрямую.
 
-Backend сначала reconciles provider state.
+Сначала бэкенд сверяет состояние провайдера, затем применяет общий алгоритм определения доступа Aveli.
 
-## SI-013 — Workspace Access Is Whole-Workspace
+## SI-013 — Доступ открывает рабочее пространство целиком
 
-Current product не использует feature-level premium gates.
+Текущий продукт не использует отдельные платные ограничения для отдельных функций.
 
-Valid access source unlocks workspace whole.
+Действующий источник доступа открывает рабочее пространство целиком.
 
-## SI-014 — No Current Multi-Device Workspace Synchronization
+## SI-014 — Текущая версия не синхронизирует рабочее пространство между устройствами
 
-Professional workspace records не synchronized между devices в current product boundary.
+Записи профессионального рабочего пространства не синхронизируются между устройствами в текущих границах продукта.
 
-## Canonical Sources
+## Связанные правила
 
-Business rules:
+Бизнес-правила:
 
-[`../../business/requirements/business-rules.ru.md`](../../business/requirements/business-rules.ru.md)
+- [`../../business/requirements/business-rules.ru.md`](../../business/requirements/business-rules.ru.md)
 
-Technical ownership:
+Техническое владение:
 
+- [`../../backend/access/`](../../backend/access/)
+- [`../../frontend/access/`](../../frontend/access/)
 - [`../../database/`](../../database/)
-- [`../../backend/`](../../backend/)
-- [`../../frontend/`](../../frontend/)
-- [`../../integrations/`](../../integrations/)
+- [`../../integrations/revenuecat/`](../../integrations/revenuecat/)

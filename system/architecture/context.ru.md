@@ -1,121 +1,121 @@
-# Aveli — System Context
+# Aveli — системный контекст
 
-## Product Context
+## Контекст продукта
 
-Aveli — personal mobile workspace для independent beauty professional.
+Aveli — персональное мобильное рабочее пространство для независимого специалиста индустрии красоты.
 
-Operating model намеренно узкий:
+Рабочая модель намеренно узкая:
 
 ```text
-One specialist
+Один специалист
     ↓
-Own clients
+Свои клиенты
     ↓
-Own schedule
+Своё расписание
     ↓
-Own services
+Свои услуги
     ↓
-Own visits
+Свои визиты
     ↓
-Own payments
+Свои оплаты
 ```
 
-System designed как lightweight professional workspace, а не salon-management platform или enterprise CRM.
+Система спроектирована как лёгкое профессиональное рабочее пространство, а не как платформа управления салоном или корпоративная CRM.
 
-Canonical business context:
+Канонический бизнес-контекст:
 
 [`../../business/context/product-context.ru.md`](../../business/context/product-context.ru.md)
 
-## Primary Actor
+## Основной пользователь
 
 ```text
-Independent Beauty Professional
+Независимый специалист индустрии красоты
 ```
 
-Specialist использует Aveli чтобы:
+Специалист использует Aveli, чтобы:
 
-- понимать current day;
-- управлять clients;
-- планировать appointments;
-- поддерживать services;
-- сохранять visit context;
-- отслеживать payments;
-- получать local reminders;
-- управлять workspace access.
+- видеть текущий рабочий день;
+- управлять клиентами;
+- планировать записи;
+- вести каталог услуг;
+- сохранять контекст визитов;
+- отслеживать оплаты;
+- получать локальные напоминания;
+- управлять доступом к рабочему пространству.
 
-## System Boundary
+## Граница системы
 
 В Aveli входят:
 
 ```text
-Aveli Mobile Client
-Aveli Backend
-Aveli-controlled persistence
-Aveli integration logic
+Мобильный клиент Aveli
+Бэкенд Aveli
+Хранилища под управлением Aveli
+Логика интеграций Aveli
 ```
 
-External:
+Внешние системы и службы:
 
 ```text
 RevenueCat
 Apple App Store
 Google Play
-Device Contacts
-OS Notification Service
-Camera / Gallery
-Exchange Rate API
-OS Share / File Picker / SMS / Browser
+Контакты устройства
+Служба уведомлений ОС
+Камера / галерея
+API курсов валют
+Системное меню «Поделиться» / выбор файла / SMS / браузер
 ```
 
-## Core Responsibility Split
+## Основное разделение ответственности
 
-Aveli разделен на:
+Aveli разделён на:
 
-### Professional Workspace
+### Профессиональное рабочее пространство
 
 ```text
-clients
-services
-appointments
-payments
-notes
-photos
-schedule
-workspace preferences
+клиенты
+услуги
+записи
+оплаты
+заметки
+фотографии
+расписание
+настройки рабочего пространства
 ```
 
-Это operational data specialist.
+Это операционные данные специалиста.
 
-Current system хранит их device-local.
+Текущая система хранит их локально на устройстве.
 
-### Identity and Access
+### Идентификация и доступ
 
 ```text
-account
-session
-trial
-manual/lifetime grants
-subscription state
-effective access decision
+аккаунт
+сессия
+пробный период
+ручные / бессрочные права доступа
+состояние подписки
+итоговое решение о доступе
 ```
 
-Это backend-controlled domain.
+Это область, управляемая бэкендом.
 
-## Important Product Boundary
+## Важная граница продукта
 
-Current Aveli **не** предоставляет:
+Текущий Aveli **не** предоставляет:
 
 ```text
-cloud workspace synchronization
-multi-device workspace synchronization
-shared team workspace
-public online booking backend
-server-side client CRM
-server-side appointment storage
+облачная синхронизация рабочего пространства
+синхронизация рабочего пространства между устройствами
+общее командное рабочее пространство
+сервер публичной онлайн-записи
+серверная CRM клиентов
+серверное хранение записей
 ```
 
-Это architecture-changing exclusions, а не просто missing UI features.
+Их появление изменило бы архитектуру системы, поэтому это не просто отсутствующие функции интерфейса.
 
-Canonical scope:
+Канонические границы продукта:
 
 [`../../business/scope/scope.ru.md`](../../business/scope/scope.ru.md)

@@ -1,22 +1,22 @@
-# Aveli Backend — Responsibility Boundary
+# Бэкенд Aveli — граница ответственности
 
-> Проверенные backend-local capability, trust и ownership boundaries.
+> Проверенные локальные границы возможностей, доверия и владения бэкенда.
 
-## Миссия Backend
+## Назначение бэкенда
 
-Aveli backend — узкий account service.
+Бэкенд Aveli — узкий сервис аккаунта и доступа.
 
-Он отвечает:
+Он отвечает на два основных вопроса:
 
 ```text
-Кто этот account?
+К какому аккаунту относится запрос?
         +
-Может ли этот authenticated account открыть workspace сейчас?
+Может ли этот аутентифицированный аккаунт открыть рабочее пространство сейчас?
 ```
 
-Также он reconciles RevenueCat subscription evidence, необходимый access decision.
+Для решения второго вопроса бэкенд также сверяет состояние подписки RevenueCat.
 
-## Проверенные NestJS Modules
+## Подтверждённые модули NestJS
 
 ```text
 AppModule
@@ -29,83 +29,83 @@ AppModule
 └── BillingModule
 ```
 
-Application bootstrap в `backend/src/main.ts` также применяет:
+При запуске в `backend/src/main.ts` также применяются:
 
 - `helmet`;
-- global `ValidationPipe`;
-- optional CORS.
+- глобальный `ValidationPipe`;
+- необязательный CORS.
 
-Global HTTP error serialization принадлежит `ApiExceptionFilter`.
+Глобальной сериализацией ошибок HTTP владеет `ApiExceptionFilter`.
 
-## Capability Map
+## Карта возможностей
 
-### AuthModule
+### `AuthModule`
 
-Владеет:
+Отвечает за:
 
-- registration;
-- sign-in;
-- JWT authentication;
-- refresh-session lifecycle;
-- logout/session revocation;
-- account self-read/delete endpoints.
+- регистрацию;
+- вход;
+- аутентификацию JWT;
+- жизненный цикл сессии обновления;
+- выход и отзыв сессий;
+- чтение и удаление собственного аккаунта.
 
-### AccessModule
+### `AccessModule`
 
-Владеет:
+Отвечает за:
 
 - `GET /v1/access`;
-- загрузкой access sources;
-- deterministic access resolution;
-- non-HTTP `AdminAccessService`.
+- загрузку источников доступа;
+- однозначное определение доступа;
+- `AdminAccessService` вне HTTP API.
 
-Pure decision implementation:
+Чистая функция принятия решения:
 
 ```text
 backend/src/access/access.decision.ts
 ```
 
-### BillingModule
+### `BillingModule`
 
-Владеет:
+Отвечает за:
 
 - `POST /v1/billing/sync`;
 - `POST /v1/webhooks/revenuecat`;
-- RevenueCat REST reconciliation;
-- subscription snapshot persistence;
-- webhook-event processing.
+- серверную сверку RevenueCat REST;
+- сохранение снимка подписки;
+- обработку событий вебхука.
 
-### HealthModule
+### `HealthModule`
 
-Владеет:
+Отвечает за:
 
 ```text
 GET /health
 GET /ready
 ```
 
-`/ready` проверяет PostgreSQL connectivity.
+`/ready` проверяет подключение к PostgreSQL.
 
-## Explicit Non-Responsibility
+## Что бэкенд намеренно не хранит
 
-Backend не хранит и не синхронизирует:
+Бэкенд не хранит и не синхронизирует:
 
 ```text
-clients
-appointments
-services
-visit notes
-visit photos
-professional payments
-local schedule
-local UI profile
+клиентов
+записи
+услуги
+заметки визитов
+фотографии визитов
+профессиональные оплаты
+локальное расписание
+локальный UI-профиль
 ```
 
-Это architectural boundary, а не просто отсутствующий набор endpoints.
+Это архитектурная граница, а не просто набор пока отсутствующих эндпоинтов.
 
-## Data Boundary
+## Граница данных
 
-Backend-owned persistence:
+Бэкенд владеет хранением:
 
 ```text
 users
@@ -115,13 +115,13 @@ subscriptions
 subscription_events
 ```
 
-Canonical physical model:
+Каноническая физическая модель:
 
 [`../../database/server/`](../../database/server/)
 
-## API Boundary
+## Граница API
 
-Canonical current API:
+Текущий канонический API:
 
 ```text
 /v1/auth/*
@@ -130,59 +130,57 @@ POST /v1/billing/sync
 POST /v1/webhooks/revenuecat
 ```
 
-плюс unversioned health/readiness endpoints.
+плюс неверсионируемые `/health` и `/ready`.
 
-`/v1/subscription` controller отсутствует в current code и не должен документироваться как current behavior.
+Контроллера `/v1/subscription` в текущем коде нет, поэтому его нельзя документировать как существующее поведение.
 
-## RevenueCat Trust Boundary
+## Граница доверия RevenueCat
 
-Mobile client не передает self-declared entitlement boolean для выдачи access.
+Мобильный клиент не передаёт собственный boolean права доступа, который сервер мог бы использовать напрямую.
 
-Billing sync использует authenticated server user id:
-
-```text
-JWT sub
-   ↓
-RevenueCat REST lookup
-   ↓
-Normalized subscription snapshot
-   ↓
-Common access decision
-```
-
-Webhooks также reconciles через RevenueCat REST, а не выдают access напрямую по event type.
-
-## Cross-Layer Consequence
+Сверка биллинга использует идентификатор аутентифицированного пользователя:
 
 ```text
-Backend Access = denied
-        ↓
-Workspace unavailable
-
-NOT
-
-Backend Access = denied
-        ↓
-Workspace deleted
+поле JWT `sub`
+   ↓
+запрос к REST API RevenueCat
+   ↓
+нормализованный снимок подписки
+   ↓
+общее решение о доступе
 ```
 
-Backend контролирует availability, а не ownership professional workspace data.
+Вебхуки также приводят к сверке через RevenueCat REST, а не выдают доступ напрямую по типу события.
 
-## Out of Scope
+## Межуровневое следствие
 
-Current backend намеренно не имеет:
+```text
+Бэкенд запретил доступ
+        ↓
+Рабочее пространство недоступно
 
-- cloud workspace sync;
-- server-side workspace entities;
-- public booking backend;
-- server-side visit-media storage;
-- normal workspace push notifications;
-- admin HTTP API;
+НЕ
+
+Бэкенд запретил доступ
+        ↓
+Рабочее пространство удалено
+```
+
+Бэкенд управляет доступностью, а не владением профессиональными данными.
+
+## Вне границ текущего бэкенда
+
+- облачная синхронизация рабочего пространства;
+- серверные сущности профессионального рабочего пространства;
+- публичная онлайн-запись;
+- серверное хранение материалов визита;
+- обычные пуш-уведомления рабочего пространства;
+- административный HTTP API;
 - 2FA;
-- implemented email verification;
-- implemented password reset.
+- реализованная проверка электронной почты;
+- реализованный сброс пароля.
 
-## Связанная документация
+## Связанные документы
 
 - [`../api/`](../api/)
 - [`../auth/`](../auth/)

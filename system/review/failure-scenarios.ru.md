@@ -1,14 +1,14 @@
-# Aveli — Cross-System Failure Scenarios
+# Aveli — межсистемные сценарии отказов
 
-> Consolidated non-happy-path scenarios, сохраненные из legacy offline/error documentation перед удалением numbered architecture.
+> Сводные сценарии нештатного поведения, сохранённые из прежней документации по автономной работе и обработке ошибок перед удалением нумерованной структуры.
 
 ## Назначение
 
-Документ сохраняет **cross-system failure behavior**, пересекающий authentication, access, billing, local persistence, account switching, reminders и external services.
+Документ сохраняет **межсистемное поведение при сбоях**, которое затрагивает аутентификацию, доступ, биллинг, локальное хранение, смену аккаунтов, напоминания и внешние сервисы.
 
-Он не является canonical owner component-specific implementation details или domain rules.
+Он не является каноническим владельцем деталей реализации отдельных компонентов или доменных правил.
 
-Detailed behavior остается в:
+Подробное поведение остаётся в:
 
 - [`../../frontend/`](../../frontend/)
 - [`../../backend/`](../../backend/)
@@ -16,288 +16,292 @@ Detailed behavior остается в:
 - [`../../integrations/`](../../integrations/)
 - [`../../business/requirements/`](../../business/requirements/)
 
-Задача файла — сделать system-level **failure isolation и recovery** явными.
+Задача этого файла — сделать на системном уровне явными ожидаемые **изоляцию сбоя и восстановление**.
 
 ---
 
-## Failure Principle
+## Общий принцип отказоустойчивости
 
-Для всех scenarios:
+Во всех сценариях действует правило:
 
 ```text
-Technical Failure
+Технический сбой
       ≠
-Delete User Work
+Удаление работы пользователя
 ```
 
-Authentication, access, billing, backend и external-service failures должны быть изолированы от locally owned professional workspace data whenever possible.
+Сбои аутентификации, доступа, биллинга, бэкенда или внешних сервисов по возможности должны быть изолированы от локально принадлежащих пользователю профессиональных данных.
 
 ---
 
-## FS-001 — Invalid Credentials
+## FS-001 — неверные учётные данные
 
 ```text
-Sign in
+Вход
    ↓
-Credentials invalid
+Учётные данные неверны
    ↓
-Authentication rejected
+Аутентификация отклонена
    ↓
-No session created
+Сессия не создана
 ```
 
-Expected:
+Ожидаемый результат:
 
-- unidentified user не получает authenticated session;
-- local workspace не открывается от имени unidentified identity;
-- existing local workspace files не удаляются.
+- пользователь с неподтверждённой идентичностью не получает аутентифицированную сессию;
+- локальное рабочее пространство не открывается от имени такого пользователя;
+- существующие файлы локального рабочего пространства не удаляются.
 
-Canonical owners:
+Канонические владельцы:
 
 - [`../../frontend/auth/`](../../frontend/auth/)
 - [`../../backend/auth/`](../../backend/auth/)
 
 ---
 
-## FS-002 — Access Token Expired
+## FS-002 — истёк токен доступа
 
 ```text
-Authenticated request
+Аутентифицированный запрос
       ↓
-Access token expired
+Токен доступа истёк
       ↓
-Refresh session
+Обновление сессии
      /       \
- success     failure
+ успешно     ошибка
    ↓            ↓
-continue    re-authenticate
+продолжить   повторный вход
 ```
 
-Expected:
+Ожидаемый результат:
 
-- successful refresh продолжает session;
-- failed refresh требует authentication;
-- local workspace data остаются unchanged.
+- успешное обновление продолжает текущую сессию;
+- неуспешное обновление требует повторной аутентификации;
+- локальные данные рабочего пространства не меняются.
 
 ---
 
-## FS-003 — Missing or Corrupted Client Session State
+## FS-003 — отсутствует или повреждено состояние клиентской сессии
 
-Если secure client state incomplete или untrusted:
+Если состояние в защищённом хранилище неполно или ему нельзя доверять:
 
 ```text
-Restore session
+Восстановление сессии
       ↓
-Session state invalid
+Состояние сессии недействительно
       ↓
-Do not trust identity
+Не доверять идентичности
       ↓
-Return to authentication
+Вернуться к аутентификации
 ```
 
-Authentication-state problem не должен решаться удалением local database.
+Клиент не должен решать проблему состояния аутентификации удалением локальной базы данных пользователя.
 
 ---
 
-## FS-004 — Reinstall During Active Trial
+## FS-004 — переустановка приложения во время активного пробного периода
 
 ```text
-Trial active
+Пробный период активен
    ↓
-Application reinstalled
+Приложение переустановлено
    ↓
-Sign in to same account
+Вход в тот же аккаунт
    ↓
-Backend returns account-owned trial state
+Бэкенд возвращает пробный период аккаунта
 ```
 
-Expected:
+Ожидаемый результат:
 
-- reinstall не создает новый trial;
-- local application state не authoritative для trial creation.
+- переустановка не создаёт новый пробный период;
+- локальное состояние приложения не является источником истины для создания пробного периода.
 
 ---
 
-## FS-005 — Local Workspace Deleted During Trial
+## FS-005 — локальное рабочее пространство удалено во время пробного периода
 
 ```text
-Local workspace deleted
+Локальное рабочее пространство удалено
         ≠
-Backend trial reset
+Сброс пробного периода на бэкенде
 ```
 
-Удаление local professional data не reset account-owned trial period.
+Удаление локальных профессиональных данных не сбрасывает пробный период, принадлежащий аккаунту.
 
-Canonical:
+Каноническое описание доступа и пробного периода:
 
 [`../../backend/access/`](../../backend/access/)
 
 ---
 
-## FS-006 — Trial or Access Changes While App Is Open
+## FS-006 — состояние пробного периода или доступа изменилось при открытом приложении
 
-Если effective access state меняется, пока user уже в workspace, приложение должно re-evaluate access согласно current verification policy.
+Если итоговое состояние доступа меняется, пока пользователь уже находится в рабочем пространстве, приложение должно повторно оценить доступ в соответствии с текущей политикой проверки.
+
+Ожидаемый сценарий:
 
 ```text
-Access state changes
+Состояние доступа изменилось
       ↓
-Verification occurs when required
+При необходимости выполняется повторная проверка
       ↓
-Access Gate may change
+Результат проверки доступа может измениться
 ```
 
-Но:
+при этом:
 
 ```text
-Access change
+Изменение доступа
       ≠
-Workspace reset
+Сброс рабочего пространства
 ```
+
+Изменение права доступа не должно приводить к пересозданию или удалению рабочего пространства.
 
 ---
 
-## FS-007 — Multiple Access Sources Are Active
+## FS-007 — одновременно активны несколько источников доступа
 
 Пример:
 
 ```text
-Trial        = active
-Subscription = active
-Lifetime     = active
+Пробный период     = активен
+Подписка            = активна
+Бессрочный доступ   = активен
 ```
 
-Backend resolves один effective access result согласно canonical precedence.
+Бэкенд вычисляет одно итоговое решение о доступе согласно каноническому приоритету.
 
-Frontend использует resolved result, а не самостоятельно combines access sources.
+Фронтенд должен использовать уже вычисленный результат, а не самостоятельно объединять источники доступа.
 
-Canonical:
+Каноническое решение:
 
 [`../../backend/access/access-resolution.ru.md`](../../backend/access/access-resolution.ru.md)
 
 ---
 
-## FS-008 — One Access Source Expires but Another Remains Valid
+## FS-008 — один источник доступа истёк, другой остаётся действующим
 
 Пример:
 
 ```text
-Subscription = expired
-Manual Grant = valid
+Подписка          = истекла
+Ручное право доступа = действует
 ```
 
-Expected:
+Ожидаемый результат:
 
-- workspace access остается available;
-- effective source меняется согласно backend resolution;
-- local workspace не мутируется из-за expiry одного access source.
+- рабочее пространство остаётся доступным;
+- итоговый источник доступа меняется на действующий источник согласно серверному приоритету;
+- истечение одного источника доступа не меняет локальные профессиональные данные.
 
 ---
 
-## FS-009 — No Access but Local Data Exists
+## FS-009 — доступа нет, но локальные данные существуют
 
 ```text
-No valid access
+Нет действующего доступа
       ↓
-Access Gate
+Проверка доступа
 ```
 
-Existing:
+Существующие:
 
 ```text
-SQLite workspace
-visit photos
-professional history
+Рабочее пространство SQLite
+фотографии визитов
+профессиональная история
 ```
 
 сохраняются.
 
-Это access-state condition, не data-deletion event.
+Это состояние доступа, а не событие удаления данных.
 
 ---
 
-## FS-010 — App Starts Offline With Valid Trusted Snapshot
+## FS-010 — приложение запускается без сети с действующим доверенным снимком
 
 ```text
-No network
+Сеть недоступна
    ↓
-Trusted snapshot available
+Есть доверенный снимок состояния
    ↓
-Verification policy accepts it
+Политика проверки разрешает его использовать
    ↓
-Workspace opens
+Рабочее пространство открывается
 ```
 
-User может продолжать local work, пока cached access trusted current policy.
+Пользователь может продолжать локальную работу, пока текущая политика считает сохранённое состояние доступа доверенным.
 
-Canonical:
+Каноническое описание автономного режима:
 
 [`../../frontend/offline/`](../../frontend/offline/)
 
 ---
 
-## FS-011 — App Starts Offline Without Trusted Snapshot
+## FS-011 — приложение запускается без сети и без доверенного снимка
 
 ```text
-No network
+Сеть недоступна
    ↓
-No trusted snapshot
+Доверенного снимка нет
    ↓
-Access cannot be verified
+Доступ нельзя подтвердить
    ↓
-Network verification required
+Требуется проверка через сеть
 ```
 
-System не должен угадывать, что access valid.
+Система не должна предполагать наличие доступа без подтверждения.
 
-Local professional data сохраняются.
+Локальные профессиональные данные сохраняются.
 
 ---
 
-## FS-012 — Offline Verification Window Expires
+## FS-012 — истёк срок автономной проверки
 
 ```text
-Cached access previously valid
+Кэшированный доступ ранее был действующим
         ↓
-Verification deadline exhausted
+Срок доверия к проверке истёк
         ↓
-Backend verification required
+Требуется проверка на бэкенде
 ```
 
-Temporary cached trust не должен превращаться в permanent offline authorization.
+Приложение не должно превращать временное доверие к сохранённому состоянию в постоянное автономное разрешение.
 
-Expected:
+Ожидаемый результат:
 
-- workspace authorization может стать unavailable;
-- local workspace data остаются stored.
+- доступ к рабочему пространству может временно стать недоступным;
+- локальные данные рабочего пространства продолжают храниться.
 
 ---
 
-## FS-013 — Purchase Succeeds but Backend Reconciliation Fails
+## FS-013 — покупка успешна, но серверная сверка не выполнена
 
 ```text
-Store purchase succeeds
+Покупка в магазине успешна
         ↓
-RevenueCat state updated
+Состояние RevenueCat обновлено
         ↓
-POST /v1/billing/sync fails
+POST /v1/billing/sync завершается ошибкой
 ```
 
-Expected:
+Ожидаемый результат:
 
-- purchase не считается исчезнувшим;
-- local workspace data unchanged;
-- billing reconciliation можно retry;
-- Aveli workspace access refreshes только после successful backend reconciliation или другого valid access source.
+- покупка не считается отсутствующей только из-за сбоя серверной сверки;
+- локальные данные рабочего пространства не меняются;
+- сверку биллинга можно повторить;
+- доступ Aveli обновляется только после успешной серверной сверки либо при наличии другого действующего источника доступа.
 
-Boundary:
+Сохраняется граница:
 
 ```text
-Provider purchase result
+Результат покупки у провайдера
         ≠
-Aveli workspace access
+Доступ к рабочему пространству Aveli
 ```
 
-Canonical:
+Канонический сценарий биллинга:
 
 - [`../../frontend/billing/`](../../frontend/billing/)
 - [`../../backend/billing/`](../../backend/billing/)
@@ -305,246 +309,254 @@ Canonical:
 
 ---
 
-## FS-014 — Backend Reconciliation Succeeds but Client State Is Stale
+## FS-014 — серверная сверка успешна, но клиент показывает устаревшее состояние
 
-Backend уже может иметь valid normalized subscription, пока frontend показывает stale access.
+Бэкенд уже может хранить действующее нормализованное состояние подписки, пока фронтенд ещё показывает устаревший результат доступа.
 
-Recovery:
+Ожидаемое восстановление:
 
 ```text
-Backend state valid
+Состояние на бэкенде корректно
       ↓
-Client refreshes AccessState
+Клиент обновляет AccessState
       ↓
-Current access result restored
+Актуальное состояние доступа восстановлено
 ```
 
-Recovery не требует recreate account/workspace data.
+Клиент должен восстановить актуальное состояние без пересоздания аккаунта или локального рабочего пространства.
 
 ---
 
-## FS-015 — Restore Finds No Active Subscription
+## FS-015 — восстановление покупок не нашло активную подписку
 
 ```text
-Restore purchase
+Восстановление покупки
       ↓
-No active support entitlement
+Нет активного права `support`
       ↓
-No subscription access
+Нет доступа по подписке
 ```
 
-Это valid business outcome, не обязательно technical failure.
+Это корректный бизнес-результат и не обязательно технический сбой.
 
-Другие access sources могут отдельно давать access.
+Другие источники доступа могут по-прежнему предоставлять доступ независимо от подписки.
 
 ---
 
-## FS-016 — RevenueCat Webhook Is Late or Repeated
+## FS-016 — вебхук RevenueCat пришёл с задержкой или повторно
 
-Mobile billing sync и webhook delivery могут происходить в разное время.
+Синхронизация биллинга с мобильного клиента и доставка вебхука могут происходить в разное время.
 
-Expected:
+Ожидаемое поведение бэкенда:
 
 ```text
-Webhook received
+Вебхук получен
       ↓
-Idempotency check
+Проверка идемпотентности
       ↓
-Provider reconciliation
+Сверка с провайдером
       ↓
-Normalized subscription state
+Нормализованное состояние подписки
 ```
 
-Repeated/delayed webhook не должен создавать contradictory access state.
+Повторная или задержанная обработка вебхука не должна создавать противоречивое состояние доступа.
 
-Canonical:
+Каноническое описание вебхука:
 
 [`../../integrations/revenuecat/webhooks.ru.md`](../../integrations/revenuecat/webhooks.ru.md)
 
 ---
 
-## FS-017 — Logout With Existing Professional Data
+## FS-017 — выход из аккаунта при существующих профессиональных данных
 
-Logout завершает active identity/session context без удаления workspace.
+Выход должен завершить активный контекст идентичности и сессии, не удаляя рабочее пространство.
 
-```text
-Logout
-  ↓
-Clear active client session/access state
-  ↓
-Close current user database
-  ↓
-Cancel account-specific reminders
-```
-
-Preserved:
+Ожидаемое межсистемное поведение:
 
 ```text
-local database
-visit photos
-professional history
+Выход из аккаунта
+  ↓
+Очистить активное состояние сессии и доступа
+  ↓
+Закрыть базу данных текущего пользователя
+  ↓
+Отменить напоминания этого аккаунта
 ```
 
-Canonical lifecycle:
+Сохраняются:
+
+```text
+локальная база данных
+фотографии визитов
+профессиональная история
+```
+
+Каноническое описание жизненного цикла:
 
 [`../flows/logout-and-profile-delete.ru.md`](../flows/logout-and-profile-delete.ru.md)
 
 ---
 
-## FS-018 — Different User Signs In
+## FS-018 — входит другой пользователь
 
 ```text
-User A logout
+Пользователь A выходит
       ↓
-User B login
+Пользователь B входит
       ↓
-Open User B local workspace
+Открывается локальное рабочее пространство пользователя B
 ```
 
-Expected:
+Ожидаемый результат:
 
-- User A records не появляются у User B;
-- database/media namespaces isolated authenticated identity.
+- записи пользователя A не появляются в рабочем пространстве пользователя B;
+- локальные базы и пространства имён медиафайлов остаются изолированы идентичностью аутентифицированного пользователя.
 
 ---
 
-## FS-019 — Local Database Migration Fails
+## FS-019 — ошибка локальной миграции базы данных
 
-Local migration failure — data-integrity problem.
+Ошибка локальной миграции является проблемой целостности данных.
 
-System не должен silently recreate empty DB, если это уничтожит recoverable workspace data.
+Система не должна молча восстанавливаться созданием пустой базы, если это уничтожит данные, которые можно было сохранить.
+
+Ожидаемый принцип:
 
 ```text
-Migration failure
+Ошибка миграции
       ↓
-Surface / isolate persistence failure
+Явно показать и изолировать ошибку хранения
       ↓
-Preserve recoverable data
+Сохранить данные, которые можно восстановить
 ```
 
-Canonical:
+Канонический владелец миграций:
 
 [`../../database/local/migrations/`](../../database/local/migrations/)
 
 ---
 
-## FS-020 — Visit Photo Metadata Exists but File Is Missing
+## FS-020 — метаданные фотографии существуют, физический файл отсутствует
 
 ```text
-Photo metadata exists
+Метаданные фотографии существуют
         +
-Physical file missing
+Физический файл отсутствует
         ↓
-Media item unavailable
+Фотография недоступна
 ```
 
-Expected:
+Ожидаемый результат:
 
-- missing media item handles as unavailable;
-- whole visit/appointment не считается corrupted только из-за одного missing file.
+- отсутствующая фотография обрабатывается как недоступный медиаобъект;
+- весь визит или запись клиента не считаются повреждёнными только из-за отсутствия одного файла.
 
 ---
 
-## FS-021 — Reminder Refers to a Missing Appointment
+## FS-021 — напоминание ссылается на отсутствующую запись
 
-Notification payload может ссылаться на уже отсутствующий appointment.
+Полезная нагрузка уведомления может содержать идентификатор записи, которая уже удалена или недоступна.
+
+Ожидаемый результат:
 
 ```text
-Notification tap
+Нажатие на уведомление
       ↓
-Appointment not found
+Запись не найдена
       ↓
-Safe navigation fallback
+Безопасный запасной маршрут навигации
 ```
 
-Navigation не должна catastrophic fail.
+Навигация должна безопасно завершиться или перейти к допустимому экрану, а не приводить к критическому сбою приложения.
 
 ---
 
-## FS-022 — Logout Before Reminder Fires
+## FS-022 — пользователь вышел до срабатывания напоминания
 
-Account-specific reminders отменяются на logout.
+Напоминания, связанные с аккаунтом, должны быть отменены во время выхода.
 
-Это предотвращает appearance appointment information прошлого account после sign-in другого user.
+Это не позволяет информации о записи предыдущего пользователя появиться после входа в другой аккаунт.
 
 ---
 
-## FS-023 — External Exchange-Rate Service Is Unavailable
+## FS-023 — недоступен внешний сервис курсов валют
 
 ```text
-Rate refresh fails
+Не удалось обновить курс
       ↓
-Currency conversion unavailable / fallback
+Конвертация недоступна / используется запасной сценарий
 ```
 
-Expected:
+Ожидаемый результат:
 
-- unrelated workspace operations продолжаются;
-- existing local professional data unchanged.
+- не связанные с конвертацией операции рабочего пространства остаются доступны;
+- существующие локальные профессиональные данные не меняются.
 
-Canonical:
+Каноническая интеграция:
 
 [`../../integrations/exchange-rate/`](../../integrations/exchange-rate/)
 
 ---
 
-## FS-024 — Store Service Is Unavailable
+## FS-024 — недоступен магазин приложений
 
-Если Apple App Store / Google Play не могут выполнить purchase/restore:
+Если Apple App Store или Google Play не могут завершить новую покупку или восстановление:
 
-- current access state не меняется только из-за store outage;
-- user может остаться на Access Gate, если другого access source нет;
-- local workspace data unaffected.
+- текущее состояние доступа не меняется только из-за недоступности магазина;
+- при отсутствии другого источника доступа пользователь может остаться на экране проверки доступа;
+- локальные данные рабочего пространства не затрагиваются.
 
 ---
 
-## Domain-Specific Failures
+## Доменные сценарии ошибок
 
-Legacy document также содержал appointment/client/service/payment edge cases.
+В прежнем документе также присутствовали пограничные случаи для записей, клиентов, услуг и оплат.
 
-Они намеренно **не становятся canonical здесь**.
+Они намеренно **не становятся каноническими в этом системном документе**.
 
 Примеры:
 
 ```text
-appointment conflict
-appointment state transition
-referenced client deletion
-duplicate payment action
-invalid payment state
+конфликт записей
+переход состояния записи
+удаление клиента, на которого есть ссылки
+повторная операция оплаты
+недопустимое состояние оплаты
 ```
 
-Их final rules принадлежат business/domain requirements и owning frontend behavior.
+Итоговые правила таких сценариев принадлежат бизнес-требованиям и документации фронтенда, который реализует соответствующее поведение, а не системному каталогу отказов.
 
-При final polish unresolved domain cases нужно reconcile с:
+Канонические доменные требования:
 
 [`../../business/requirements/`](../../business/requirements/)
 
 ---
 
-## Summary
+## Итог
 
-Main cross-system failure categories:
-
-```text
-authentication recovery
-access/trial transitions
-offline verification
-billing reconciliation
-account/workspace isolation
-local persistence integrity
-reminder recovery
-external service failure
-```
-
-Common expectation:
+Основные категории межсистемных отказов:
 
 ```text
-deterministic behavior
-+
-recoverable state
-+
-failure isolation
-+
-protection of locally owned work
+восстановление аутентификации
+изменения доступа и пробного периода
+автономная проверка доступа
+сверка биллинга
+изоляция аккаунта и рабочего пространства
+целостность локального хранения
+восстановление напоминаний
+сбой внешнего сервиса
 ```
+
+Общее ожидание:
+
+```text
+предсказуемое поведение
++
+восстанавливаемое состояние
++
+изоляция отказов
++
+защита локально хранимой работы пользователя
+```
+
+То есть поведение должно быть предсказуемым, состояние — восстанавливаемым, сбои — изолированными, а локальная работа пользователя — защищённой.

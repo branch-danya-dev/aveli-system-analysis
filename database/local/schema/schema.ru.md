@@ -1,18 +1,18 @@
-# Aveli — Local SQLite Physical Schema
+# Aveli — физическая схема локальной SQLite
 
-## Файлы БД
+## Файлы базы данных
 
 | Путь | Назначение |
 |---|---|
-| `documents/aveli_<userId>.sqlite` | Активная per-user professional workspace database. |
-| `documents/aveli.db` | Legacy single-file database; автоматически к account не подключается. |
-| `documents/visit_photos/<sanitizedUserId>/` | Binary visit-photo files вне SQLite. |
+| `documents/aveli_<userId>.sqlite` | Активная база профессионального рабочего пространства конкретного пользователя. |
+| `documents/aveli.db` | Устаревшая единая база данных; автоматически к аккаунту не привязывается. |
+| `documents/visit_photos/<sanitizedUserId>/` | Двоичные файлы фотографий визитов вне SQLite. |
 
-`LocalDatabaseManager.openForUser(userId)` открывает или создает per-user database.
+`LocalDatabaseManager.openForUser(userId)` открывает или создаёт отдельную базу для пользователя.
 
-Legacy `aveli.db` может быть присвоена пользователю только через explicit legacy-claim path. Закрытие workspace закрывает connection, но не удаляет файл. Explicit local-data deletion удаляет per-user SQLite file.
+Устаревшая `aveli.db` может быть присвоена пользователю только через явный сценарий переноса. Закрытие рабочего пространства закрывает соединение, но не удаляет файл. Явное удаление локальных данных удаляет файл SQLite пользователя.
 
-Local entity identifiers — UUID v4, генерируемые application use cases.
+Идентификаторы локальных сущностей — UUID v4, создаваемые прикладными сценариями.
 
 ## Таблицы
 
@@ -37,41 +37,41 @@ appointments 1 ── 0..* visit_photos
 clients      1 ── 0..* visit_photos
 ```
 
-Подтвержденный invariant:
+Подтверждённый инвариант:
 
-> `payments.appointment_id` имеет UNIQUE, поэтому physical appointment имеет максимум одну payment row.
+> `payments.appointment_id` имеет ограничение `UNIQUE`, поэтому физически для одной записи существует не более одной строки оплаты.
 
-Partial payment хранится внутри этой строки через `amount_paid` и `status=partial`.
+Частичная оплата хранится в этой же строке через `amount_paid` и `status=partial`.
 
 ## Намеренная денормализация
 
-Schema намеренно дублирует некоторые значения:
+Схема намеренно дублирует некоторые значения:
 
-- `appointments.price` фиксирует snapshot цены услуги на момент записи;
-- `appointments.payment_status` хранит агрегированный UI-oriented payment state;
-- `visit_photos.client_id` дублирует связь с client, которую также можно получить через appointment.
+- `appointments.price` фиксирует снимок цены услуги на момент создания записи;
+- `appointments.payment_status` хранит агрегированное состояние оплаты для удобного чтения интерфейсом;
+- `visit_photos.client_id` дублирует связь с клиентом, которую также можно получить через запись.
 
 ## Индексы
 
-Известные non-PK indexes:
+Известные индексы, не относящиеся к первичным ключам:
 
 ```text
 appointments_starts_at(starts_at)
 appointments_client_id(client_id)
 ```
 
-Остальные table-specific indexes описываются рядом с entities.
+Остальные индексы конкретных таблиц описываются рядом с соответствующими сущностями.
 
-## Замечание о consistency источника
+## Замечание о согласованности источников
 
-В предоставленном persistence-документе есть одно расхождение имен:
+В предоставленном описании физической модели есть одно расхождение в именовании:
 
 ```text
-ER overview:      duration_minutes / return_interval_minutes
-Detailed table:  duration / return_interval
+Обзор ER:          duration_minutes / return_interval_minutes
+Детальное описание: duration / return_interval
 ```
 
-В этой документации используются имена из detailed table, но exact SQL column names стоит повторно сверить с `lib/core/database/tables/*.dart` до фиксации generated SQL как canonical.
+В этой документации используются имена из детального описания. Точные имена столбцов SQL следует повторно сверить с `lib/core/database/tables/*.dart`, прежде чем фиксировать сгенерированный SQL как канонический источник.
 
 ## Связанная документация
 

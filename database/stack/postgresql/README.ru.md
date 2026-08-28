@@ -1,10 +1,10 @@
 # PostgreSQL
 
-> Backend relational database для identity, access, subscription state и event persistence Aveli.
+> Серверная реляционная база данных для идентификации, доступа, состояния подписки и событий Aveli.
 
-## Role
+## Роль
 
-PostgreSQL хранит backend-owned domain:
+PostgreSQL хранит домен, принадлежащий бэкенду:
 
 ```text
 users
@@ -14,68 +14,68 @@ subscriptions
 subscription_events
 ```
 
-Professional workspace здесь не хранится.
+Профессиональное рабочее пространство здесь не хранится.
 
-## Почему подходит Aveli
+## Почему PostgreSQL подходит Aveli
 
-Backend dataset сравнительно небольшой, но product-critical.
+Объём серверных данных сравнительно небольшой, но сами данные критичны для продукта.
 
-Его ценность — в relational consistency и constraints, а не в horizontal scale.
+Основная ценность PostgreSQL здесь — реляционная согласованность и ограничения целостности, а не горизонтальное масштабирование.
 
-Current schema использует возможности PostgreSQL:
+Текущая схема использует:
 
-- CHECK constraints;
-- partial UNIQUE indexes;
-- relational foreign keys;
-- transactions;
-- JSONB для raw subscription-event payloads;
-- concurrent backend/webhook writes.
+- ограничения `CHECK`;
+- частичные уникальные индексы;
+- внешние ключи;
+- транзакции;
+- JSONB для исходных данных событий подписки;
+- конкурентную запись со стороны обычных запросов бэкенда и вебхуков.
 
-Критичный пример — partial UNIQUE index, обеспечивающий один registration trial на user.
+Критичный пример — частичный уникальный индекс, обеспечивающий один регистрационный пробный период на пользователя.
 
-## Почему не MongoDB для текущей модели
+## Почему не MongoDB
 
-Backend data strongly related и constraint-heavy.
+Серверные данные Aveli тесно связаны и существенно зависят от ограничений целостности.
 
-Для текущего небольшого набора relational tables MongoDB перенес бы важные invariants из database в application logic без заметной product value.
+Для текущего небольшого набора реляционных таблиц MongoDB перенесла бы важные инварианты из базы данных в прикладную логику без заметной продуктовой выгоды.
 
-## Другие SQL Engines
+## Другие системы SQL
 
-MySQL или server-side SQLite способны хранить большую часть этих данных, но migration потребует отдельной проверки:
+MySQL или серверный SQLite способны хранить большую часть этих данных, но миграция потребовала бы отдельно проверить:
 
-- partial-index behavior;
-- CHECK semantics;
-- JSONB usage;
-- concurrency characteristics;
-- generated migrations.
+- поведение частичных индексов;
+- семантику `CHECK`;
+- использование JSONB;
+- особенности конкурентного доступа;
+- сгенерированные миграции.
 
-## Dependencies
+## Зависимости
 
-Canonical physical usage:
+Каноническое физическое использование:
 
 - [`../../server/schema/`](../../server/schema/)
 - [`../../server/entities/`](../../server/entities/)
 - [`../../server/constraints/`](../../server/constraints/)
 - [`../../server/migrations/`](../../server/migrations/)
 
-Consumer technology:
+Технология доступа к данным:
 
-- [`../prisma/`](../prisma/)
+- [`../../../backend/stack/prisma/`](../../../backend/stack/prisma/)
 
-## Replaceability
+## Заменяемость
 
-**Replaceability: medium.**
+**Средняя.**
 
-Backend API boundary изолирует Flutter от database engine, но замена PostgreSQL всё равно потребует:
+Граница API бэкенда изолирует Flutter от конкретного движка базы данных, но замена PostgreSQL всё равно потребует:
 
-- conversion migrations;
-- verification constraints;
-- изменения JSON representation, где применимо;
-- operational/deployment changes;
-- regression testing access и billing invariants.
+- миграции данных;
+- проверки ограничений;
+- корректировки представления JSON, где это применимо;
+- изменений в развёртывании и эксплуатации;
+- регрессионного тестирования инвариантов доступа и биллинга.
 
-## Selection Status
+## Статус выбора
 
-Current technical rationale сильный.
+Текущее техническое обоснование достаточно сильное.
 
-Historical formal comparison всех альтернатив в repository не зафиксирован.
+Историческое формальное сравнение всех альтернатив в репозитории не зафиксировано.
