@@ -1,0 +1,75 @@
+@startuml
+title Aveli — System Map
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam rectangle {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  RoundCorner 8
+}
+skinparam database {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam ArrowColor black
+
+actor "Independent Specialist" as User
+
+rectangle "Aveli System" {
+  rectangle "Aveli Mobile Client" as Mobile
+  rectangle "Aveli Backend" as Backend
+  database "Per-user SQLite" as SQLite
+  rectangle "Visit Photo Files" as Files
+  rectangle "Secure Storage" as Secure
+  database "PostgreSQL" as PG
+}
+
+rectangle "RevenueCat" as RC
+rectangle "Apple App Store" as Apple
+rectangle "Google Play" as Google
+
+rectangle "Device Contacts" as Contacts
+rectangle "OS Notifications" as Notifications
+rectangle "Camera / Gallery" as Media
+rectangle "Exchange Rate API" as FX
+rectangle "OS Handoff\nShare / File / SMS / Browser" as Handoff
+
+User --> Mobile
+
+Mobile --> SQLite : professional workspace
+Mobile --> Files : visit media
+Mobile --> Secure : session + access snapshot
+Mobile --> Backend : auth / access / billing
+
+Backend --> PG : identity / access state
+Mobile --> RC : offerings / purchase / restore
+Backend --> RC : subscriber lookup
+RC --> Backend : webhook
+
+RC --> Apple
+RC --> Google
+
+Mobile --> Contacts
+Mobile --> Notifications
+Mobile --> Media
+Mobile --> FX
+Mobile --> Handoff
+
+note bottom of SQLite
+Source of truth:
+professional workspace
+end note
+
+note bottom of PG
+Source of truth:
+identity + server access state
+end note
+
+note bottom of Backend
+Online access authority
+end note
+
+@enduml

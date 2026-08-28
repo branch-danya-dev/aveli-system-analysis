@@ -1,0 +1,42 @@
+@startuml
+title Aveli — Main System Runtime
+
+actor User
+participant "Aveli Mobile" as Mobile
+database "Local Workspace" as Local
+participant "Aveli Backend" as Backend
+database "PostgreSQL" as PG
+participant "RevenueCat" as RC
+
+== Bootstrap ==
+User -> Mobile : open app
+Mobile -> Backend : refresh session
+Backend -> PG : validate session/user
+Backend --> Mobile : rotated credentials
+Mobile -> Local : open aveli_<userId>.sqlite
+Mobile -> RC : logIn(userId)
+Mobile -> Backend : GET /v1/access
+Backend -> PG : grants + subscription
+Backend --> Mobile : AccessStatusView
+Mobile -> Mobile : Access Gate
+
+== Local Work ==
+User -> Mobile : manage clients / appointments / payments
+Mobile -> Local : read/write professional workspace
+
+== Purchase ==
+User -> Mobile : purchase
+Mobile -> RC : purchase
+RC --> Mobile : provider result
+Mobile -> Backend : POST /v1/billing/sync
+Backend -> RC : subscriber lookup
+RC --> Backend : subscription evidence
+Backend -> PG : upsert subscription
+Backend --> Mobile : AccessStatusView
+
+== Logout ==
+User -> Mobile : logout
+Mobile -> RC : logOut
+Mobile -> Backend : logout refresh session
+Mobile -> Local : close DB\n(do not delete)
+@enduml
