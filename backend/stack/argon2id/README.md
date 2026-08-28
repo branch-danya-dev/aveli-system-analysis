@@ -1,49 +1,35 @@
 # Argon2id
 
-> Password hashing mechanism used by Aveli account authentication.
+> Password-hashing technology used by Aveli account authentication.
 
-## Verified Usage
+## Role
 
-Registration stores:
+Argon2id protects stored passwords by persisting a one-way hash instead of plaintext credentials.
 
-```text
-password
-   ↓ Argon2id
-password_hash
-```
+## Why It Fits
 
-Current package:
-
-```text
-argon2 0.45
-```
-
-Plaintext passwords are not persisted.
-
-## Login Verification
-
-The backend verifies the supplied credential against the stored Argon2id hash.
-
-Failed login for a missing user uses a dummy hash to reduce account-existence timing leakage.
-
-This means the public invalid-credential outcome is intentionally unified for:
-
-```text
-missing user
-wrong password
-disabled/unavailable account during credential handling
-```
-
-Public contract:
-
-```text
-401 AUTH_INVALID_CREDENTIALS
-```
-
-## Boundary
-
-Exact Argon2 parameters are not provided by the current implementation description and are therefore not documented here.
+Passwords are long-lived authentication secrets and require a deliberately expensive password-hashing function rather than a fast general-purpose digest. Argon2id is designed for password hashing and provides memory-hard behavior.
 
 ## Contextual Usage
 
-[`../../auth/authentication.md`](../../auth/authentication.md)
+Registration/login behavior: [`../../auth/authentication.md`](../../auth/authentication.md)
+
+Physical storage: [`../../../database/server/entities/users.md`](../../../database/server/entities/users.md)
+
+The dummy-hash behavior for missing users belongs to authentication/security usage, not this canonical technology definition.
+
+## Dependencies
+
+Current runtime package: `argon2` 0.45.
+
+## Limitations
+
+Hash cost affects CPU/memory usage, parameters may require future tuning, and a parameter change needs an upgrade/rehash policy. Exact Argon2 parameters are not present in the supplied implementation description and are intentionally not invented.
+
+## Replaceability
+
+**Medium.** A change requires compatibility with existing hashes, verification changes, possible opportunistic rehash and regression testing, but not a public API change.
+
+## Alternatives
+
+Relevant alternatives include bcrypt, scrypt and PBKDF2 where required. No historical ADR records a formal comparison.

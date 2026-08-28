@@ -4,32 +4,40 @@
 
 ## Purpose
 
-`backend/` explains **what the Aveli server owns, how its internal capabilities are separated, which contracts it exposes, how access and billing are resolved, and which server-side security/configuration rules apply**.
+`backend/` explains what the Aveli server owns, how its internal capabilities are separated, which contracts it exposes, how access and billing are resolved, and which server-side security/configuration rules apply.
 
-Aveli API is intentionally narrow.
-
-It owns account, session, access, and subscription coordination.
-
-It does **not** store or synchronize the specialist's professional workspace.
+Aveli API is intentionally narrow. It owns account, session, access and subscription coordination. It does **not** store or synchronize the specialist's professional workspace.
 
 ## Status
 
 **Implementation-verified baseline in progress**
 
-The current backend documentation is grounded in the verified NestJS implementation description, API contracts, configuration, and runtime behavior.
-
-A final baseline review should be performed after this package is merged.
+The current backend documentation is grounded in the verified NestJS implementation description, API contracts, configuration and runtime behavior. A final baseline review should be performed after this correction pass is merged.
 
 ## Runtime Boundary
 
 ```text
-Flutter                          NestJS API                    PostgreSQL
-────────                         ──────────                    ──────────
-AuthRemoteDataSource      →      AuthModule           →        users
-AccessRemoteDataSource    →      AccessModule         →        auth_sessions
-GET /v1/access                   AccessService                 access_grants
-POST /v1/billing/sync     →      BillingModule        →        subscriptions
-RevenueCat SDK            ↔      RevenueCat Gateway   →        subscription_events
+Flutter Client
+   │
+   ├── AuthRemoteDataSource
+   │        ↓
+   │     AuthModule
+   │        ↓
+   │     users + auth_sessions
+   │
+   ├── AccessRemoteDataSource
+   │        ↓
+   │     AccessModule / AccessService
+   │        ↓
+   │     access_grants + subscriptions
+   │
+   └── POST /v1/billing/sync
+            ↓
+         BillingModule
+            ↓
+         subscriptions + subscription_events
+            ↕
+        RevenueCat REST / webhooks
 ```
 
 Professional workspace data remains local.
@@ -93,13 +101,9 @@ auth/ + access/ + billing/
 errors/ + security/ + configuration/
 ```
 
-Start with:
+Start with [`architecture/responsibility-boundary.md`](architecture/responsibility-boundary.md).
 
-[`architecture/responsibility-boundary.md`](architecture/responsibility-boundary.md)
-
-Canonical API contract:
-
-[`api/openapi.yaml`](api/openapi.yaml)
+Canonical API contract: [`api/openapi.yaml`](api/openapi.yaml).
 
 ## Documentation Rules
 

@@ -1,49 +1,35 @@
 # Argon2id
 
-> Password hashing mechanism Aveli account authentication.
+> Password-hashing technology Aveli account authentication.
 
-## Verified Usage
+## Role
 
-Registration сохраняет:
+Argon2id защищает stored passwords: вместо plaintext credentials сохраняется one-way hash.
 
-```text
-password
-   ↓ Argon2id
-password_hash
-```
+## Почему подходит
 
-Current package:
-
-```text
-argon2 0.45
-```
-
-Plaintext passwords не сохраняются.
-
-## Login Verification
-
-Backend проверяет supplied credential по stored Argon2id hash.
-
-Failed login для missing user использует dummy hash, чтобы уменьшить account-existence timing leakage.
-
-Public invalid-credential outcome намеренно unified для:
-
-```text
-missing user
-wrong password
-disabled/unavailable account during credential handling
-```
-
-Public contract:
-
-```text
-401 AUTH_INVALID_CREDENTIALS
-```
-
-## Boundary
-
-Exact Argon2 parameters в текущем implementation description не указаны и здесь не выдумываются.
+Passwords — long-lived authentication secrets, поэтому им нужен deliberately expensive password-hashing function, а не быстрый general-purpose digest. Argon2id разработан для password hashing и использует memory-hard behavior.
 
 ## Contextual Usage
 
-[`../../auth/authentication.ru.md`](../../auth/authentication.ru.md)
+Registration/login behavior: [`../../auth/authentication.ru.md`](../../auth/authentication.ru.md)
+
+Physical storage: [`../../../database/server/entities/users.ru.md`](../../../database/server/entities/users.ru.md)
+
+Dummy-hash behavior для missing users относится к authentication/security usage, а не к canonical technology definition.
+
+## Dependencies
+
+Current runtime package: `argon2` 0.45.
+
+## Limitations
+
+Hash cost влияет на CPU/memory, параметры могут требовать tuning, а их изменение требует upgrade/rehash policy. Exact Argon2 parameters отсутствуют в supplied implementation description и здесь не придумываются.
+
+## Replaceability
+
+**Medium.** Замена требует compatibility с existing hashes, изменений verification, возможно opportunistic rehash и regression testing, но не public API change.
+
+## Alternatives
+
+Релевантные alternatives: bcrypt, scrypt и PBKDF2 где требуется. Historical ADR с formal comparison отсутствует.

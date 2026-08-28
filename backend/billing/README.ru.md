@@ -31,8 +31,10 @@ Canonical HTTP contracts:
 
 [`../api/billing/`](../api/billing/)
 
-Provider integration позже принадлежит target area:
+Provider-specific RevenueCat integration принадлежит system integration area:
 
 ```text
-../integrations/revenuecat/
+../../integrations/revenuecat/
 ```
+
+после миграции target area.

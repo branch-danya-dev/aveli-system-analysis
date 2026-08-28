@@ -1,68 +1,45 @@
 # NestJS
 
-> Backend application framework used by the Aveli account/access server.
-
-## Verified Version
-
-```text
-@nestjs/* 11.x
-```
+> Application framework for the Aveli account/access backend.
 
 ## Role
 
-NestJS hosts the backend module structure:
+NestJS provides the application structure around backend capabilities:
 
 ```text
-AppModule
-├── ConfigModule
-├── ThrottlerModule
-├── PrismaModule
-├── HealthModule
-├── AuthModule
-├── AccessModule
-└── BillingModule
+HTTP ingress
+    ↓
+controllers
+    ↓
+services / guards / filters
+    ↓
+persistence and integrations
 ```
 
-## Bootstrap Behavior
+Current modules include `ConfigModule`, `ThrottlerModule`, `PrismaModule`, `HealthModule`, `AuthModule`, `AccessModule` and `BillingModule`.
 
-`backend/src/main.ts` applies:
+## Why It Fits
 
-- `helmet`;
-- global `ValidationPipe`;
-- optional CORS.
+Aveli backend is a compact TypeScript service with several clearly separated modules and cross-cutting HTTP concerns. NestJS supports this through explicit modules, dependency injection, controllers, DTO validation, Passport guards, exception filters and testable service boundaries.
 
-A global `ApiExceptionFilter` normalizes HTTP error responses.
+## Contextual Usage
 
-## Supporting Framework Behavior
+- authentication → [`../../auth/`](../../auth/)
+- access → [`../../access/`](../../access/)
+- billing → [`../../billing/`](../../billing/)
+- HTTP contracts → [`../../api/`](../../api/)
+- security → [`../../security/`](../../security/)
 
-Validation:
+Persistence is accessed through Prisma: [`../../../database/stack/prisma/`](../../../database/stack/prisma/).
 
-```text
-whitelist = true
-forbidNonWhitelisted = true
-transform = true
-```
+## Limitations
 
-Rate limiting:
+NestJS introduces framework conventions, decorators, DI coupling and Nest-specific guard/filter/controller abstractions.
 
-```text
-global: 120 requests / 60 seconds / IP
-```
+## Replaceability
 
-Additional auth-route limits are documented in backend security/API documentation.
+**Medium to low as implementation grows.** Public API contracts and product rules can remain stable, but controllers, DI/module wiring, guards, filters, validation integration and framework-level tests would need replacement.
 
-## Persistence Usage
+## Alternatives
 
-NestJS services use Prisma for backend persistence.
-
-Canonical Prisma technology documentation:
-
-[`../../../database/stack/prisma/`](../../../database/stack/prisma/)
-
-## Boundary
-
-NestJS is implementation technology, not a product rule or public contract.
-
-Public contract ownership remains in:
-
-[`../../api/`](../../api/)
+Comparable choices include Fastify with explicit wiring, Express with custom layering, or another TypeScript server framework. No historical ADR records formal comparison.

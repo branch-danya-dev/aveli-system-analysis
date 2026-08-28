@@ -1,5 +1,7 @@
 # Auth API Contracts
 
+> Канонический HTTP contract для `/v1/auth/*`. JSON fields, paths, identifiers и error codes сохраняются без перевода.
+
 ## Shared Response Types
 
 ### `AuthUser`
@@ -26,15 +28,11 @@
 }
 ```
 
-Flutter mirror:
-
-```text
-lib/features/auth/domain/entities/auth_session.dart
-```
+Flutter mirror: `lib/features/auth/domain/entities/auth_session.dart`.
 
 ## `POST /v1/auth/register`
 
-Auth: none  
+Auth: отсутствует  
 Success: `201 Created` → `AuthTokensResponse`
 
 Request:
@@ -53,58 +51,36 @@ Validation:
 
 | Field | Rule |
 |---|---|
-| `email` | valid email; normalized to lowercase + trim |
+| `email` | valid email; normalize → lowercase + trim |
 | `password` | 8–128 characters |
 | `deviceId` | optional string |
 | `deviceName` | optional string |
 | `platform` | optional string |
 
-Errors:
-
-```text
-409 AUTH_EMAIL_ALREADY_EXISTS
-400 AUTH_VALIDATION_FAILED
-```
-
-Rate limit:
-
-```text
-10/min
-```
+Errors: `409 AUTH_EMAIL_ALREADY_EXISTS`, `400 AUTH_VALIDATION_FAILED`  
+Rate limit: `10/min`
 
 ## `POST /v1/auth/login`
 
-Auth: none  
+Auth: отсутствует  
 Success: `200` → `AuthTokensResponse`
 
-Request shape matches register credentials/device context.
+Request имеет ту же credential/device-context структуру, что register.
 
-Errors:
+Error: `401 AUTH_INVALID_CREDENTIALS`  
+Rate limit: `20/min`
 
-```text
-401 AUTH_INVALID_CREDENTIALS
-```
-
-Rate limit:
-
-```text
-20/min
-```
-
-The public credential error is intentionally unified.
+Public credential error намеренно unified.
 
 ## `POST /v1/auth/refresh`
-
-Auth: refresh credential in body  
-Success: `200` → `AuthTokensResponse`
 
 Request:
 
 ```json
-{
-  "refreshToken": "..."
-}
+{ "refreshToken": "..." }
 ```
+
+Success: `200` → `AuthTokensResponse`
 
 Errors:
 
@@ -113,46 +89,39 @@ Errors:
 403 AUTH_USER_DISABLED
 ```
 
-Rate limit:
-
-```text
-30/min
-```
+Rate limit: `30/min`
 
 ## `POST /v1/auth/logout`
 
 Request:
 
 ```json
-{
-  "refreshToken": "..."
-}
+{ "refreshToken": "..." }
 ```
 
 Success:
 
 ```json
-{
-  "ok": true
-}
+{ "ok": true }
 ```
 
-The operation is idempotent.
+Operation идемпотентна.
 
 ## `POST /v1/auth/logout-all`
 
-Auth:
-
-```http
-Authorization: Bearer <accessToken>
-```
+Auth: Bearer
 
 Success:
 
 ```json
-{
-  "ok": true
-}
+{ "ok": true }
+```
+
+Errors:
+
+```text
+401 — invalid/expired authentication
+403 AUTH_USER_DISABLED
 ```
 
 ## `GET /v1/auth/me`
@@ -169,6 +138,13 @@ Success:
 }
 ```
 
+Errors:
+
+```text
+401 — invalid/expired authentication
+403 AUTH_USER_DISABLED
+```
+
 ## `DELETE /v1/auth/me`
 
 Auth: Bearer
@@ -176,26 +152,25 @@ Auth: Bearer
 Success:
 
 ```json
-{
-  "ok": true
-}
+{ "ok": true }
 ```
 
-The backend performs soft account deletion. The API contract does not imply deletion of local workspace data.
+Backend выполняет soft account deletion и не удаляет local workspace data.
 
-Rate limit:
+Rate limit: `5/min`
+
+Errors:
 
 ```text
-5/min
+401 — invalid/expired authentication
+403 AUTH_USER_DISABLED
 ```
+
+Implementation description говорит о service-level idempotency для already deleted account, но `JwtStrategy` одновременно описан как допускающий только `active` users. Поэтому repeated HTTP deletion после delete не гарантируется этим contract до прямой проверки controller/guard behavior.
 
 ## Current 501 Stubs
 
-All return:
-
-```text
-501 AUTH_NOT_IMPLEMENTED
-```
+Все возвращают `501 AUTH_NOT_IMPLEMENTED`.
 
 | Method | Path | Body | Auth |
 |---|---|---|---|
@@ -204,14 +179,6 @@ All return:
 | POST | `/v1/auth/forgot-password` | `{ "email": "..." }` | none |
 | POST | `/v1/auth/reset-password` | `{ "token": "...", "password": "..." }` | none |
 
-Rate limits:
+Rate limits: forgot-password `5/min`, reset-password `5/min`.
 
-```text
-forgot-password: 5/min
-reset-password:  5/min
-```
-
-These routes exist as contract stubs, not implemented product capabilities.
-
-
-> RU-версия сохраняет JSON, paths, identifiers и error codes без перевода. Описательные правила соответствуют English contract выше.
+Это contract stubs, а не реализованные product capabilities.

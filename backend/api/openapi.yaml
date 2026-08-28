@@ -128,11 +128,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
         '403':
-          description: User disabled/deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/UserDisabled'
 
   /v1/auth/logout:
     post:
@@ -167,6 +163,8 @@ paths:
                 $ref: '#/components/schemas/OkResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/UserDisabled'
 
   /v1/auth/me:
     get:
@@ -188,6 +186,11 @@ paths:
     delete:
       tags: [Auth]
       summary: Soft-delete current account
+      description: |
+        The supplied implementation description states service-level idempotency for an already
+        deleted account, while JwtStrategy is also documented as accepting only active users.
+        Repeated HTTP deletion after deletion is therefore not guaranteed by this contract until
+        controller/guard behavior is verified directly.
       x-rate-limit: 5/min
       security:
         - bearerAuth: []
@@ -200,6 +203,8 @@ paths:
                 $ref: '#/components/schemas/OkResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/UserDisabled'
 
   /v1/auth/resend-verification:
     post:
@@ -367,16 +372,6 @@ components:
         ok:
           type: boolean
           const: true
-
-    DeviceContext:
-      type: object
-      properties:
-        deviceId:
-          type: string
-        deviceName:
-          type: string
-        platform:
-          type: string
 
     RegisterRequest:
       type: object
@@ -546,21 +541,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ApiError'
-
     Unauthorized:
       description: Authentication failed
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ApiError'
-
     UserDisabled:
       description: Current backend user is disabled/deleted
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ApiError'
-
     NotImplemented:
       description: Declared endpoint is not implemented
       content:

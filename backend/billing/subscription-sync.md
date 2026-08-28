@@ -14,12 +14,7 @@ The normal client triggers it after purchase or restore in the RevenueCat SDK.
 
 ## Trust Model
 
-The client does not send:
-
-```text
-isPremium = true
-entitlementStatus = active
-```
+The client does not send authoritative entitlement state.
 
 Instead:
 
@@ -32,7 +27,7 @@ RevenueCat REST
 GET /v1/subscribers/{userId}
 ```
 
-The backend therefore verifies subscription evidence independently of client-declared entitlement state.
+The backend verifies subscription evidence independently of client-declared purchase state.
 
 ## Flow
 
@@ -52,34 +47,44 @@ run common access resolution
 return AccessStatusView
 ```
 
-## Result Handling
+## RevenueCat Result Handling
 
 | RevenueCat result | Backend behavior |
 |---|---|
-| `ok` | Upsert normalized snapshot. |
-| `not_found` | Upsert snapshot with `status=expired`. |
+| `ok` | Upsert normalized snapshot and resolve access. |
+| `not_found` | Upsert `status=expired`, then resolve access. |
 | `unavailable` | Fail closed with `502 BILLING_SYNC_FAILED`. |
 
-When RevenueCat is unavailable, the sync request must not return successful access based purely on an unverified client assertion.
+## Fail-Closed Semantics
+
+`unavailable` is not treated as a successful sync.
+
+The implementation description explicitly states that an unverified stale active result must not remain the result of this sync attempt.
+
+```text
+RevenueCat unavailable
+      ↓
+verification not possible
+      ↓
+do not report successful synchronized entitlement
+      ↓
+502 BILLING_SYNC_FAILED
+```
+
+This is different from client offline grace, which relies on a previously verified secure snapshot.
 
 ## Entitlement
 
-Canonical entitlement id:
-
-```text
-support
-```
+Canonical entitlement id: `support`.
 
 ## Persistence
-
-Snapshot table:
 
 [`../../database/server/entities/subscriptions.md`](../../database/server/entities/subscriptions.md)
 
 ## Access Integration
 
-After synchronization the backend returns the same effective result as `GET /v1/access`.
+After successful reconciliation the backend returns the same access contract as `GET /v1/access`.
 
-Canonical access decision:
+Canonical decision:
 
 [`../access/access-resolution.md`](../access/access-resolution.md)

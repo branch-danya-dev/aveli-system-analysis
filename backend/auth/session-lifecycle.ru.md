@@ -1,10 +1,14 @@
 # Aveli Backend — Session Lifecycle
 
-> Проверенный lifecycle JWT access authentication и persisted rotating refresh sessions.
+> Проверенный Aveli lifecycle JWT access authentication и persisted rotating refresh sessions.
+
+## Ownership
+
+Canonical JWT technology knowledge находится в [`../stack/jwt/`](../stack/jwt/).
+
+Этот документ владеет **Aveli-specific configuration и lifecycle**.
 
 ## Credential Pair
-
-Aveli authentication выдает:
 
 ```text
 JWT Access Token
@@ -12,11 +16,9 @@ JWT Access Token
 Opaque Refresh Token
 ```
 
-У них разные lifecycle и trust properties.
-
 ## Access Token
 
-Verified defaults:
+Verified configuration:
 
 ```text
 claims: { sub: userId, email }
@@ -24,11 +26,7 @@ TTL: JWT_ACCESS_TTL
 default: 15m
 ```
 
-`JwtStrategy` дополнительно проверяет:
-
-```text
-users.status === active
-```
+`JwtStrategy` дополнительно проверяет `users.status === active`.
 
 ## Refresh Token
 
@@ -39,7 +37,7 @@ Verified format:
 base64url opaque string
 ```
 
-Stored value:
+Persisted server value:
 
 ```text
 SHA-256(refreshToken)
@@ -71,6 +69,8 @@ expires_at
 revoked_at
 ```
 
+Physical ownership: [`../../database/server/entities/auth_sessions.ru.md`](../../database/server/entities/auth_sessions.ru.md).
+
 ## Session States
 
 ```text
@@ -79,14 +79,14 @@ EXPIRED
 REVOKED
 ```
 
-## Rotation
+Rotation — operation, а не persistent state.
 
-Successful refresh выполняет rotation:
+## Rotation
 
 ```text
 Old active session
       ↓
-Validate
+Validate presented refresh credential
       ↓
 Revoke old session
       ↓
@@ -95,13 +95,7 @@ Create new session
 Issue new token pair
 ```
 
-Old refresh token становится invalid.
-
 ## Reuse / Family Invalidation
-
-Reuse revoked refresh token считается high-risk condition.
-
-Verified response:
 
 ```text
 reused revoked token
@@ -111,34 +105,29 @@ revoke all active sessions of the user
 require re-authentication
 ```
 
-## Logout
+## Logout / Logout All
 
-Single logout revokes session, соответствующую refresh-token hash.
+Single logout revokes session по supplied refresh-token hash.
 
-Endpoint идемпотентен.
-
-## Logout All
-
-Authenticated `logout-all` revokes все non-revoked sessions current user.
+`logout-all` revokes все non-revoked sessions current user.
 
 ## Account Deletion
 
-Soft deletion сначала revokes все sessions, затем переводит user в `deleted`.
+Soft deletion revokes все account sessions до перевода user в `deleted`.
 
-## Open Detail
+## Open Details
 
 Current source description не указывает:
 
 - exact JWT signing algorithm;
-- Argon2 parameters;
-- device session count limits;
-- server-side denylist старых access JWT после refresh/logout.
+- device-session count limits;
+- server-side denylisting старых access JWT после refresh/logout.
 
-Эти детали остаются open.
+Эти детали намеренно остаются open.
 
 ## Связанная документация
 
 - [`authentication.ru.md`](authentication.ru.md)
 - [`../api/auth/`](../api/auth/)
 - [`../security/`](../security/)
-- [`../../database/server/entities/auth_sessions.ru.md`](../../database/server/entities/auth_sessions.ru.md)
+- [`../stack/jwt/`](../stack/jwt/)

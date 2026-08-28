@@ -26,11 +26,7 @@
 }
 ```
 
-Flutter mirror:
-
-```text
-lib/features/auth/domain/entities/auth_session.dart
-```
+Flutter mirror: `lib/features/auth/domain/entities/auth_session.dart`.
 
 ## `POST /v1/auth/register`
 
@@ -59,18 +55,8 @@ Validation:
 | `deviceName` | optional string |
 | `platform` | optional string |
 
-Errors:
-
-```text
-409 AUTH_EMAIL_ALREADY_EXISTS
-400 AUTH_VALIDATION_FAILED
-```
-
-Rate limit:
-
-```text
-10/min
-```
+Errors: `409 AUTH_EMAIL_ALREADY_EXISTS`, `400 AUTH_VALIDATION_FAILED`  
+Rate limit: `10/min`
 
 ## `POST /v1/auth/login`
 
@@ -79,32 +65,20 @@ Success: `200` → `AuthTokensResponse`
 
 Request shape matches register credentials/device context.
 
-Errors:
-
-```text
-401 AUTH_INVALID_CREDENTIALS
-```
-
-Rate limit:
-
-```text
-20/min
-```
+Error: `401 AUTH_INVALID_CREDENTIALS`  
+Rate limit: `20/min`
 
 The public credential error is intentionally unified.
 
 ## `POST /v1/auth/refresh`
 
-Auth: refresh credential in body  
-Success: `200` → `AuthTokensResponse`
-
 Request:
 
 ```json
-{
-  "refreshToken": "..."
-}
+{ "refreshToken": "..." }
 ```
+
+Success: `200` → `AuthTokensResponse`
 
 Errors:
 
@@ -113,46 +87,39 @@ Errors:
 403 AUTH_USER_DISABLED
 ```
 
-Rate limit:
-
-```text
-30/min
-```
+Rate limit: `30/min`
 
 ## `POST /v1/auth/logout`
 
 Request:
 
 ```json
-{
-  "refreshToken": "..."
-}
+{ "refreshToken": "..." }
 ```
 
 Success:
 
 ```json
-{
-  "ok": true
-}
+{ "ok": true }
 ```
 
 The operation is idempotent.
 
 ## `POST /v1/auth/logout-all`
 
-Auth:
-
-```http
-Authorization: Bearer <accessToken>
-```
+Auth: Bearer
 
 Success:
 
 ```json
-{
-  "ok": true
-}
+{ "ok": true }
+```
+
+Errors:
+
+```text
+401 — invalid/expired authentication
+403 AUTH_USER_DISABLED
 ```
 
 ## `GET /v1/auth/me`
@@ -169,6 +136,13 @@ Success:
 }
 ```
 
+Errors:
+
+```text
+401 — invalid/expired authentication
+403 AUTH_USER_DISABLED
+```
+
 ## `DELETE /v1/auth/me`
 
 Auth: Bearer
@@ -176,26 +150,25 @@ Auth: Bearer
 Success:
 
 ```json
-{
-  "ok": true
-}
+{ "ok": true }
 ```
 
-The backend performs soft account deletion. The API contract does not imply deletion of local workspace data.
+The backend performs soft account deletion and does not delete local workspace data.
 
-Rate limit:
+Rate limit: `5/min`
+
+Errors:
 
 ```text
-5/min
+401 — invalid/expired authentication
+403 AUTH_USER_DISABLED
 ```
+
+The implementation description states service-level idempotency for an already deleted account while `JwtStrategy` is also documented as accepting only `active` users. Repeated HTTP deletion after deletion is therefore not guaranteed by this contract until controller/guard behavior is verified.
 
 ## Current 501 Stubs
 
-All return:
-
-```text
-501 AUTH_NOT_IMPLEMENTED
-```
+All return `501 AUTH_NOT_IMPLEMENTED`.
 
 | Method | Path | Body | Auth |
 |---|---|---|---|
@@ -204,11 +177,6 @@ All return:
 | POST | `/v1/auth/forgot-password` | `{ "email": "..." }` | none |
 | POST | `/v1/auth/reset-password` | `{ "token": "...", "password": "..." }` | none |
 
-Rate limits:
+Rate limits: forgot-password `5/min`, reset-password `5/min`.
 
-```text
-forgot-password: 5/min
-reset-password:  5/min
-```
-
-These routes exist as contract stubs, not implemented product capabilities.
+These routes are contract stubs, not implemented product capabilities.

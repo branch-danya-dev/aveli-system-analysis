@@ -1,73 +1,27 @@
 # REST API
 
-> JSON/HTTP contract style Aveli backend.
+> HTTP interface style Aveli backend.
 
-## Base Addresses
+## Role
 
-Current environment examples:
+REST/JSON — external interface style для authentication, account self-service, access state, billing reconciliation, webhook ingress и health/readiness.
 
-```text
-release:  https://api.aveli.app
-staging:  https://api-staging.aveli.app
-```
+## Почему подходит
 
-Client base configuration key:
+Public surface небольшой и request/response oriented, потребляется в основном Flutter плюс RevenueCat webhooks. REST дает conventional HTTP semantics, простые JSON contracts, удобное mobile-client consumption и прямое OpenAPI representation.
 
-```text
-AVELI_API_BASE
-```
+## Canonical vs Contextual Knowledge
 
-## Versioning
+Этот документ владеет general REST interface decision. Concrete paths, bodies, statuses, errors и authentication requirements canonical в [`../../api/`](../../api/).
 
-Account/access/billing routes используют:
+## Limitations
 
-```text
-/v1/...
-```
+REST contracts требуют deliberate evolution paths, HTTP semantics и JSON shapes. `AuthTokensResponse` и `AccessStatusView` client-dependent, поэтому careless changes являются breaking.
 
-Health routes intentionally unversioned:
+## Replaceability
 
-```text
-/health
-/ready
-```
+**Low to medium пока current client зависит от REST.** Новый primary interface style потребует coordinated changes во Flutter remote data sources, authentication transport, billing/access calls, tests и API documentation.
 
-## Representation
+## Alternatives
 
-```http
-Content-Type: application/json
-Accept: application/json
-```
-
-## Authentication
-
-Protected routes:
-
-```http
-Authorization: Bearer <accessToken>
-```
-
-RevenueCat webhook также использует `Authorization`, но это exact shared-secret header value, а не JWT auth.
-
-## Error Shape
-
-Canonical HTTP error shape:
-
-```json
-{
-  "code": "AUTH_INVALID_CREDENTIALS",
-  "message": "Invalid email or password"
-}
-```
-
-См.:
-
-[`../../api/error-model.ru.md`](../../api/error-model.ru.md)
-
-## Boundary
-
-API не является workspace-sync interface.
-
-Canonical machine-readable contract:
-
-[`../../api/openapi.yaml`](../../api/openapi.yaml)
+Potential alternatives: GraphQL, gRPC для controlled service-to-service interfaces или другой RPC-style HTTP contract. Historical ADR с formal evaluation отсутствует.

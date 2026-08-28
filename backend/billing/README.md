@@ -31,10 +31,10 @@ Canonical HTTP contracts:
 
 [`../api/billing/`](../api/billing/)
 
-Provider integration:
+Provider-specific RevenueCat integration belongs to the system integration area:
 
 ```text
-../integrations/revenuecat/
+../../integrations/revenuecat/
 ```
 
-when migrated to the target repository structure.
+when that target area is migrated.

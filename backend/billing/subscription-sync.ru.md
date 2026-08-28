@@ -14,12 +14,7 @@ Normal client вызывает его после purchase или restore чер�
 
 ## Trust Model
 
-Client не отправляет:
-
-```text
-isPremium = true
-entitlementStatus = active
-```
+Client не отправляет authoritative entitlement state.
 
 Вместо этого:
 
@@ -52,34 +47,44 @@ run common access resolution
 return AccessStatusView
 ```
 
-## Result Handling
+## RevenueCat Result Handling
 
 | RevenueCat result | Backend behavior |
 |---|---|
-| `ok` | Upsert normalized snapshot. |
-| `not_found` | Upsert snapshot с `status=expired`. |
+| `ok` | Upsert normalized snapshot и resolve access. |
+| `not_found` | Upsert `status=expired`, затем resolve access. |
 | `unavailable` | Fail closed: `502 BILLING_SYNC_FAILED`. |
 
-При RevenueCat unavailable sync request не должен возвращать successful access на основании client assertion.
+## Fail-Closed Semantics
+
+`unavailable` не считается successful sync.
+
+Implementation description прямо указывает: unverified stale active result не должен оставаться результатом этой sync attempt.
+
+```text
+RevenueCat unavailable
+      ↓
+verification not possible
+      ↓
+do not report successful synchronized entitlement
+      ↓
+502 BILLING_SYNC_FAILED
+```
+
+Это отличается от client offline grace, где используется previously verified secure snapshot.
 
 ## Entitlement
 
-Canonical entitlement id:
-
-```text
-support
-```
+Canonical entitlement id: `support`.
 
 ## Persistence
-
-Snapshot table:
 
 [`../../database/server/entities/subscriptions.ru.md`](../../database/server/entities/subscriptions.ru.md)
 
 ## Access Integration
 
-После sync backend возвращает тот же effective result, что `GET /v1/access`.
+После successful reconciliation backend возвращает тот же access contract, что `GET /v1/access`.
 
-Canonical access decision:
+Canonical decision:
 
 [`../access/access-resolution.ru.md`](../access/access-resolution.ru.md)

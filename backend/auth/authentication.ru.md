@@ -4,9 +4,7 @@
 
 ## Authentication Boundary
 
-Authentication устанавливает account identity.
-
-Она не решает workspace entitlement.
+Authentication устанавливает account identity и не решает workspace entitlement.
 
 ```text
 Credentials / Session
@@ -28,7 +26,7 @@ Endpoint:
 POST /v1/auth/register
 ```
 
-High-level transaction:
+Проверенный high-level flow:
 
 ```text
 validate DTO
@@ -44,6 +42,8 @@ create auth_sessions row
 issue access + refresh tokens
 ```
 
+Source description подтверждает эти side effects, но **не утверждает явно**, что весь registration flow выполняется внутри одной database transaction.
+
 Registration trial:
 
 ```text
@@ -52,36 +52,15 @@ source = registration
 endsAt = now + TRIAL_DAYS
 ```
 
-Current default:
+Current default: `TRIAL_DAYS = 30`.
 
-```text
-TRIAL_DAYS = 30
-```
-
-Duplicate registration email:
-
-```text
-409 AUTH_EMAIL_ALREADY_EXISTS
-```
+Duplicate registration email: `409 AUTH_EMAIL_ALREADY_EXISTS`.
 
 ## Sign-In
 
-Endpoint:
+`POST /v1/auth/login` нормализует/resolves email, проверяет Argon2id password hash, создает refresh session, выдает access + refresh tokens, обновляет `users.last_login_at` и не создает новый registration trial.
 
-```text
-POST /v1/auth/login
-```
-
-Behavior:
-
-- normalize/resolve email;
-- verify Argon2id password hash;
-- create authenticated refresh session;
-- issue access + refresh tokens;
-- update `users.last_login_at`;
-- never create another registration trial.
-
-Public invalid-credential result unified:
+Public invalid-credential result:
 
 ```text
 401 AUTH_INVALID_CREDENTIALS
@@ -91,34 +70,28 @@ Public invalid-credential result unified:
 
 ## Access Token
 
-Access authentication использует JWT.
-
-Verified claims:
-
-```json
-{
-  "sub": "user UUID",
-  "email": "user email"
-}
-```
-
-Default access-token TTL:
+Verified Aveli usage:
 
 ```text
-15m
+format: JWT
+claims: { sub: userId, email }
+TTL: JWT_ACCESS_TTL
+default: 15m
 ```
 
-При каждом JWT-authenticated request backend user status должен оставаться:
+При каждом JWT-authenticated request backend дополнительно требует:
 
 ```text
-active
+users.status = active
 ```
+
+Canonical JWT technology rationale:
+
+[`../stack/jwt/`](../stack/jwt/)
 
 ## Refresh Credential
 
 Refresh token не JWT.
-
-Это:
 
 ```text
 48 random bytes
@@ -129,18 +102,12 @@ Refresh token не JWT.
 Default refresh-session TTL:
 
 ```text
-60 days
+JWT_REFRESH_TTL_DAYS = 60 days
 ```
 
 ## Refresh Rotation
 
-Endpoint:
-
-```text
-POST /v1/auth/refresh
-```
-
-Verified behavior:
+Endpoint: `POST /v1/auth/refresh`
 
 ```text
 present refresh token
@@ -156,62 +123,29 @@ create new session
 issue new access + refresh pair
 ```
 
-### Reuse Detection
-
-Reuse revoked refresh token:
+Reuse revoked refresh token приводит к family invalidation:
 
 ```text
-revoked refresh reuse detected
+reused revoked token
         ↓
 revoke all active sessions for that user
 ```
 
-Это family invalidation.
-
 ## Logout
 
-```text
-POST /v1/auth/logout
-```
-
-Server находит session по refresh-token hash и revokes ее.
-
-Operation идемпотентна.
-
-Response:
-
-```json
-{ "ok": true }
-```
+`POST /v1/auth/logout` находит session по refresh-token hash и revokes ее. Operation идемпотентна.
 
 ## Logout All
 
-```text
-POST /v1/auth/logout-all
-Authorization: Bearer <accessToken>
-```
-
-Revokes все user sessions где:
-
-```text
-revoked_at IS NULL
-```
+`POST /v1/auth/logout-all` использует Bearer auth и revokes все user sessions, где `revoked_at IS NULL`.
 
 ## Current Account
 
-```text
-GET /v1/auth/me
-```
-
-Возвращает authenticated user view.
+`GET /v1/auth/me` возвращает authenticated user view.
 
 ## Account Soft Delete
 
-```text
-DELETE /v1/auth/me
-```
-
-Verified transaction:
+`DELETE /v1/auth/me` выполняет verified database transaction:
 
 1. revoke all sessions;
 2. revoke all active access grants;
@@ -222,13 +156,17 @@ Rewrite освобождает normalized email для будущей registrati
 
 Operation не удаляет device-local Drift workspace.
 
+### Endpoint Idempotency Note
+
+Source description говорит, что account deletion идемпотентен для уже deleted account. Одновременно `JwtStrategy` описан как допускающий только `users.status === active`.
+
+Поэтому **service-level idempotency и repeated HTTP delete behavior нужно сверить по controller/guard code до более сильной endpoint guarantee**.
+
+Current API contract не обещает повторный HTTP delete после перевода account в `deleted`.
+
 ## Not Implemented
 
-Следующие routes сейчас возвращают:
-
-```text
-501 AUTH_NOT_IMPLEMENTED
-```
+Эти routes сейчас возвращают `501 AUTH_NOT_IMPLEMENTED`:
 
 ```text
 POST /v1/auth/resend-verification
@@ -237,15 +175,12 @@ POST /v1/auth/forgot-password
 POST /v1/auth/reset-password
 ```
 
-Они должны документироваться как stubs, а не working behavior.
-
-## Canonical Contract
-
-[`../api/auth/`](../api/auth/)
+Это contract stubs, а не working product capabilities.
 
 ## Связанная документация
 
 - [`session-lifecycle.ru.md`](session-lifecycle.ru.md)
+- [`../api/auth/`](../api/auth/)
 - [`../stack/jwt/`](../stack/jwt/)
 - [`../stack/argon2id/`](../stack/argon2id/)
 - [`../../database/server/entities/auth_sessions.ru.md`](../../database/server/entities/auth_sessions.ru.md)

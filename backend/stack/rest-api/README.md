@@ -1,73 +1,27 @@
 # REST API
 
-> JSON/HTTP contract style used by the Aveli backend.
+> HTTP interface style used by the Aveli backend.
 
-## Base Addresses
+## Role
 
-Current environment examples:
+REST/JSON is the external interface style for authentication, account self-service, access state, billing reconciliation, webhook ingress and health/readiness.
 
-```text
-release:  https://api.aveli.app
-staging:  https://api-staging.aveli.app
-```
+## Why It Fits
 
-Client base configuration key:
+The public surface is small and request/response oriented, consumed mainly by Flutter plus RevenueCat webhooks. REST provides conventional HTTP semantics, simple JSON contracts, easy mobile-client consumption and direct OpenAPI representation.
 
-```text
-AVELI_API_BASE
-```
+## Canonical vs Contextual Knowledge
 
-## Versioning
+This document owns the general REST interface decision. Concrete paths, bodies, statuses, errors and authentication requirements are canonical in [`../../api/`](../../api/).
 
-Account/access/billing routes use:
+## Limitations
 
-```text
-/v1/...
-```
+REST contracts require deliberate evolution of paths, HTTP semantics and JSON shapes. `AuthTokensResponse` and `AccessStatusView` are client-dependent shapes, so careless changes are breaking.
 
-Health routes are intentionally unversioned:
+## Replaceability
 
-```text
-/health
-/ready
-```
+**Low to medium while the current client depends on REST.** A new primary interface style would require coordinated changes across Flutter remote data sources, authentication transport, billing/access calls, tests and API documentation.
 
-## Representation
+## Alternatives
 
-```http
-Content-Type: application/json
-Accept: application/json
-```
-
-## Authentication
-
-Protected routes use:
-
-```http
-Authorization: Bearer <accessToken>
-```
-
-RevenueCat webhook authentication also uses `Authorization`, but with an exact shared-secret header value rather than JWT authentication.
-
-## Error Shape
-
-Canonical HTTP error shape:
-
-```json
-{
-  "code": "AUTH_INVALID_CREDENTIALS",
-  "message": "Invalid email or password"
-}
-```
-
-See:
-
-[`../../api/error-model.md`](../../api/error-model.md)
-
-## Boundary
-
-The API is not a workspace-sync interface.
-
-Canonical machine-readable contract:
-
-[`../../api/openapi.yaml`](../../api/openapi.yaml)
+Potential alternatives include GraphQL, gRPC for controlled service-to-service interfaces, or another RPC-style HTTP contract. No historical ADR records formal evaluation.

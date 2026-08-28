@@ -1,71 +1,51 @@
 # JWT
 
-> Access-token format for authenticated Aveli backend requests.
+> Access-token technology used for authenticated Aveli backend requests.
 
-## Verified Access JWT
+## Role
 
-Payload:
+JWT is the short-lived bearer credential format for authenticated API requests. It carries authenticated identity context across the HTTP boundary.
 
-```json
-{
-  "sub": "<userId>",
-  "email": "<account email>"
-}
-```
-
-Configuration:
+JWT does **not** represent workspace entitlement:
 
 ```text
-secret: JWT_ACCESS_SECRET
-TTL:    JWT_ACCESS_TTL
-default TTL: 15m
+JWT authentication
+      ↓
+Authenticated account
+      ↓
+Access resolution
+      ↓
+Granted / Denied
 ```
 
-At authenticated request time, `JwtStrategy` also verifies that the corresponding backend user has:
+## Why It Fits
 
-```text
-status = active
-```
+The backend is a narrow stateless HTTP API. JWT allows request authentication without a dedicated access-token row for each request, while current account status is still checked server-side.
 
-A structurally valid token therefore does not bypass current account-state validation.
+## Aveli-Specific Usage
 
-## Refresh Token Is Not JWT
+Concrete Aveli claims, TTL, refresh-token format, rotation and reuse behavior are contextual authentication details and are canonical in:
 
-Refresh credentials are:
+[`../../auth/session-lifecycle.md`](../../auth/session-lifecycle.md)
 
-```text
-opaque
-48 random bytes
-base64url encoded
-```
+## Dependencies
 
-Server persistence stores only a:
+- `@nestjs/jwt`
+- `passport-jwt`
+- `JwtStrategy`
+- `JWT_ACCESS_SECRET`
+- current account-state validation
 
-```text
-SHA-256 hash
-```
+## Limitations
 
-Refresh-session TTL:
+Self-contained access tokens may remain cryptographically valid until expiry unless an additional revocation mechanism exists. Signing-secret handling is security-critical, and token claims become part of the internal authentication contract.
 
-```text
-JWT_REFRESH_TTL_DAYS
-default: 60 days
-```
+The current documentation does not claim a server-side access-token denylist.
 
-This distinction is important:
+## Replaceability
 
-```text
-JWT access token
-        ≠
-opaque refresh token
-```
+**Medium.** Replacing JWT would affect NestJS guards/strategy, Flutter bearer authentication, token issuance, security configuration and tests, but should not require changing product access rules if authentication and access remain separated.
 
-## Contextual Usage
+## Alternatives
 
-Authentication lifecycle:
-
-[`../../auth/`](../../auth/)
-
-Physical refresh-session state:
-
-[`../../../database/server/entities/auth_sessions.md`](../../../database/server/entities/auth_sessions.md)
+Relevant alternatives include opaque server-side access tokens, cookie-backed web sessions for browser-oriented clients, or another signed-token format. No historical ADR records a formal comparison.
