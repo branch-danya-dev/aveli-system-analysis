@@ -1,0 +1,54 @@
+@startuml
+title Aveli — Verified Backend Module Map
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam rectangle {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  RoundCorner 8
+}
+skinparam ArrowColor black
+
+left to right direction
+
+rectangle "Flutter Client" as Client
+rectangle "RevenueCat" as RC
+
+rectangle "NestJS AppModule" as App {
+  rectangle "HealthModule" as Health
+  rectangle "AuthModule" as Auth
+  rectangle "AccessModule" as Access
+  rectangle "BillingModule" as Billing
+  rectangle "PrismaModule" as Prisma
+}
+
+database "PostgreSQL" as DB
+
+Client --> Health : /health /ready
+Client --> Auth : /v1/auth/*
+Client --> Access : GET /v1/access
+Client --> Billing : POST /v1/billing/sync
+
+RC --> Billing : webhook
+Billing --> RC : subscriber REST lookup
+
+Auth --> Prisma
+Access --> Prisma
+Billing --> Prisma
+Health --> Prisma : readiness query
+Prisma --> DB
+
+note bottom of Access
+Access controls workspace
+availability only.
+end note
+
+note bottom of Billing
+No client-declared entitlement
+is trusted as final authority.
+end note
+
+@enduml

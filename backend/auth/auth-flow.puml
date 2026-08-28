@@ -1,0 +1,44 @@
+@startuml
+title Aveli — Backend Authentication Flow
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam ArrowColor black
+
+actor Client
+participant "Auth API" as API
+participant "Authentication" as Auth
+database "PostgreSQL" as DB
+
+== Registration ==
+
+Client -> API : register(credentials)
+API -> Auth : validate + register
+Auth -> DB : create user
+Auth -> DB : create registration trial
+Auth -> DB : create refresh session
+Auth --> API : access + refresh credentials
+API --> Client : authenticated result
+
+== Sign-In ==
+
+Client -> API : sign-in(credentials)
+API -> Auth : authenticate
+Auth -> DB : resolve user + password hash
+Auth -> Auth : verify credentials
+Auth -> DB : create refresh session
+Auth --> API : access + refresh credentials
+API --> Client : authenticated result
+
+== Refresh ==
+
+Client -> API : refresh(refresh credential)
+API -> Auth : validate refresh session
+Auth -> DB : load session / hash
+Auth -> Auth : validate + rotate
+Auth -> DB : persist rotation/revocation state
+Auth --> API : new credentials
+API --> Client : renewed session
+
+@enduml

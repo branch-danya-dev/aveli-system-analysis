@@ -1,0 +1,41 @@
+@startuml
+title Aveli — Billing Reconciliation
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam ArrowColor black
+
+actor "Flutter" as App
+participant "Billing API" as API
+participant "SubscriptionSyncService" as Sync
+participant "RevenueCat REST" as RC
+database "PostgreSQL" as DB
+participant "AccessService" as Access
+
+App -> API : POST /v1/billing/sync\nBearer JWT
+API -> Sync : sync authenticated userId
+Sync -> RC : GET subscriber/{userId}
+
+alt RevenueCat ok
+  RC --> Sync : subscriber + entitlements.support
+  Sync -> DB : upsert subscription snapshot
+  Sync -> Access : resolve access
+  Access -> DB : grants + subscription
+  Access --> Sync : AccessStatusView
+  Sync --> API : AccessStatusView
+  API --> App : 200 AccessStatusView
+else RevenueCat not found
+  RC --> Sync : not_found
+  Sync -> DB : upsert status=expired
+  Sync -> Access : resolve access
+  Access --> Sync : AccessStatusView
+  Sync --> API : AccessStatusView
+  API --> App : 200 AccessStatusView
+else RevenueCat unavailable
+  RC --> Sync : unavailable
+  Sync --> API : BILLING_SYNC_FAILED
+  API --> App : 502
+end
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+title Aveli — Backend Access Resolution
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam ArrowColor black
+
+start
+
+:Authenticated Account;
+
+if (Valid Lifetime?) then (yes)
+  :Effective Source = Lifetime;
+  :Access Granted;
+  stop
+endif
+
+if (Valid Manual Grant?) then (yes)
+  :Effective Source = Manual;
+  :Access Granted;
+  stop
+endif
+
+if (Active Subscription?) then (yes)
+  :Effective Source = Subscription;
+  :Access Granted;
+  stop
+endif
+
+if (Active Registration Trial?) then (yes)
+  :Effective Source = Trial;
+  :Access Granted;
+  stop
+endif
+
+:Effective Source = None;
+:Access Denied;
+stop
+
+@enduml

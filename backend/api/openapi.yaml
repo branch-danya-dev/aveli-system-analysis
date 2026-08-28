@@ -1,0 +1,569 @@
+openapi: 3.1.0
+info:
+  title: Aveli Backend API
+  version: 1.0.0
+  description: |
+    Current Aveli account/access backend contract.
+    Professional workspace entities are not part of this API.
+servers:
+  - url: https://api.aveli.app
+    description: Release
+  - url: https://api-staging.aveli.app
+    description: Staging
+
+tags:
+  - name: Health
+  - name: Auth
+  - name: Access
+  - name: Billing
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Liveness check
+      responses:
+        '200':
+          description: Backend process is alive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+  /ready:
+    get:
+      tags: [Health]
+      summary: Readiness check
+      description: Verifies PostgreSQL connectivity.
+      responses:
+        '200':
+          description: Backend and PostgreSQL are ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+        '503':
+          description: PostgreSQL is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+  /v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register account and create initial session
+      x-rate-limit: 10/min
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Account registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokensResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Authenticate account
+      x-rate-limit: 20/min
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokensResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /v1/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Rotate refresh session and issue new credentials
+      x-rate-limit: 30/min
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Session rotated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokensResponse'
+        '401':
+          description: Refresh session expired, invalid, revoked, or reused
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: User disabled/deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /v1/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Revoke one refresh session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Idempotent logout result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+
+  /v1/auth/logout-all:
+    post:
+      tags: [Auth]
+      summary: Revoke all active refresh sessions for current user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: All active sessions revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/UserDisabled'
+    delete:
+      tags: [Auth]
+      summary: Soft-delete current account
+      x-rate-limit: 5/min
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Account soft-deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/auth/resend-verification:
+    post:
+      tags: [Auth]
+      summary: Resend verification email
+      description: Current implementation stub; always returns AUTH_NOT_IMPLEMENTED.
+      security:
+        - bearerAuth: []
+      responses:
+        '501':
+          $ref: '#/components/responses/NotImplemented'
+
+  /v1/auth/verify-email:
+    post:
+      tags: [Auth]
+      summary: Verify email
+      description: Current implementation stub.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '501':
+          $ref: '#/components/responses/NotImplemented'
+
+  /v1/auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: Request password reset
+      description: Current implementation stub.
+      x-rate-limit: 5/min
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+      responses:
+        '501':
+          $ref: '#/components/responses/NotImplemented'
+
+  /v1/auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Reset password
+      description: Current implementation stub.
+      x-rate-limit: 5/min
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '501':
+          $ref: '#/components/responses/NotImplemented'
+
+  /v1/access:
+    get:
+      tags: [Access]
+      summary: Resolve effective workspace access
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Access state, including valid access denial
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessStatusView'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/UserDisabled'
+
+  /v1/billing/sync:
+    post:
+      tags: [Billing]
+      summary: Reconcile RevenueCat subscription state and return access
+      description: |
+        Uses JWT sub as RevenueCat app user id.
+        The request body is empty; the client does not submit entitlement state.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Reconciled effective access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessStatusView'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/UserDisabled'
+        '502':
+          description: RevenueCat state cannot be verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /v1/webhooks/revenuecat:
+    post:
+      tags: [Billing]
+      summary: RevenueCat webhook ingress
+      description: |
+        Authorization header must exactly match REVENUECAT_WEBHOOK_AUTH.
+        This is shared-secret webhook authentication, not JWT bearer auth.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Webhook accepted/processed idempotently
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthStatus:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok, error]
+
+    ApiError:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+    OkResponse:
+      type: object
+      additionalProperties: false
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
+          const: true
+
+    DeviceContext:
+      type: object
+      properties:
+        deviceId:
+          type: string
+        deviceName:
+          type: string
+        platform:
+          type: string
+
+    RegisterRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+        deviceId:
+          type: string
+        deviceName:
+          type: string
+        platform:
+          type: string
+
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        deviceId:
+          type: string
+        deviceName:
+          type: string
+        platform:
+          type: string
+
+    RefreshRequest:
+      type: object
+      additionalProperties: false
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+
+    TokenRequest:
+      type: object
+      additionalProperties: false
+      required: [token]
+      properties:
+        token:
+          type: string
+
+    EmailRequest:
+      type: object
+      additionalProperties: false
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    ResetPasswordRequest:
+      type: object
+      additionalProperties: false
+      required: [token, password]
+      properties:
+        token:
+          type: string
+        password:
+          type: string
+
+    AuthUser:
+      type: object
+      additionalProperties: false
+      required: [id, email, emailVerified]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        emailVerified:
+          type: boolean
+
+    AuthTokensResponse:
+      type: object
+      additionalProperties: false
+      required: [user, accessToken, refreshToken]
+      properties:
+        user:
+          $ref: '#/components/schemas/AuthUser'
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+
+    SubscriptionAccessView:
+      type: object
+      additionalProperties: false
+      required: [plan, status, autoRenew, expiresAt]
+      properties:
+        plan:
+          type: string
+        status:
+          type: string
+          enum:
+            - trialing
+            - active
+            - past_due
+            - cancelled
+            - expired
+            - grace_period
+            - revoked
+        autoRenew:
+          type: [boolean, 'null']
+        expiresAt:
+          type: [string, 'null']
+          format: date-time
+
+    AccessStatusView:
+      type: object
+      additionalProperties: false
+      required:
+        - hasAccess
+        - source
+        - trialEndsAt
+        - accessEndsAt
+        - subscription
+        - reason
+        - requiresOnlineVerification
+        - verifiedAt
+        - nextVerificationRequiredAt
+      properties:
+        hasAccess:
+          type: boolean
+        source:
+          type: string
+          enum: [lifetime, manual, subscription, trial, none]
+        trialEndsAt:
+          type: [string, 'null']
+          format: date-time
+        accessEndsAt:
+          type: [string, 'null']
+          format: date-time
+        subscription:
+          oneOf:
+            - $ref: '#/components/schemas/SubscriptionAccessView'
+            - type: 'null'
+        reason:
+          type: [string, 'null']
+          enum: [trial_expired, subscription_expired, access_required, null]
+        requiresOnlineVerification:
+          type: boolean
+        verifiedAt:
+          type: string
+          format: date-time
+        nextVerificationRequiredAt:
+          type: string
+          format: date-time
+
+  responses:
+    ValidationError:
+      description: DTO validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    Unauthorized:
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    UserDisabled:
+      description: Current backend user is disabled/deleted
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    NotImplemented:
+      description: Declared endpoint is not implemented
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
