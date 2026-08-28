@@ -1,6 +1,6 @@
 # Business
 
-> Business-level documentation for Aveli: product context, scope, requirements, processes, tasks, and traceability.
+> Business-level documentation for Aveli: product context, scope, requirements, processes, and traceability.
 
 ---
 
@@ -21,7 +21,6 @@ The `business/` area is responsible for documenting:
 - functional and non-functional requirements;
 - business rules and constraints;
 - user and business processes;
-- implementation task statements;
 - acceptance criteria;
 - traceability from business decisions to technical implementation.
 
@@ -81,7 +80,7 @@ Technical implementation:
 
 ## Structure
 
-The directory is divided into focused areas for context, scope, requirements, processes, tasks, and traceability.
+The directory is divided into focused areas for context, scope, requirements, processes, and traceability.
 
 Each area should remain readable independently and link to deeper technical documentation when necessary.
 
@@ -95,8 +94,12 @@ Each area should remain readable independently and link to deeper technical docu
 | `scope/` | Product boundary, in-scope capabilities, exclusions, and constraints. |
 | `requirements/` | Functional requirements, non-functional requirements, business rules, and acceptance criteria. |
 | `processes/` | User and business workflows. |
-| `tasks/` | Task statements derived from approved analytical decisions. |
-| `traceability/` | Links between business rules, requirements, tasks, implementation, and verification. |
+| `traceability/` | Links between business rules, requirements, implementation, and verification. |
+| `diagrams/` | High-level map of business knowledge and its relationships. |
+
+Business knowledge map:
+
+[`diagrams/business-map.puml`](diagrams/business-map.puml)
 
 For technical implementation, continue to:
 

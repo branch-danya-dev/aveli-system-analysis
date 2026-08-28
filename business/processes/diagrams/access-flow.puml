@@ -1,0 +1,49 @@
+@startuml
+title Aveli — Workspace Access Flow
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam activity {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  DiamondBackgroundColor white
+  DiamondBorderColor black
+}
+skinparam ArrowColor black
+
+start
+
+:Authenticated user;
+:Evaluate valid access sources;
+
+if (Lifetime valid?) then (Yes)
+  :Resolve access as Lifetime;
+elseif (Manual Grant valid?) then (Yes)
+  :Resolve access as Manual Grant;
+elseif (Subscription valid?) then (Yes)
+  :Resolve access as Active Subscription;
+elseif (Trial valid?) then (Yes)
+  :Resolve access as Active Trial;
+else (No)
+  :Resolve as No Access;
+endif
+
+if (Valid access source exists?) then (Yes)
+  :Workspace available;
+else (No)
+  :Access Gate;
+endif
+
+note right
+Any valid source unlocks
+the same complete workspace.
+
+Priority resolves which source
+represents the current access state.
+end note
+
+stop
+
+@enduml

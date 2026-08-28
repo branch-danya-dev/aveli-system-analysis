@@ -1,0 +1,54 @@
+@startuml
+title Aveli — Product Boundary
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam rectangle {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  RoundCorner 8
+}
+skinparam package {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+}
+skinparam ArrowColor black
+skinparam ActorBorderColor black
+skinparam ActorFontColor black
+
+left to right direction
+
+actor "Independent\nSpecialist" as User
+
+package "Aveli" as Aveli {
+  rectangle "Professional Workspace\n\nClients\nAppointments & Visits\nServices\nPayments\nNotes & Photos\nToday & Calendar\nSchedule & Preferences" as Workspace
+
+  rectangle "Account & Access\n\nRegistration & Sign-in\nTrial\nSubscription Access\nManual Access\nLifetime Access\nAccess Restoration" as Access
+}
+
+rectangle "Mobile Platform\nBilling" as Billing
+rectangle "Device Contacts" as Contacts
+rectangle "Device Notifications" as Notifications
+rectangle "Exchange-rate Source" as Rates
+
+rectangle "Out of Current Scope\n\nShared team workspace\nMulti-device workspace sync\nPublic online booking\nEnterprise CRM\nFull accounting\nOrganization management" as OutOfScope
+
+User --> Workspace : daily professional work
+User --> Access : identity & access
+
+Access ..> Billing : subscription / restore
+Workspace ..> Contacts : optional contact import
+Workspace ..> Notifications : appointment reminders
+Workspace ..> Rates : supported currency context
+
+Aveli ..> OutOfScope : intentionally excluded
+
+note bottom of Aveli
+The diagram defines product responsibility.
+It does not describe implementation technologies.
+end note
+
+@enduml

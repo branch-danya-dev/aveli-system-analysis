@@ -569,6 +569,280 @@ Creating an additional generic `business/tasks/` layer would usually duplicate t
 
 ---
 
+## Business Knowledge Ownership
+
+The `business/` branch is ideally maintained through collaboration between a **Business Analyst** and a **System Analyst**.
+
+Their perspectives overlap, but their primary focus differs.
+
+### Business Analyst
+
+The Business Analyst primarily protects:
+
+- business goals;
+- stakeholder intent;
+- user problems;
+- product context;
+- business processes;
+- business rules;
+- acceptance of business outcomes.
+
+### System Analyst
+
+The System Analyst primarily protects:
+
+- system boundary consistency;
+- formalization of requirements;
+- product-to-system traceability;
+- non-functional expectations;
+- technical consequences of business decisions;
+- consistency between business knowledge and technical architecture.
+
+The business branch is therefore a **shared analytical boundary**, not an artifact owned exclusively by one profession.
+
+If a Business Analyst is not present, stewardship of the branch moves to the System Analyst.
+
+In that case, the System Analyst must still preserve the distinction between:
+
+```text
+Business decision
+        ≠
+Technical design decision
+```
+
+Missing business decisions should be validated with product owners, domain experts, or stakeholders rather than inferred solely from technical convenience.
+
+---
+
+## Dependency-Driven Construction Strategy
+
+SSAD should not be built in arbitrary order.
+
+Documentation has dependencies just like software architecture.
+
+If downstream artifacts are finalized before their upstream assumptions are understood, the project repeatedly returns to already completed documents and rewrites them.
+
+The methodology therefore follows this principle:
+
+> **Build knowledge in dependency order and stabilize upstream decisions before detailing downstream implementation.**
+
+This does not eliminate iteration.
+
+The goal is to make iteration **local, visible, and intentional** rather than repeatedly rebuilding the entire repository.
+
+### Default Construction Direction
+
+A typical project should progress approximately as follows:
+
+```text
+Existing evidence / product reality
+        ↓
+Business Context
+        ↓
+Scope
+        ↓
+Business Rules / Requirements / Processes
+        ↓
+Initial component boundaries
+        ↓
+Data ownership and domain model
+        ↓
+Interfaces and integration boundaries
+        ↓
+Component architecture
+        ↓
+Technology stack and implementation details
+        ↓
+Operations / security / release behavior
+        ↓
+System-wide synthesis
+        ↓
+Final traceability and consistency review
+```
+
+The exact order may change when the system has strong external constraints, but the dependency principle remains.
+
+For example, an externally mandated API contract may need to be analyzed before the internal backend design because the external contract is an upstream constraint.
+
+---
+
+## Architecture Construction Principles
+
+### 1. Start from evidence, not from a desired diagram
+
+When analyzing an existing system, first establish what actually exists:
+
+- source code;
+- current product behavior;
+- database schemas;
+- external contracts;
+- deployment configuration;
+- stakeholder knowledge;
+- existing documentation.
+
+Documentation should model the real system unless the artifact explicitly describes a proposed target state.
+
+### 2. Define the product boundary before decomposing implementation
+
+Before documenting backend services, databases, integrations, or frontend modules, establish:
+
+```text
+What is the system responsible for?
+What is outside its responsibility?
+Which behavior is required?
+```
+
+Without this boundary, technical decomposition tends to encode assumptions that later have to be removed.
+
+### 3. Establish ownership before detail
+
+Before describing implementation detail, determine which component owns the responsibility.
+
+Example:
+
+```text
+Subscription access decision
+        ↓
+Who owns the decision?
+        ↓
+Only then describe API, data, integration, and stack.
+```
+
+This prevents the same responsibility from being independently documented in several layers.
+
+### 4. Model data ownership early
+
+Data ownership should be understood before finalizing many APIs and component interactions.
+
+The important early questions are:
+
+```text
+What data exists?
+Who owns it?
+Where is its canonical state?
+Who may change it?
+Who only consumes it?
+What is its lifecycle?
+```
+
+Physical storage details can follow later.
+
+### 5. Define canonical contracts before consumers
+
+An interface should have one owner.
+
+When a backend API is canonical, frontend documentation describes how it consumes that API rather than redefining it.
+
+When an external provider contract constrains the system, that contract should be documented before internal components that depend on it are finalized.
+
+### 6. Document technology after responsibility is understood
+
+A known technology may already exist in the implementation, but its documentation should still answer:
+
+```text
+What responsibility does it support?
+Why is it here?
+Where is it used?
+What depends on it?
+```
+
+Technology should not become the starting point for inventing system boundaries.
+
+### 7. Build component documentation before the final system view
+
+Component-level documentation is the source material for the final cross-system model.
+
+A preliminary component skeleton may exist early to guide navigation, but the final `system/` view should be synthesized after the major areas are documented.
+
+The system view should summarize established knowledge, not invent missing component behavior.
+
+### 8. Maintain traceability continuously
+
+Traceability should not be postponed until the project is finished.
+
+As each layer becomes stable, its important links should be added:
+
+```text
+Business
+    → Data
+    → Component
+    → Interface
+    → Technology
+    → Verification
+```
+
+The final traceability review then checks completeness instead of reconstructing relationships from memory.
+
+---
+
+## Stabilization Before Expansion
+
+Documents should be treated as having different levels of maturity.
+
+A useful conceptual lifecycle is:
+
+```text
+Draft
+  ↓
+Baseline
+  ↓
+Stable
+```
+
+### Draft
+
+The artifact is still being used to discover the system.
+
+Downstream documents should not rely on unstable details as final truth.
+
+### Baseline
+
+The artifact is sufficiently agreed and understood to become an input for deeper analysis.
+
+Small changes are still expected.
+
+### Stable
+
+The artifact has been cross-checked against the relevant implementation, contracts, or stakeholder decisions and can act as a canonical reference.
+
+The methodology does not require formal status metadata yet, but this distinction helps prevent premature detail.
+
+A downstream artifact may expose a problem in an upstream artifact.
+
+That is valid.
+
+The goal is not to forbid corrections; it is to avoid corrections caused only by analyzing the system in the wrong order.
+
+---
+
+## System View Is a Synthesis Layer
+
+The `system/` branch represents knowledge that crosses component boundaries.
+
+It should normally be finalized **after** the relevant component areas have been documented.
+
+For example, the final system model may connect:
+
+```text
+Business
+Database
+Backend
+Frontend
+Integrations
+Operations
+```
+
+but the canonical details remain in those component areas.
+
+This leads to an ownership principle:
+
+> **A layer may reference another layer, but a model that describes several layers together belongs to their nearest common system-level owner.**
+
+Therefore a business document may reference backend or database consequences.
+
+A diagram that models business, backend, frontend, database, and integrations together belongs to `system/`, not to `business/`.
+
+
 ## Documentation Should Support Real Implementation
 
 SSAD is intended to move beyond abstract analytical descriptions.

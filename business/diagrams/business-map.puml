@@ -1,0 +1,53 @@
+@startuml
+title Aveli — Business Knowledge Map
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam rectangle {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  RoundCorner 8
+}
+skinparam ArrowColor black
+
+top to bottom direction
+
+rectangle "Product Context\nWhy / For whom" as Context
+rectangle "Scope\nProduct boundary" as Scope
+
+rectangle "Business Rules\nProduct invariants" as BR
+rectangle "Functional Requirements\nRequired capabilities" as FR
+rectangle "Non-Functional Requirements\nQuality expectations" as NFR
+
+rectangle "Processes\nUser and product flows" as Processes
+rectangle "Acceptance Criteria\nObservable verification" as AC
+rectangle "Traceability\nRelationships and coverage" as Trace
+
+Context --> Scope
+
+Scope --> BR
+Scope --> FR
+Scope --> NFR
+
+BR --> FR
+BR --> Processes
+
+FR --> Processes
+FR --> AC
+NFR --> AC
+BR --> AC
+Processes --> AC
+
+BR ..> Trace
+FR ..> Trace
+NFR ..> Trace
+AC ..> Trace
+
+note bottom of Trace
+This is a knowledge map,
+not a runtime system flow.
+end note
+
+@enduml

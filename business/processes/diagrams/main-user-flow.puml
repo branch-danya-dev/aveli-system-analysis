@@ -1,0 +1,64 @@
+@startuml
+title Aveli — Main User Flow
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam activity {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  DiamondBackgroundColor white
+  DiamondBorderColor black
+}
+skinparam ArrowColor black
+
+start
+
+:Enter Aveli;
+
+if (Authenticated user?) then (Yes)
+else (No)
+  :Create account or sign in;
+endif
+
+:Determine workspace access;
+
+while (Access unavailable?) is (Yes)
+  :Open Access Gate;
+
+  if (User attempts to restore\nor obtain access?) then (Yes)
+    :Complete a supported access action;
+    :Re-evaluate access;
+  else (No)
+    :Leave application;
+    stop
+  endif
+endwhile (No)
+
+:Open personal workspace;
+
+repeat
+  :Review Today / Calendar;
+
+  if (Work with an appointment?) then (Yes)
+    :Create / reschedule / cancel /\nmark no-show / complete;
+  endif
+
+  if (Work with a client?) then (Yes)
+    :Find / create / update client;
+    :Review available client history;
+  endif
+
+  if (Complete professional work?) then (Yes)
+    :Preserve supported visit context;
+    :Record payment or leave outstanding;
+  endif
+
+repeat while (Continue working?) is (Yes)
+
+:Leave application;
+
+stop
+
+@enduml
