@@ -23,6 +23,37 @@
 
 ---
 
+## Project Context
+
+**Aveli is not a hypothetical training system. It is a personal end-to-end product project that I conceived, analyzed, designed and implemented myself.**
+
+| Question | Context |
+|---|---|
+| **Origin** | I came up with the product idea and defined its scope, constraints and intended user workflow. |
+| **My role** | **Creator · System Analyst · Solution Designer · Developer** |
+| **What I owned** | Product/system boundaries, requirements and business rules, data ownership, frontend/backend architecture, API contracts, access and billing behavior, integrations and implementation. |
+| **How analysis was validated** | Major analytical decisions were carried into a real Flutter / NestJS / PostgreSQL / RevenueCat implementation. Framework, provider and implementation constraints fed back into the system model when the original assumptions did not survive contact with code. |
+| **What this repository is** | A reader-oriented system-analysis knowledge base for the implemented product — not a raw dump of working notes or application source code. |
+| **Current result** | An implemented product case with a stable analytical baseline and explicit conditions for reopening decisions when the product changes. |
+
+There was no analyst-to-developer handoff in this case: the same system model moved from analysis into solution design and implementation under my responsibility.
+
+```text
+Product idea
+    ↓
+System analysis
+    ↓
+Solution design
+    ↓
+Implementation
+    ↓
+Implementation evidence
+    ↓
+Refined system knowledge
+```
+
+---
+
 ## What is Aveli?
 
 **Aveli** is a personal mobile workspace for independent beauty professionals.
